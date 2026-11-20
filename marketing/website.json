@@ -1,0 +1,2439 @@
+{
+  "key": "website",
+  "name": "Website",
+  "title": "Website: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Access and enablement",
+      "s": "Website module permissions and the sub-pages the operator can reach"
+    },
+    {
+      "id": "B",
+      "t": "Create the site",
+      "s": "Templates and drafts page, first draft from a template, data pre-filled from the restaurant and the Brand Book"
+    },
+    {
+      "id": "C",
+      "t": "Build pages and sections",
+      "s": "The builder: pages, sections, menu, text, colours, media, links, forms, maps, header, footer, popups, devices"
+    },
+    {
+      "id": "D",
+      "t": "Sync, preview and check",
+      "s": "Brand Book sync, preview and the ADA accessibility scan before publishing"
+    },
+    {
+      "id": "E",
+      "t": "Publish and domains",
+      "s": "Temporary domain or custom domain, DNS and SSL, the build workflow, status and recovery"
+    },
+    {
+      "id": "F",
+      "t": "Guest on the live site",
+      "s": "What the visitor sees and does: fonts, navigation, menu, links into ordering, maps, popups, forms"
+    },
+    {
+      "id": "G",
+      "t": "Form submissions and leads",
+      "s": "What happens after a guest submits a form and where the operator sees it"
+    },
+    {
+      "id": "H",
+      "t": "After publishing",
+      "s": "Edit and republish, platform releases, restaurant data changes, unpublish and offboarding"
+    },
+    {
+      "id": "I",
+      "t": "Measure and SEO",
+      "s": "Website overview stats, SEO page, Search Console and analytics tags"
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Operator opens Website",
+      "d": "The operator opens Marketing, Website in Web Dash for the selected location. The website belongs to one restaurant (location), not to the whole business.",
+      "sys": [
+        "Web Dash: Website"
+      ],
+      "e": [
+        [
+          "Operator on a multi-location business edits the website of the wrong location because the location switcher is not obvious in the builder",
+          "Wrong site changed or published",
+          "H",
+          "CX,D",
+          []
+        ],
+        [
+          "Module not switched on or no Website permission, page silently missing from the sidebar with no explanation",
+          "Operator thinks the feature is broken",
+          "M",
+          "OB,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Access and sub-pages",
+      "d": "The Website group shows Overview, Design (templates and builder), Announcements, SEO and Forms, each behind its own read permission under the Website module permission. Domain settings live inside the builder publish flow, not on a separate page.",
+      "sys": [
+        "Web Dash: Website",
+        "Super Admin"
+      ],
+      "e": [
+        [
+          "Permissions are checked in the sidebar and on read, but a role with read access can still reach publish or domain actions if the action is not checked on the server",
+          "Unauthorised publish or domain change",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "Overview shows empty charts on first visit before any site is published or Google is connected, with no first-run guidance",
+          "Operator does not know where to start",
+          "M",
+          "OB,CX",
+          []
+        ],
+        [
+          "Restaurant alias missing for the location, so later publishing to the temporary domain fails with Restaurant alias not found",
+          "Cannot publish at all",
+          "H",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Templates and drafts page",
+      "d": "Design lists the templates and the restaurant's drafts with a status of draft, published temporary or published live. Drafts can be created, renamed, archived, unarchived and deleted; the live website cannot be archived or deleted (Live websites cannot be archived or deleted).",
+      "sys": [
+        "Web Dash: Website",
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Draft deleted while it is the published temporary site, the temporary URL keeps serving an orphaned copy",
+          "Stale site with no way to edit it",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Status badge is worked out from the domain settings, so if the published id is cleared by a domain change the live site shows as draft",
+          "Operator loses track of which draft is live",
+          "M",
+          "D,CX",
+          []
+        ],
+        [
+          "Two drafts with similar names and no last-published date make it easy to edit the wrong one",
+          "Changes made to a draft that is not live",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Delete removes the draft from both stores with no undo or recycle bin",
+          "Work lost",
+          "H",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose template, create draft",
+      "d": "The operator picks a template and a new draft is created from it with an optional draft name. Only one website record per draft; the template sets the starting pages and sections. No AI generated site or copy was found in the live code.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Switching template on an existing draft replaces pages and sections, custom content is lost without a clear warning",
+          "Operator loses hours of work",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "Template ships with sections the restaurant does not have (catering, loyalty, gift cards), left in and published with dead links",
+          "Guests hit empty or broken sections",
+          "M",
+          "CX,CN",
+          []
+        ],
+        [
+          "Draft created twice on a double click, two near identical drafts appear",
+          "Clutter and confusion",
+          "L",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "soft",
+      "rel": "L",
+      "t": "Prefill restaurant and brand data",
+      "d": "On first load the builder pulls restaurant details, integrations, domain settings and the Brand Book (fonts, logos, colours, social links) into the draft and stores a copy of the Brand Book with its updated date. Site URL is set from the domain settings at this point.",
+      "sys": [
+        "Website builder",
+        "Brand Book",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Brand Book fonts not marked Done are missing, so heading, sub heading or paragraph styles fall back to template defaults",
+          "Site does not match the brand",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Restaurant address, phone or hours are copied into the draft once and do not follow later changes in restaurant settings",
+          "Live site shows stale details",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "Site URL written while only the temporary domain exists and not refreshed when a custom domain is added later",
+          "Canonical and sitemap point at the temporary domain",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "Brand Book empty for a new restaurant, the site starts with generic template colours and placeholder logo",
+          "Unbranded site published by mistake",
+          "M",
+          "OB,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Editor loads, auto-saves, undo",
+      "d": "The builder loads the draft and auto-saves changes as small patches after a short pause, with a save on leaving the page. Undo and redo walk the local change history.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Two operators edit the same draft, patches from both are applied without locking and one person's change is silently lost or merged into a broken page",
+          "Lost edits or corrupted layout",
+          "H",
+          "D,T",
+          []
+        ],
+        [
+          "Patch fails to apply on the server (stale base after another save), the error is swallowed and the operator believes it saved",
+          "Changes lost on reload",
+          "H",
+          "D,T",
+          []
+        ],
+        [
+          "Closing the tab within the save delay drops the last change",
+          "Last edit lost",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Undo after a Brand Book sync or template switch restores only part of the change",
+          "Inconsistent styles",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Large drafts with many images load slowly or freeze the editor",
+          "Operator gives up editing",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Pages and navigation",
+      "d": "The operator adds pages (standard pages such as Menu, About, Contact, Catering, Privacy policy, custom), sets the page name, URL slug and page SEO settings, and orders them in the navigation. Slugs are validated for format.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Two pages given the same slug, one of them is unreachable after publishing",
+          "Page missing on the live site",
+          "H",
+          "CX,D",
+          []
+        ],
+        [
+          "Renaming a slug breaks buttons and links that pointed at the old page, with no warning",
+          "Broken links on the live site",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Deleting a page leaves it in the header or footer navigation",
+          "Guests hit a 404",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Page hidden from navigation still appears in the sitemap",
+          "Unfinished page indexed by Google",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Add, duplicate or remove sections",
+      "d": "From the section library the operator adds sections (hero, about, menu, featured menu, deals, spotlights, testimonials, gallery, Instagram, FAQ, form, call to action, location, gift card, catering, loyalty, tiers, packages, custom), reorders them by drag and drop, hides, deletes or duplicates them on the same page or onto other pages.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "A call to action or form section appears across pages where the operator did not add it",
+          "Duplicate content across the site",
+          "H",
+          "D,CX",
+          [
+            "4657"
+          ]
+        ],
+        [
+          "Extra sections appear in the builder without being added",
+          "Cluttered site, operator distrusts the builder",
+          "M",
+          "D,CX",
+          [
+            "4690"
+          ]
+        ],
+        [
+          "Duplicated section keeps the same internal ids as the original, so editing one changes both or edits are lost",
+          "Operator cannot edit the copy",
+          "H",
+          "D,T",
+          []
+        ],
+        [
+          "Drag and drop drops a section on the wrong page or in the wrong order on mobile",
+          "Layout differs from intent",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Deleting a section that holds a form leaves the form and its submissions orphaned on the Forms page",
+          "Confusing leads list",
+          "L",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Menu page from Menu Manager",
+      "d": "The menu section lists menus, categories and items from Menu Manager with category headings, layout variants and a category dropdown. Item data is pulled when the site is built, so the live menu is a snapshot of Menu Manager at publish time.",
+      "sys": [
+        "Website builder",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Category heading show or hide toggle has no effect on the menu page while the font size control works",
+          "Operator cannot control the layout",
+          "M",
+          "CX",
+          [
+            "4862"
+          ]
+        ],
+        [
+          "Item renamed, repriced, hidden or 86ed in Menu Manager after publishing, the website keeps the old snapshot until republished",
+          "Guest sees wrong prices or unavailable items",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "Items with no image or long names break the grid layout",
+          "Untidy menu page",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Menu with time based availability shows all items at all times on the website",
+          "Guests expect items that are not served now",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Very large menus make the build slow or time out",
+          "Publish fails",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C5",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Text, fonts and letter spacing",
+      "d": "Global font styles (heading, sub heading, body, button) and per-text overrides set family, weight, size, line height and letter spacing per device. The inline text editor allows letter spacing from minus 50 to 20, while other controls and the Brand Book only allow zero or more.",
+      "sys": [
+        "Website builder",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Zero and negative letter spacing not available in some text controls, so the operator cannot match the brand design",
+          "Design cannot match the brand",
+          "M",
+          "CX",
+          [
+            "4951"
+          ]
+        ],
+        [
+          "Custom uploaded font shows in the editor but is not bundled with the published site",
+          "Fonts fall back on the live site",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Font weight chosen that the font family does not provide, browser fakes a bold or italic",
+          "Text looks wrong",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Per-device size set on desktop only, mobile inherits a size that overflows",
+          "Text cut off on phones",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C6",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Colour styles",
+      "d": "Each section picks one of the colour styles (light and dark variants built from the theme) that sets background, text, button and form field colours. Brand Book colours are available as the palette.",
+      "sys": [
+        "Website builder",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Custom form fields and labels take the page text colour instead of the section colour style, so on a light colour style the form is invisible",
+          "Guests cannot see or fill the form",
+          "H",
+          "CX",
+          [
+            "4723"
+          ]
+        ],
+        [
+          "Footer colour style chosen in the builder is not applied the same way on the published site",
+          "Footer looks different live",
+          "M",
+          "CX,CN",
+          [
+            "4687"
+          ]
+        ],
+        [
+          "Low contrast combinations allowed without warning",
+          "Unreadable text, ADA exposure",
+          "H",
+          "L,CX",
+          []
+        ],
+        [
+          "Changing a Brand Book colour does not update colour styles already in use",
+          "Site drifts from the brand",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C7",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Images and media",
+      "d": "The operator uploads or picks images and videos from the content library, sets focal point, crop and transforms, and builds galleries and carousels. Files are stored on S3 and served from the CDN.",
+      "sys": [
+        "Website builder",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Very large images or videos uploaded without compression, live pages load slowly on mobile",
+          "Guests bounce, poor SEO",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Image deleted from the content library still referenced by the site, shows broken after the next publish",
+          "Broken images on the live site",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Missing alt text on images",
+          "ADA exposure",
+          "H",
+          "L",
+          []
+        ],
+        [
+          "Focal point set on desktop crops the subject out on mobile",
+          "Bad hero on phones",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C8",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Buttons and links",
+      "d": "Buttons, inline hyperlinks and FAQ links open a link modal: Standard page (page and optional section) or External link with a URL check, label and new tab option. The Order Online link is usually an external link to the online ordering page.",
+      "sys": [
+        "Website builder",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Valid Order Online URL rejected with Invalid URL on primary and secondary buttons, because the URL check refuses uppercase letters, query strings or long domain endings",
+          "Operator cannot link to online ordering",
+          "C",
+          "CN,CX",
+          [
+            "4841",
+            "4923"
+          ]
+        ],
+        [
+          "Different link editors use different URL checks, a URL accepted in one place is refused in another",
+          "Inconsistent behaviour",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Link to a section anchor breaks when the section is deleted or moved to another page",
+          "Button does nothing",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Order Online link hard coded to one location on a multi-location brand",
+          "Orders go to the wrong store",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "External link saved without https",
+          "Browser warnings or broken link",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C9",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Forms and custom forms",
+      "d": "Form sections (contact, custom, catering, loyalty sign-up and popup forms) have questions of several types, required flags, a success message and notification recipients. Forms can be duplicated within the site.",
+      "sys": [
+        "Website builder",
+        "Email service"
+      ],
+      "e": [
+        [
+          "Existing questions cannot be edited in a duplicated form",
+          "Operator cannot change the form",
+          "H",
+          "D,T",
+          [
+            "4996"
+          ]
+        ],
+        [
+          "No notification recipient set, submissions arrive with nobody told",
+          "Lost catering and event leads",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Required consent checkbox missing on a sign-up form that adds guests to marketing",
+          "Marketing without consent",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "Form renamed after submissions exist, older submissions grouped under the old name",
+          "Leads split across two forms",
+          "L",
+          "D,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C10",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "FAQ section",
+      "d": "FAQ section with question and answer pairs, links inside answers and spacing controls.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Spacing between FAQ items and around the section does not follow the controls or the design",
+          "Section looks broken",
+          "L",
+          "CX",
+          [
+            "4818"
+          ]
+        ],
+        [
+          "Long answers overflow on mobile",
+          "Unreadable answers",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Link inside an answer refused by the URL check or saved without a protocol",
+          "Broken link",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C11",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Location, map and business hours",
+      "d": "Location section shows address, phone, map and business hours from the restaurant settings, with map styling options. Hours shown on the live site are the values present when the site was last built.",
+      "sys": [
+        "Website builder",
+        "Web Dash: Business hours"
+      ],
+      "e": [
+        [
+          "Business hours updated in restaurant settings do not reach the website",
+          "Guests turn up when the store is closed",
+          "H",
+          "CN,D",
+          [
+            "4939"
+          ]
+        ],
+        [
+          "Holiday or special hours not shown on the website",
+          "Guests misled on holidays",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Split shifts or overnight hours displayed in the wrong order or time format",
+          "Confusing hours",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Wrong pin for an address that geocodes badly",
+          "Guests sent to the wrong place",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C12",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Gift card, catering, loyalty, deals sections",
+      "d": "Sections that pull from other AIO modules: gift card categories, catering packages, loyalty tiers and sign-up, deals, spotlights and reviews. Their data is fetched when the site is built.",
+      "sys": [
+        "Website builder",
+        "Marketing Gift cards",
+        "Marketing Loyalty",
+        "Marketing Deals"
+      ],
+      "e": [
+        [
+          "Deal or spotlight expires or is deleted, the website keeps showing it until republished",
+          "Guest expects an offer that is gone",
+          "H",
+          "CN,M",
+          []
+        ],
+        [
+          "Gift card section added while digital gift cards are not set up for online, the buy link leads nowhere",
+          "Lost gift card sales",
+          "H",
+          "CN,OB",
+          []
+        ],
+        [
+          "Loyalty tiers changed in Marketing after publish, website shows old tiers and points",
+          "Guest disputes rewards",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Fetch of module data fails during the build, the section silently renders empty",
+          "Empty section on the live site",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C13",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Header and footer",
+      "d": "Header with logo, navigation items and dropdowns, call to action button, sticky and mobile menu; footer with colour style, hours, address and social links taken from the Brand Book.",
+      "sys": [
+        "Website builder",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Footer colour style differs between builder and live site",
+          "Brand looks inconsistent",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Social link icons shown with empty links after a Brand Book sync",
+          "Dead icons",
+          "L",
+          "CX,CN",
+          []
+        ],
+        [
+          "Logo too large or wrong variant in the mobile header",
+          "Header covers content on phones",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C14",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Popups, consent and announcements",
+      "d": "Global popups (announcement, form popup, sign-up popup that creates a guest, cookie consent) with triggers and styling; the Announcements page manages announcement content shown on the site.",
+      "sys": [
+        "Website builder",
+        "Web Dash: Website",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Cookie consent off or misconfigured while analytics and pixels run",
+          "Privacy exposure (CCPA)",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "Popup shows on every page view because dismissal is not remembered",
+          "Guests annoyed",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Sign-up popup adds guests without clear marketing terms",
+          "Messaging without consent",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "Announcement end date passes but it stays live until republish",
+          "Outdated message shown",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C15",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Desktop and mobile views",
+      "d": "The operator switches between desktop, tablet and mobile views and sets per-device overrides for sizes, spacing and visibility.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Mobile view in the builder does not match a real phone (fonts, dropdowns, sticky header)",
+          "Broken mobile site goes live",
+          "H",
+          "CX,T",
+          []
+        ],
+        [
+          "Per-device override hides a section on mobile that holds the only Order Online button",
+          "Lost mobile orders",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Tablet view rarely checked, layout breaks in between breakpoints",
+          "Untidy site on tablets",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "dec",
+      "rel": "L",
+      "t": "Brand Book changed since last sync?",
+      "d": "When the builder opens it compares the Brand Book updated date with the copy stored in the draft. If newer, it shows a New changes made in brand book modal (Later or Sync now), then a reminder banner if postponed.",
+      "sys": [
+        "Website builder",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Change detection only runs when the builder is open, so a live site never learns of Brand Book changes on its own",
+          "Site drifts from the brand",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Modal shows again on every load if the stored date is not saved after Later",
+          "Operator nagged",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Sync now from Brand Book",
+      "d": "Sync now copies Brand Book fonts (only properties that changed since the last sync), social links, logos and colours into the draft. Colours land in the palette but do not rewrite colour styles. The live site changes only after a republish.",
+      "sys": [
+        "Website builder",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Sync overwrites manual font changes the operator made in the builder for the same property",
+          "Custom styling lost",
+          "M",
+          "D,CX",
+          []
+        ],
+        [
+          "Operator expects the live site to change after Sync now but nothing happens until republish",
+          "Confusion, support tickets",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Sync fails silently when the Brand Book request fails, the success snackbar still shows",
+          "False confirmation",
+          "M",
+          "T,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Preview the site",
+      "d": "Preview renders the draft with the same shared section components as the live site, inside Web Dash, per device.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Preview uses the latest shared components while the live site was built on an older release, so they differ",
+          "Operator sees one thing, guests another",
+          "M",
+          "T,CN",
+          []
+        ],
+        [
+          "Fonts and maps work in preview but fail on the published site",
+          "Surprise after publishing",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "Data driven sections in preview show current data, the live site shows the snapshot from the last build",
+          "Mismatch between preview and live",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Run ADA accessibility scan",
+      "d": "The builder runs an automated accessibility scan (axe-core) on each page and device, lists violations and stores the latest scan on the website; the Overview shows an ADA compliance card from it.",
+      "sys": [
+        "Website builder",
+        "Web Dash: Website"
+      ],
+      "e": [
+        [
+          "ADA compliance report wrong or not loading on production",
+          "Operator cannot rely on the report",
+          "H",
+          "L,R",
+          [
+            "4716"
+          ]
+        ],
+        [
+          "Latest scan cached for a day, fixes made today still show the old result",
+          "Operator thinks fixes failed",
+          "M",
+          "T,R",
+          []
+        ],
+        [
+          "Scan runs on the builder canvas, not on the published site, so live only issues are missed",
+          "False sense of compliance",
+          "H",
+          "L",
+          []
+        ],
+        [
+          "Automated scan presented as compliance although it covers only part of the guidelines",
+          "ADA lawsuit exposure",
+          "C",
+          "L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "dec",
+      "rel": "L",
+      "t": "Temporary or custom domain?",
+      "d": "From the publish modal the operator publishes to the temporary domain (shared staging, up to 3 versions per restaurant) or to the live custom domain, which needs a verified domain and certificate.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Operator publishes a draft to live by mistake when meaning to test on the temporary domain",
+          "Unfinished site goes live",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Publish clicked while the last auto-save is still pending, the build uses older content",
+          "Latest edits missing live",
+          "H",
+          "D,T",
+          []
+        ],
+        [
+          "No check for missing essentials (Order Online link, hours, privacy policy) before publishing",
+          "Incomplete site goes live",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Assign temporary subfolder",
+      "d": "For the temporary domain the draft gets a subfolder named from the restaurant alias and a counter 1 to 3 on a shared bucket. A fourth version is refused: Maximum of 3 staging versions allowed.",
+      "sys": [
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Limit of 3 temporary versions reached, the operator must unpublish one first and the message does not say which",
+          "Blocked publishing",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Two drafts published at once get the same free counter",
+          "One temporary site overwrites another",
+          "M",
+          "T,D",
+          []
+        ],
+        [
+          "Alias changed after publishing, old subfolder left behind",
+          "Old temporary URLs still public",
+          "L",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Connect custom domain",
+      "d": "The operator enters the domain, AIO creates a hosted zone and requests an SSL certificate, and shows the nameservers or DNS records to set at the registrar. Existing records (www, subdomains, mail) are read so they can be carried over.",
+      "sys": [
+        "Website builder",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Moving nameservers drops the restaurant's existing mail or other records that were not copied over",
+          "Restaurant email stops working",
+          "C",
+          "OB,D",
+          []
+        ],
+        [
+          "Domain typed with www or a typo, the hosted zone and certificate are created for the wrong name",
+          "Domain never verifies",
+          "M",
+          "OB,CX",
+          []
+        ],
+        [
+          "Operator lacks registrar access, onboarding stalls with no hand-off to AIO Ops",
+          "Go-live delayed",
+          "M",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E4",
+      "b": "E",
+      "k": "dec",
+      "rel": "L",
+      "t": "Domain and SSL verified?",
+      "d": "Publishing live is refused until nameservers resolve and the certificate is issued. The status is checked against the certificate each time domain settings load.",
+      "sys": [
+        "Website builder",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "DNS propagation takes hours, the operator retries and sees the same error with no time estimate",
+          "Frustration, support tickets",
+          "M",
+          "CX,OB",
+          []
+        ],
+        [
+          "Certificate request expires after validation is not completed in time, a new request is needed",
+          "Go-live blocked",
+          "H",
+          "OB,T",
+          []
+        ],
+        [
+          "Verified status read from a slow call on every load, the builder hangs while waiting",
+          "Slow builder",
+          "L",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E5",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Provision bucket and CloudFront",
+      "d": "For a live publish AIO creates or reuses the restaurant's bucket and CloudFront distribution with the custom domain and certificate attached.",
+      "sys": [
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Distribution created without the alternate domain or certificate, site serves a certificate error",
+          "Site unreachable",
+          "C",
+          "OB,T",
+          []
+        ],
+        [
+          "Partial failure leaves a bucket without a distribution, publish refused for missing CloudFront distribution",
+          "Cannot publish",
+          "H",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E6",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Build workflow runs",
+      "d": "AIO triggers a GitHub workflow that fetches the website data, builds the static site (pulling menu, deals, spotlights, gift cards and tiers at build time), uploads it to the bucket or temporary subfolder and invalidates the CDN cache.",
+      "sys": [
+        "Website builder",
+        "S3 / CDN",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "The published site uses a different font from the builder",
+          "Brand look broken live",
+          "H",
+          "CN,T",
+          [
+            "4681",
+            "4702"
+          ]
+        ],
+        [
+          "A restaurant website fails to publish",
+          "Site cannot be updated",
+          "C",
+          "T",
+          [
+            "4688"
+          ]
+        ],
+        [
+          "Workflow trigger succeeds but the run cannot be found, status stays unknown",
+          "Operator republishes repeatedly",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Build uses the platform release current at publish time, not the one the operator previewed",
+          "Unexpected layout changes",
+          "M",
+          "T,CN",
+          []
+        ],
+        [
+          "CDN invalidation misses some paths, guests see a mix of old and new pages",
+          "Inconsistent site",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E7",
+      "b": "E",
+      "k": "dec",
+      "rel": "L",
+      "t": "Did the publish succeed?",
+      "d": "The builder polls the workflow status and shows in progress, success, failure or cancelled with the publish date and a link to the site. Publishing an eligible verified custom domain can also start restaurant email sender setup. Email verification proceeds separately from the website build.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Shows published but the temporary link does not work",
+          "Operator shares a dead link",
+          "H",
+          "T,CX",
+          [
+            "4658"
+          ]
+        ],
+        [
+          "Preview link for the temporary domain not working after publishing",
+          "Cannot review before going live",
+          "H",
+          "T,CX",
+          [
+            "4922"
+          ]
+        ],
+        [
+          "Status stuck in progress when polling stops or the run is lost",
+          "Operator cannot tell if the site is live",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E8",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Search Console and sitemap",
+      "d": "After a live publish the workflow asks AIO to verify the domain in Google Search Console (DNS TXT record) and submit the sitemap, if Google is connected and the certificate is valid.",
+      "sys": [
+        "Website builder",
+        "Google Business Profile"
+      ],
+      "e": [
+        [
+          "The published sitemap contains temporary domain URLs",
+          "Wrong URLs indexed by Google",
+          "H",
+          "CN,D",
+          [
+            "4793"
+          ]
+        ],
+        [
+          "Verification fails because the TXT record has not propagated within the short wait",
+          "Sitemap not submitted",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Google not connected, sitemap submission skipped with no message to the operator",
+          "Slower indexing",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E9",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Retry, cancel or unpublish",
+      "d": "After a failure the operator can retry the publish or cancel a running workflow; a temporary version can be unpublished, which deletes its subfolder and clears the CDN cache. Unpublishing a custom domain disables its branded campaign email sender.",
+      "sys": [
+        "Website builder",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Publish fails and Unpublish does not work, so the site cannot be republished on the temporary domain",
+          "Operator stuck",
+          "H",
+          "T",
+          [
+            "4750"
+          ]
+        ],
+        [
+          "Cancel marks the run cancelled while files were already partly uploaded",
+          "Half updated site",
+          "M",
+          "T,D",
+          []
+        ],
+        [
+          "Repeated retries start several builds that finish out of order",
+          "Older version ends up live",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F1",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest opens the website",
+      "d": "The guest opens the custom domain or temporary URL. Published pages serve the built design and assets. Some sections, including the campaign announcement popup, request current restaurant content when displayed.",
+      "sys": [
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Fonts fall back to a default serif on the live site",
+          "Site looks unprofessional",
+          "H",
+          "CX,CN",
+          [
+            "4681"
+          ]
+        ],
+        [
+          "Temporary site is indexable and competes with the real site in search",
+          "SEO harm",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Certificate expired or not renewed, browser shows a security warning",
+          "Guests leave",
+          "C",
+          "T",
+          []
+        ],
+        [
+          "Slow first load on mobile from large media",
+          "Guests bounce",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F2",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Sees popups and consent banner",
+      "d": "Announcement, sign-up and cookie consent popups show according to their triggers; analytics and pixels load only after targeting consent.",
+      "sys": [
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Tags fire before consent is given",
+          "Privacy exposure",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "Popup covers the Order Online button on mobile with no visible close",
+          "Lost orders, ADA exposure",
+          "H",
+          "CX,L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F3",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Navigates between pages",
+      "d": "Header navigation highlights the current page; buttons link to other pages, sections or external sites.",
+      "sys": [
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Active page not highlighted correctly in the navigation on every website",
+          "Guests lose their place",
+          "M",
+          "CX",
+          [
+            "4817"
+          ]
+        ],
+        [
+          "A published button navigates to the wrong destination",
+          "Broken navigation",
+          "H",
+          "CX,T",
+          [
+            "4701"
+          ]
+        ],
+        [
+          "Dropdown navigation does not open on touch devices",
+          "Pages unreachable on mobile",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F4",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Browses the menu page",
+      "d": "Menu page shows categories with headings and a category dropdown, items, prices and item pages from the snapshot taken at publish.",
+      "sys": [
+        "S3 / CDN",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Category dropdown is clipped and the second item is cut off mid text",
+          "Guests cannot jump to categories",
+          "M",
+          "CX",
+          [
+            "4729"
+          ]
+        ],
+        [
+          "Prices or items out of date versus online ordering",
+          "Guest disputes price at checkout",
+          "H",
+          "CN,M",
+          []
+        ],
+        [
+          "Allergen or dietary info missing although it exists in Menu Manager",
+          "Guest safety and trust",
+          "M",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F5",
+      "b": "F",
+      "k": "int",
+      "rel": "L",
+      "t": "Order Online, gift card or catering link",
+      "d": "Buttons hand the guest to AIO online ordering, the digital gift card purchase page, catering or loyalty sign-up.",
+      "sys": [
+        "Online ordering",
+        "Marketing Gift cards",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Digital gift cards link returns a 404",
+          "Lost gift card sales",
+          "H",
+          "CN",
+          [
+            "4705"
+          ]
+        ],
+        [
+          "Order Online link points to a closed or wrong location",
+          "Lost orders",
+          "C",
+          "CN",
+          []
+        ],
+        [
+          "Orders from the website are not attributed to the website in reports",
+          "Operator cannot see website value",
+          "M",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F6",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Views location, map and hours",
+      "d": "The location section shows the map, address, phone and hours.",
+      "sys": [
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "The embedded map fails to load on the restaurant website",
+          "No map for guests",
+          "M",
+          "T,OB",
+          [
+            "4724"
+          ]
+        ],
+        [
+          "Hours shown are those at the last publish, not current",
+          "Guests arrive when closed",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "Phone number not clickable on mobile",
+          "Fewer calls",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F7",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Submits a form",
+      "d": "The guest fills a contact, catering, custom or popup form, including file uploads, and submits it to a public AIO endpoint. Sign-up popups reject a repeat email or phone.",
+      "sys": [
+        "Website builder",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Form fields invisible because of the colour style",
+          "Guest cannot submit",
+          "H",
+          "CX",
+          [
+            "4723"
+          ]
+        ],
+        [
+          "No captcha or rate limit, spam submissions flood the inbox and the Guestbook",
+          "Spam leads and fake guests",
+          "H",
+          "S,D",
+          []
+        ],
+        [
+          "File upload too large or wrong type fails with no message",
+          "Guest gives up",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Submit error not shown, guest believes it was sent",
+          "Lost lead",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G1",
+      "b": "G",
+      "k": "soft",
+      "rel": "L",
+      "t": "Submission stored, emails sent",
+      "d": "AIO stores the submission, uploads files to S3, emails a confirmation to the guest and a notification to the form recipients through the email queue, and for sign-up popups creates the guest in the Guestbook with a segment.",
+      "sys": [
+        "Email service",
+        "Guestbook / CRM",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Notification email to recipients fails and the error is only logged",
+          "Restaurant misses the lead",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Guest created from a popup without consent fields stored",
+          "Marketing compliance gap",
+          "C",
+          "L,D",
+          []
+        ],
+        [
+          "Duplicate guest created when the same person signs up with a different email",
+          "Duplicate records in Guestbook",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Uploaded files are publicly readable",
+          "Privacy exposure",
+          "H",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G2",
+      "b": "G",
+      "k": "op",
+      "rel": "L",
+      "t": "Reviews submissions on Forms page",
+      "d": "The Forms page lists forms and their submissions for the location.",
+      "sys": [
+        "Web Dash: Website"
+      ],
+      "e": [
+        [
+          "Submissions from a deleted or duplicated form missing or grouped wrongly",
+          "Leads overlooked",
+          "M",
+          "D,R",
+          []
+        ],
+        [
+          "No export or status to track follow up",
+          "Leads handled in spreadsheets",
+          "L",
+          "R,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H1",
+      "b": "H",
+      "k": "op",
+      "rel": "L",
+      "t": "Edit and republish",
+      "d": "Any change, including data that comes from other modules, reaches guests only after a republish.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Operator edits the draft and forgets to republish",
+          "Live site stays stale",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Republish of a different draft replaces the live site",
+          "Wrong version live",
+          "H",
+          "CX,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H2",
+      "b": "H",
+      "k": "soft",
+      "rel": "L",
+      "t": "Platform release reaches sites",
+      "d": "A release changes shared section components, defaults and settings. Published sites change only when rebuilt, but a release can also change stored settings or defaults that the next build uses.",
+      "sys": [
+        "Website builder"
+      ],
+      "e": [
+        [
+          "GTM tag toggle turned off after a release, tags stop firing on rebuild",
+          "Restaurant loses tracking and ad data",
+          "H",
+          "T,R",
+          []
+        ],
+        [
+          "New component defaults change the layout of sites on their next republish",
+          "Unexpected visual changes",
+          "M",
+          "T,CN",
+          []
+        ],
+        [
+          "A built page still serves a component version from before the fix",
+          "The reported display problem persists until that site is rebuilt",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H3",
+      "b": "H",
+      "k": "soft",
+      "rel": "L",
+      "t": "Restaurant data changes after publish",
+      "d": "Menu, hours, deals, gift cards, tiers and address change in other modules after publishing.",
+      "sys": [
+        "Menu Manager",
+        "Marketing Deals",
+        "Web Dash: Business hours"
+      ],
+      "e": [
+        [
+          "Updated business hours do not sync to the website",
+          "Guests misled",
+          "H",
+          "CN,D",
+          [
+            "4939"
+          ]
+        ],
+        [
+          "Deleted menu item still has an indexed item page",
+          "Guests find items that do not exist",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H4",
+      "b": "H",
+      "k": "op",
+      "rel": "L",
+      "t": "Unpublish temporary site",
+      "d": "Unpublishing a temporary version deletes its subfolder, clears the cache and frees the slot.",
+      "sys": [
+        "Website builder",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Unpublish fails part way, the slot stays taken",
+          "Cannot publish a new temporary version",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Cached copies still served after unpublish",
+          "Old site visible",
+          "L",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H5",
+      "b": "H",
+      "k": "op",
+      "rel": "L",
+      "t": "Remove custom domain or offboard",
+      "d": "Removing the domain deletes the hosted zone and certificate and clears the live website link; the restaurant must move its nameservers back.",
+      "sys": [
+        "Website builder",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Hosted zone deleted while nameservers still point to it, the domain and mail go dark",
+          "Restaurant email and site down",
+          "C",
+          "OB",
+          []
+        ],
+        [
+          "Site files and bucket left running after churn",
+          "AIO pays for hosting",
+          "L",
+          "B,OB",
+          []
+        ],
+        [
+          "Search Console property and verification left in place",
+          "Stale ownership",
+          "L",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H6",
+      "b": "H",
+      "k": "term",
+      "rel": "L",
+      "t": "Site offline",
+      "d": "The temporary version or the live domain no longer serves the site.",
+      "sys": [],
+      "e": [
+        [
+          "Guests and Google still have links to the old site",
+          "404s and lost traffic",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I1",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "Website overview stats",
+      "d": "Overview shows traffic, real-time users, inbound and outbound channels, click-through, page speed and the ADA card, from AIO's Google Analytics property, page speed checks and the stored scan.",
+      "sys": [
+        "Web Dash: Website"
+      ],
+      "e": [
+        [
+          "Stats empty or wrong when the site is not tagged with AIO's analytics property",
+          "Operator cannot see results",
+          "M",
+          "R",
+          []
+        ],
+        [
+          "Date range converted in the wrong time zone, daily totals off",
+          "Misleading reports",
+          "L",
+          "R",
+          []
+        ],
+        [
+          "Website orders not linked to visits, no conversion figure",
+          "Value of the website unclear",
+          "M",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I2",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "SEO page and Search Console",
+      "d": "SEO page shows site health, indexed pages, top search terms, top pages and traffic trends, and holds the SEO settings; Search Console needs Google connected and a verified custom domain.",
+      "sys": [
+        "Web Dash: Website",
+        "Google Business Profile"
+      ],
+      "e": [
+        [
+          "No SEO checklist guiding the operator through titles, descriptions, alt text and schema",
+          "Poor search ranking",
+          "M",
+          "CX",
+          [
+            "4672"
+          ]
+        ],
+        [
+          "Indexed pages include temporary URLs",
+          "Duplicate content",
+          "M",
+          "R,CN",
+          []
+        ],
+        [
+          "Search Console data missing until verification, with no explanation",
+          "Operator confused",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I3",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "Analytics tags (GTM, GA4, pixels)",
+      "d": "The operator sets a Google Tag Manager id, GA4 ids and Meta or TikTok pixels with on or off toggles; they are written into the site at build time.",
+      "sys": [
+        "Website builder",
+        "Meta"
+      ],
+      "e": [
+        [
+          "The GTM toggle turns off following a release",
+          "Tracking lost",
+          "H",
+          "T,R",
+          [
+            "4879"
+          ]
+        ],
+        [
+          "Tag id changed but not republished, old id keeps firing",
+          "Data goes to the wrong account",
+          "M",
+          "R",
+          []
+        ],
+        [
+          "Invalid id format accepted",
+          "Tags silently fail",
+          "L",
+          "R",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "B1",
+      ""
+    ],
+    [
+      "B1",
+      "B2",
+      "New draft"
+    ],
+    [
+      "B1",
+      "C1",
+      "Open existing draft"
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "C1",
+      ""
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "C5",
+      ""
+    ],
+    [
+      "C5",
+      "C6",
+      ""
+    ],
+    [
+      "C6",
+      "C7",
+      ""
+    ],
+    [
+      "C7",
+      "C8",
+      ""
+    ],
+    [
+      "C8",
+      "C9",
+      ""
+    ],
+    [
+      "C9",
+      "C10",
+      ""
+    ],
+    [
+      "C10",
+      "C11",
+      ""
+    ],
+    [
+      "C11",
+      "C12",
+      ""
+    ],
+    [
+      "C12",
+      "C13",
+      ""
+    ],
+    [
+      "C13",
+      "C14",
+      ""
+    ],
+    [
+      "C14",
+      "C15",
+      ""
+    ],
+    [
+      "C3",
+      "C15",
+      "Small change"
+    ],
+    [
+      "C15",
+      "D1",
+      ""
+    ],
+    [
+      "D1",
+      "D2",
+      "Yes"
+    ],
+    [
+      "D1",
+      "D3",
+      "No"
+    ],
+    [
+      "D2",
+      "D3",
+      ""
+    ],
+    [
+      "D3",
+      "D4",
+      ""
+    ],
+    [
+      "D3",
+      "E1",
+      "Skip scan"
+    ],
+    [
+      "D4",
+      "E1",
+      ""
+    ],
+    [
+      "E1",
+      "E2",
+      "Temporary domain"
+    ],
+    [
+      "E1",
+      "E3",
+      "Custom domain"
+    ],
+    [
+      "E2",
+      "E6",
+      ""
+    ],
+    [
+      "E3",
+      "E4",
+      ""
+    ],
+    [
+      "E4",
+      "E5",
+      "Yes"
+    ],
+    [
+      "E4",
+      "E3",
+      "No, fix DNS"
+    ],
+    [
+      "E5",
+      "E6",
+      ""
+    ],
+    [
+      "E6",
+      "E7",
+      ""
+    ],
+    [
+      "E7",
+      "E8",
+      "Yes, custom domain"
+    ],
+    [
+      "E7",
+      "F1",
+      "Yes, temporary domain"
+    ],
+    [
+      "E7",
+      "E9",
+      "Failed or cancelled"
+    ],
+    [
+      "E8",
+      "F1",
+      ""
+    ],
+    [
+      "E9",
+      "E6",
+      "Retry publish"
+    ],
+    [
+      "E9",
+      "H4",
+      "Unpublish temporary"
+    ],
+    [
+      "F1",
+      "F2",
+      ""
+    ],
+    [
+      "F2",
+      "F3",
+      ""
+    ],
+    [
+      "F3",
+      "F4",
+      ""
+    ],
+    [
+      "F4",
+      "F5",
+      ""
+    ],
+    [
+      "F5",
+      "F6",
+      "Keeps browsing"
+    ],
+    [
+      "F3",
+      "F6",
+      "Location or contact"
+    ],
+    [
+      "F3",
+      "F7",
+      "Opens a form"
+    ],
+    [
+      "F6",
+      "F7",
+      ""
+    ],
+    [
+      "F7",
+      "G1",
+      ""
+    ],
+    [
+      "G1",
+      "G2",
+      ""
+    ],
+    [
+      "G2",
+      "I1",
+      ""
+    ],
+    [
+      "I1",
+      "I2",
+      ""
+    ],
+    [
+      "I2",
+      "I3",
+      ""
+    ],
+    [
+      "I3",
+      "H1",
+      "Change tags or SEO"
+    ],
+    [
+      "H1",
+      "C1",
+      "Edit draft"
+    ],
+    [
+      "H1",
+      "E1",
+      "Republish"
+    ],
+    [
+      "H1",
+      "H5",
+      "Offboard"
+    ],
+    [
+      "E7",
+      "H2",
+      "Later platform release",
+      1
+    ],
+    [
+      "E7",
+      "H3",
+      "Later data change",
+      1
+    ],
+    [
+      "H2",
+      "H1",
+      "Republish to pick up"
+    ],
+    [
+      "H3",
+      "H1",
+      "Republish to refresh"
+    ],
+    [
+      "H4",
+      "H6",
+      ""
+    ],
+    [
+      "H5",
+      "H6",
+      ""
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Core",
+    "Publishing and domains",
+    "Guest on the site",
+    "After publishing",
+    "Measuring"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "First site to the temporary domain",
+      "n": "Baseline: template, full build of every section, scan and publish to the temporary URL.",
+      "s": "A1 A2 B1 B2 B3 C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 C11 C12 C13 C14 C15 D1 D3 D4 E1 E2 E6 E7 F1",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Brand Book sync before publishing",
+      "n": "Brand Book changed, operator syncs fonts, logos and social links, then publishes.",
+      "s": "B1 C1 C2 C3 C15 D1 D2 D3 D4 E1 E2 E6 E7 F1",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 1,
+      "t": "Go live on a custom domain",
+      "n": "Domain connected and verified, live publish, Search Console and sitemap.",
+      "s": "A1 A2 B1 C1 C2 C3 C15 D1 D3 E1 E3 E4 E5 E6 E7 E8 F1",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 1,
+      "t": "DNS not ready, then verified",
+      "n": "Recovery: verification fails until nameservers and the certificate are in place.",
+      "s": "E1 E3 E4 E3 E4 E5 E6 E7 E8 F1",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Publish fails, then retry",
+      "n": "Recovery: the build fails or is cancelled and the operator retries.",
+      "s": "E1 E2 E6 E7 E9 E6 E7 F1",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Unpublish a temporary version",
+      "n": "Exit: free a temporary slot or take a broken temporary site down.",
+      "s": "E6 E7 E9 H4 H6",
+      "side": ""
+    },
+    {
+      "id": "P07",
+      "g": 2,
+      "t": "Guest browses the menu and orders",
+      "n": "Guest goes from the website into online ordering or gift cards.",
+      "s": "F1 F2 F3 F4 F5 F6 F7",
+      "side": "G1"
+    },
+    {
+      "id": "P08",
+      "g": 2,
+      "t": "Guest submits a form",
+      "n": "Contact, catering or sign-up form through to the operator's Forms page.",
+      "s": "F1 F2 F3 F7 G1 G2",
+      "side": ""
+    },
+    {
+      "id": "P09",
+      "g": 2,
+      "t": "Guest looks for location and hours",
+      "n": "Map and hours, then a contact form.",
+      "s": "F1 F2 F3 F6 F7 G1",
+      "side": ""
+    },
+    {
+      "id": "P10",
+      "g": 3,
+      "t": "Edit and republish",
+      "n": "Operator changes the draft and republishes to the temporary domain.",
+      "s": "I3 H1 C1 C2 C3 C15 D1 D3 E1 E2 E6 E7 F1",
+      "side": ""
+    },
+    {
+      "id": "P11",
+      "g": 3,
+      "t": "Platform release changes a live site",
+      "n": "A release changes settings or components, picked up on the next republish.",
+      "s": "E6 E7 H2 H1 E1 E3 E4 E5 E6 E7 E8 F1",
+      "side": ""
+    },
+    {
+      "id": "P12",
+      "g": 3,
+      "t": "Hours or menu change after publishing",
+      "n": "Restaurant data changes elsewhere; the site is stale until republished.",
+      "s": "E7 H3 H1 E1 E2 E6 E7 F1",
+      "side": ""
+    },
+    {
+      "id": "P13",
+      "g": 3,
+      "t": "Offboard the website and domain",
+      "n": "Exit: remove the custom domain and take the site down.",
+      "s": "I3 H1 H5 H6",
+      "side": ""
+    },
+    {
+      "id": "P14",
+      "g": 4,
+      "t": "Review stats, SEO and tags",
+      "n": "Overview, SEO page, analytics tags, then edit.",
+      "s": "G1 G2 I1 I2 I3 H1",
+      "side": ""
+    }
+  ],
+  "NOTES": [
+    "The site build captures design and content used at publish time. The announcement popup separately fetches active campaign data and checks its schedule. Verify the affected section before attributing stale content to the last publish.",
+    "Website sub-pages confirmed from the sidebar: Overview, Design, Announcements, SEO, Forms. A separate Leads page was not found in the sidebar although a leads endpoint exists in the backend.",
+    "No AI generated site or copy was found in the live builder code.",
+    "Whether permission checks for publish and domain actions are enforced on the server as well as the sidebar was not confirmed (TBC with engineering).",
+    "The URL check behind PROD-4841 and PROD-4923 was a regex refusing uppercase, query strings and long domain endings; the link modal now uses another check, but other editors may still use the old one.",
+    "Build-dependent changes take effect on a rebuild. The release and rebuild history of a particular restaurant requires operational confirmation.",
+    "Form spam protection (captcha or rate limit) was not found on the public submit endpoint; duplicate rejection exists only for guest-creating popups.",
+    "Brand Book tickets PROD-4836 and PROD-4781 are attached in the Brand Book map, not here.",
+    "Zeus internal, 02473c3bac9. See web-builder/website/website.service.ts, quantumhorizon and web-components/src/sections/AnnouncementPopup."
+  ]
+}

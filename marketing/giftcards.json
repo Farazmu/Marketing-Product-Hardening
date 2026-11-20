@@ -1,0 +1,3061 @@
+{
+  "key": "giftcards",
+  "name": "Gift Cards",
+  "title": "Gift Cards: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Enablement and set-up",
+      "s": "Ops switches gift cards on for the location and enters the eCard Systems processor credentials that every balance movement depends on"
+    },
+    {
+      "id": "B",
+      "t": "Operator configures the programme",
+      "s": "Amount rules, PIN rules, design categories and templates, and the links the operator shares with guests"
+    },
+    {
+      "id": "C",
+      "t": "Physical card stock and migration",
+      "s": "Ordering physical cards from eCard Systems, the stock import webhook, and uploading balances from a previous gift card system"
+    },
+    {
+      "id": "D",
+      "t": "Guest buys a digital card online",
+      "s": "The online gift card page: design, amount, recipient, delivery method and send time, up to the payment link"
+    },
+    {
+      "id": "E",
+      "t": "Payment, issue and delivery",
+      "s": "Adyen payment, the webhook that creates and loads the card on eCard Systems, the purchase record, and the email or text to the recipient"
+    },
+    {
+      "id": "F",
+      "t": "Recipient receives the card",
+      "s": "The recipient opens the email or text and links the card to a phone number"
+    },
+    {
+      "id": "G",
+      "t": "Sell and reload cards at POS",
+      "s": "Create a physical purchase, reload an active card or sell a digital card on its own ticket."
+    },
+    {
+      "id": "H",
+      "t": "Balance lookup",
+      "s": "Guest or staff check what is left on a card, by card number and PIN or by phone number"
+    },
+    {
+      "id": "I",
+      "t": "Redemption on each channel",
+      "s": "Paying with a gift card on POS (with the CFD), online ordering and Kiosk, including partial payment and migrated cards"
+    },
+    {
+      "id": "J",
+      "t": "After the sale",
+      "s": "Refunds to a gift card, reloads, reversing a gift card sale, and cards that keep a balance indefinitely"
+    },
+    {
+      "id": "K",
+      "t": "Reporting and reconciliation",
+      "s": "The Gift Cards overview figures, card list, guest profile view and how they reconcile with the Merchant and sales reports"
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Restaurant wants gift cards",
+      "d": "A restaurant signs up for gift cards. Gift cards run on eCard Systems (a third-party card processor): it generates digital card numbers and PINs, holds the real balance and processes every load, sale and void. AIO keeps a copy of each card and its balance.",
+      "sys": [
+        "Ops dashboard",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "Restaurant is sold gift cards before an eCard Systems account exists for the location",
+          "Go-live delayed, operator sees a disabled module",
+          "M",
+          "OB,CX",
+          []
+        ],
+        [
+          "No onboarding checklist covering credentials, settings, templates and the website page",
+          "Programme launched half set up",
+          "M",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Enable gift cards and add credentials",
+      "d": "In the Ops dashboard location settings, the gift cards toggle is switched on and two credential pairs are entered: gateway (used for loads, sales, balances and PIN checks) and digital (used to create new digital cards). Blank values are saved as empty and the host is taken from server configuration. The save button is disabled while the toggle is on and any of the four fields is empty.",
+      "sys": [
+        "Ops dashboard",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "Gateway and digital credentials swapped or mistyped; nothing tests them on save",
+          "Every purchase, load and redemption fails at run time",
+          "C",
+          "OB,CN",
+          []
+        ],
+        [
+          "Credentials of another location or tenant pasted in",
+          "Balances loaded to or deducted from the wrong merchant account",
+          "C",
+          "S,M",
+          []
+        ],
+        [
+          "Processor credentials are exposed during location setup",
+          "Payment partner account confidentiality at risk",
+          "C",
+          "S,L",
+          []
+        ],
+        [
+          "Changing credentials while cards exist leaves old cards on the previous account",
+          "Existing cards stop validating",
+          "H",
+          "D,OB",
+          []
+        ],
+        [
+          "Toggle switched off with balances outstanding; no warning",
+          "Guests cannot spend money they paid for",
+          "C",
+          "L,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A3",
+      "b": "A",
+      "k": "dec",
+      "rel": "L",
+      "t": "Is the module switched on?",
+      "d": "Web Dash treats gift cards as enabled only when the gift cards toggle is on and all six credential values (gateway and digital host, username, password) are present. Otherwise the Overview and Configure pages show a Feature not enabled screen.",
+      "sys": [
+        "Web Dash: Gift Cards",
+        "Ops dashboard"
+      ],
+      "e": [
+        [
+          "Module status is cached; after Ops saves credentials the page still shows Feature not enabled until the cache clears",
+          "Operator thinks set-up failed",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Status only checks values exist, not that they work",
+          "Module shows enabled with broken credentials",
+          "H",
+          "OB",
+          []
+        ],
+        [
+          "POS, Kiosk and online ordering read their own flags, so gift cards can appear on a device while Web Dash says disabled, or the reverse",
+          "Inconsistent availability across channels",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Set amount rules",
+      "d": "Configure minimum and maximum amounts and up to five preset denominations. The service checks the order of the bounds and that the presets fall inside them. The settings request also enforces the platform maximum.",
+      "sys": [
+        "Web Dash: Gift Cards"
+      ],
+      "e": [
+        [
+          "Typed preset not added because Enter was not pressed; the form blocks save with a hint but operators miss it",
+          "Preset silently missing online",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "An invalid preset or an amount beyond the configured cap is saved",
+          "Rules bypassed outside the form",
+          "M",
+          "S,M",
+          []
+        ],
+        [
+          "Raising the minimum does not affect drafts already created online at the old amount",
+          "Card sold below the new minimum",
+          "L",
+          "M",
+          []
+        ],
+        [
+          "Maximum is applied per card on POS sales but the online purchase is not checked against it on the server",
+          "Cards above the maximum can be bought",
+          "H",
+          "M,S",
+          []
+        ],
+        [
+          "Two managers editing settings at once, last save wins with no warning",
+          "Settings reverted unnoticed",
+          "L",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Set PIN rules",
+      "d": "Configure independent PIN settings for online ordering, POS and Kiosk. Kiosk defaults to off where no setting exists. Both Kiosk validation and the final gift card payment read the restaurant setting.",
+      "sys": [
+        "Web Dash: Gift Cards",
+        "POS",
+        "Online ordering",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "Inadequate verification allows an unintended person to spend a card",
+          "Unauthorised redemption",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "Setting change not picked up by POS until it refreshes its settings",
+          "PIN asked or skipped unexpectedly",
+          "M",
+          "CN,T",
+          []
+        ],
+        [
+          "A guest with a physical card cannot locate the PIN required at checkout",
+          "Payment pauses until the guest can verify the card or use another tender",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Balance access does not consistently enforce the configured verification policy",
+          "Card information disclosed to the wrong person",
+          "H",
+          "S",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Create design categories",
+      "d": "Template categories (for example Birthday, Thank you) group the card designs guests choose from. Names are trimmed and must be unique per location, with a fixed maximum number of categories. A category cannot be deleted while an active template uses it.",
+      "sys": [
+        "Web Dash: Gift Cards"
+      ],
+      "e": [
+        [
+          "Category limit reached with a message written for guest categories",
+          "Operator confused by the error",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Empty category (all its templates deleted) still listed on the website gift card section",
+          "Guest sees a category with no designs",
+          "L",
+          "CX,CN",
+          []
+        ],
+        [
+          "Renaming a category is not reflected on purchase pages until caches expire",
+          "Old names shown to guests",
+          "L",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B4",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Upload and crop designs",
+      "d": "Templates are uploaded, cropped to 16:9 and assigned to a category. A template is soft-deleted; deletion is blocked while an active card uses it. Online ordering only shows categories that have at least one active template, and with none the gift card page returns no gift cards.",
+      "sys": [
+        "Web Dash: Gift Cards",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "No template uploaded, so the online gift card page has nothing to sell and the website gift card page errors",
+          "Programme invisible to guests",
+          "H",
+          "OB,CN",
+          []
+        ],
+        [
+          "Delete check only counts cards in active status, not cards paid and waiting for the recipient",
+          "Pending gift email shows a missing design",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Edit upload fails silently and the old image is saved under the new category",
+          "Wrong design shown",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Large or wrong-format images accepted and look poor on email and phone",
+          "Low quality brand presentation",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B5",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Share purchase links",
+      "d": "Promote Your Program shows two copyable links: the gift card webpage on the restaurant website (only when a website domain exists, otherwise Site not setup yet) and the gift card purchase link on online ordering.",
+      "sys": [
+        "Web Dash: Gift Cards",
+        "Website builder",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Website link points to a gift cards page that does not exist or was never published, giving a 404",
+          "Guests cannot buy from the website",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Website link uses the temporary staging domain when the custom domain certificate is not valid",
+          "Guests sent to a staging URL",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Purchase link built from aliases; changing the restaurant alias breaks links already printed or shared",
+          "Dead links in marketing",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Order physical cards",
+      "d": "Physical Cards opens the eCard Systems AIO store with a location id made of environment, tenant and restaurant ids; Accessories opens the general store. Cards are printed and shipped by eCard Systems.",
+      "sys": [
+        "Web Dash: Gift Cards",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "Location id built with the wrong environment code, so cards are tied to another environment",
+          "Stock never arrives in the live account",
+          "H",
+          "OB,CN",
+          []
+        ],
+        [
+          "Operator of a multi-location tenant orders while on the wrong location",
+          "Cards stocked at the wrong store",
+          "M",
+          "OB",
+          []
+        ],
+        [
+          "No order status in Web Dash",
+          "Operator chases support for delivery",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "int",
+      "rel": "L",
+      "t": "Card stock webhook arrives",
+      "d": "The processor sends a stock import request for the restaurant. AIO validates the request and rejects a previously processed job.",
+      "sys": [
+        "eCard Systems",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Sensitive processor authentication material appears in operational records",
+          "Stock import integrity at risk",
+          "C",
+          "S",
+          []
+        ],
+        [
+          "Clock drift beyond 5 minutes rejects valid webhooks",
+          "Stock never imported",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "CSV missing Account ID or Card Numbers headers rejects the whole file",
+          "No cards in stock",
+          "M",
+          "OB",
+          []
+        ],
+        [
+          "Callback token not configured, so eCard Systems is never told the result",
+          "Silent failure on both sides",
+          "H",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Stock import job",
+      "d": "Cards are queued in batches; a background job encrypts each number, stores its hash and a purchase URL (used for the QR on the card) as In stock, and on the last batch uploads an output CSV and calls back. Any insert error (usually a duplicate number) deletes every row of the job and reports failure.",
+      "sys": [
+        "Marketing Gift cards",
+        "eCard Systems",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "One duplicate card number fails and deletes the whole shipment",
+          "Entire stock unusable until re-sent",
+          "H",
+          "D,OB",
+          []
+        ],
+        [
+          "Batches processed out of order; an earlier error stored in the cache is missed and a later batch reports success",
+          "Partial stock, wrong status sent back",
+          "H",
+          "T,D",
+          []
+        ],
+        [
+          "Progress counters expire before a large job finishes",
+          "Job never finalised",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Purchase URL built from aliases that later change",
+          "QR codes on printed cards break",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Upload cards from previous system",
+      "d": "Overview, menu, Import: the operator selects the previous platform and uploads an .xls, .xlsx or .csv file up to 5MB with that platform's columns (card number and balance). Progress is polled until done.",
+      "sys": [
+        "Web Dash: Gift Cards"
+      ],
+      "e": [
+        [
+          "Previous platform not in the list, or its export uses different column names",
+          "Migration blocked, manual data work",
+          "H",
+          "OB",
+          []
+        ],
+        [
+          "Re-uploading a file that was already imported fails every row as already existing, read as a broken import",
+          "Operator and support think cards were lost",
+          "H",
+          "OB,CX",
+          [
+            "5043"
+          ]
+        ],
+        [
+          "Upload is per location; cards valid at all stores of the old system are tied to one location",
+          "Guests refused at sister stores",
+          "H",
+          "OB,CN",
+          []
+        ],
+        [
+          "File exceeds 5MB for large card books",
+          "Import must be split by hand",
+          "M",
+          "OB",
+          []
+        ],
+        [
+          "Upload holds full card numbers; no audit of who imported what",
+          "Weak trail for disputed balances",
+          "M",
+          "S,L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C5",
+      "b": "C",
+      "k": "dec",
+      "rel": "L",
+      "t": "Does the file pass validation?",
+      "d": "Every row needs a card number and a non-negative numeric balance (currency symbols stripped), with no duplicates in the file or against cards already migrated for that location. If any row fails, nothing is imported and a CSV report with a reason per row is returned.",
+      "sys": [
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "Balances with thousands separators or text are misread after stripping characters",
+          "Wrong opening balance",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "Card numbers stored as numbers in Excel lose leading zeros or switch to scientific notation",
+          "Imported number does not match the physical card",
+          "H",
+          "D,OB",
+          []
+        ],
+        [
+          "Zero-balance cards are accepted and fill the list",
+          "Clutter and wrong counts",
+          "L",
+          "D",
+          []
+        ],
+        [
+          "One bad row blocks thousands of good ones",
+          "Slow migration",
+          "M",
+          "OB,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C6",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Migrated import job",
+      "d": "Valid rows are queued in batches of 100 and saved as active migrated cards for the location. Migrated cards exist only in AIO, not on eCard Systems, so they cannot be charged directly; their balance is used by transferring it to a new physical card on POS.",
+      "sys": [
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "Progress counters are cleared by the status poll when done; a second import at the same location overwrites the first one's progress",
+          "Wrong progress, duplicate attempts",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Rows failing on save are listed in an error file the operator is never shown in the dialog",
+          "Cards missing without anyone knowing",
+          "H",
+          "D,OB",
+          []
+        ],
+        [
+          "Expiry date column exists but is never filled or enforced",
+          "Old system expiry rules lost",
+          "M",
+          "L,D",
+          []
+        ],
+        [
+          "Imported Balance on the Overview only counts cards once transferred, not the outstanding migrated total",
+          "Liability understated",
+          "H",
+          "R,M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "cust",
+      "rel": "L",
+      "t": "Open the gift card page",
+      "d": "The guest opens the online ordering gift card page (or the website gift card section) for the restaurant alias. It loads categories with active designs and the amount settings. With no designs it reports that no gift cards were found.",
+      "sys": [
+        "Online ordering",
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Website gift cards page returns 404 for digital gift cards",
+          "Lost sales from the website",
+          "H",
+          "CN,CX",
+          [
+            "4705"
+          ]
+        ],
+        [
+          "Page loads without settings when none were saved, so amount entry has no limits",
+          "Odd amounts accepted",
+          "M",
+          "M,CX",
+          []
+        ],
+        [
+          "Restaurant alias not found for a renamed location",
+          "Gift card page down",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "cust",
+      "rel": "L",
+      "t": "Choose design and amount",
+      "d": "The guest picks a design in a category, then a preset or a custom amount between the minimum and maximum, and enters sender name, email and phone.",
+      "sys": [
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "A purchase draft accepts an amount outside the restaurant limits",
+          "Cards outside the rules, including zero or negative",
+          "H",
+          "M,S",
+          []
+        ],
+        [
+          "Decimal amounts round differently between the page, the charge and the load",
+          "Card value differs from amount paid by cents",
+          "M",
+          "M",
+          []
+        ],
+        [
+          "Sender phone or email mistyped; no confirmation step",
+          "Receipt and self-cards lost",
+          "H",
+          "CX,D",
+          []
+        ],
+        [
+          "Page not accessible with a screen reader (design picker, amount chips)",
+          "ADA exposure",
+          "M",
+          "L,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "dec",
+      "rel": "L",
+      "t": "For myself or someone else?",
+      "d": "Myself: the card is delivered to the purchaser and becomes active when paid. Someone else: recipient details are required and the card stays paid but not active until the recipient links it.",
+      "sys": [
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Switching from Someone else to Myself keeps old recipient data in the update call",
+          "Card sent to an earlier recipient",
+          "M",
+          "D,CX",
+          []
+        ],
+        [
+          "Gift cards that are paid but never linked are excluded from phone lookups and some redemption checks",
+          "Recipient cannot use the card",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "cust",
+      "rel": "L",
+      "t": "Enter recipient and message",
+      "d": "Recipient name, delivery method (Send as email or Send as text) with the matching address or phone, and an optional personal message.",
+      "sys": [
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Wrong recipient email or phone; there is no way for the guest or operator to resend or change it after payment",
+          "Card value delivered to a stranger",
+          "C",
+          "M,CX",
+          []
+        ],
+        [
+          "Personal message not filtered; abusive text sent under the restaurant name",
+          "Brand and abuse risk",
+          "M",
+          "L",
+          []
+        ],
+        [
+          "Text delivery to a number that has opted out of the sending service",
+          "Card never arrives",
+          "H",
+          "L,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D5",
+      "b": "D",
+      "k": "cust",
+      "rel": "L",
+      "t": "Choose when to send",
+      "d": "On the payment screen: Send now, or Schedule for later with a date and time. The choice is saved on the draft card, converted to UTC, just before payment is submitted.",
+      "sys": [
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Guest time zone versus restaurant time zone not shown; the card arrives at the wrong hour",
+          "Birthday card arrives a day early or late",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Schedule save fails but payment goes ahead, so the card is sent immediately",
+          "Surprise spoiled",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Past date allowed and silently treated as Send now",
+          "Unexpected timing",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D6",
+      "b": "D",
+      "k": "soft",
+      "rel": "L",
+      "t": "Draft card and payment token",
+      "d": "A draft card record (inactive, balance equal to the amount) is created and a one-hour token for the payment page is issued. The payment page validates the token and adds any online convenience fee configured for the location.",
+      "sys": [
+        "Online ordering",
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "A purchase draft can be changed by someone other than its intended purchaser",
+          "Incorrect card recipient or price",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "Abandoned drafts accumulate with personal data and no clean-up",
+          "Data retention exposure",
+          "M",
+          "D,L",
+          []
+        ],
+        [
+          "Token expires after one hour while the guest is still on the page",
+          "Payment fails, guest retries",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Convenience fee shown on the page differs from what is charged",
+          "Guest disputes the charge",
+          "H",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Adyen takes payment",
+      "d": "The guest pays by card through Adyen (online, 3D Secure where required). Success triggers the payment webhook carrying the draft card id, business and restaurant ids, and reload flags.",
+      "sys": [
+        "Adyen",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Payment captured but the webhook fails or is lost; no card is issued and no retry alert reaches the restaurant",
+          "Guest charged with no card",
+          "C",
+          "M,T",
+          []
+        ],
+        [
+          "Guest double-submits and pays twice for one draft",
+          "Duplicate charge",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "Missing restaurant or business id in the webhook is logged and dropped",
+          "Paid card never issued",
+          "C",
+          "D,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Card number and PIN issued",
+      "d": "The webhook skips payments already processed, then asks eCard Systems for the next virtual account number and PIN using the digital credentials. Number and PIN are encrypted, a lookup hash and a QR image (stored in S3) are created and saved on the card.",
+      "sys": [
+        "Marketing Gift cards",
+        "eCard Systems",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "eCard Systems down or credentials wrong: payment kept, card never created",
+          "Guest charged with no card",
+          "C",
+          "M,CN",
+          []
+        ],
+        [
+          "Duplicate webhook processed in parallel before the first is recorded, issuing two cards for one payment",
+          "Double value given away",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "A card image is visible outside its intended recipient group",
+          "Card details exposed",
+          "M",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Initial value loaded",
+      "d": "The paid amount is loaded onto the new card on eCard Systems with the gateway credentials. This call is outside the database transaction.",
+      "sys": [
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "Load succeeds on eCard Systems but a later step fails and the database rolls back; the card holds value AIO has no record of",
+          "Unreconciled liability",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "Load fails after the number was saved; card shows the full balance in AIO but zero on eCard Systems",
+          "Card declined at first use",
+          "C",
+          "M,CN",
+          []
+        ],
+        [
+          "Digital and gateway credentials belong to different eCard accounts, so the issued card cannot be loaded",
+          "Every online sale fails",
+          "C",
+          "OB,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E4",
+      "b": "E",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Record the online purchase and link the guest",
+      "d": "The payment webhook creates a gift card ticket and movement record for an online purchase or reload and associates the payment. After commit it emits the settled ticket event. A gift and a self-purchase can appear under different guest profiles.",
+      "sys": [
+        "Marketing Gift cards",
+        "Guestbook / CRM",
+        "Adyen"
+      ],
+      "e": [
+        [
+          "Purchase payment has no ticket and no restaurant on the card record, so reports that filter by restaurant drop it",
+          "Sale missing from the Merchant report",
+          "H",
+          "R,D",
+          []
+        ],
+        [
+          "Commit happens before the remaining steps; a failure afterwards leaves a paid card with no webhook record",
+          "Reprocessing issues a second card",
+          "C",
+          "T,D",
+          []
+        ],
+        [
+          "Duplicate rows written for one purchase",
+          "Purchased total overstated",
+          "H",
+          "D,R",
+          []
+        ],
+        [
+          "Promotions consent stored from a pre-ticked or unclear box",
+          "TCPA or CAN-SPAM exposure",
+          "H",
+          "L",
+          []
+        ],
+        [
+          "A settled gift card ticket is searched for among dining orders",
+          "Support cannot find the receipt for a successful purchase",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "E8",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Purchaser receipt email",
+      "d": "The purchaser receives a receipt showing the masked card number, recipient details, amount and delivery status.",
+      "sys": [
+        "Email service",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "The gift card receipt goes to the wrong email address",
+          "Receipt lost, personal data to a stranger",
+          "H",
+          "D,L",
+          [
+            "4871"
+          ]
+        ],
+        [
+          "A receipt is sent to an unverified destination",
+          "Guest purchase details disclosed",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "Total charged shows the card amount, not the amount including convenience fee",
+          "Receipt does not match the bank statement",
+          "M",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E5",
+      "b": "E",
+      "k": "dec",
+      "rel": "L",
+      "t": "Send now or scheduled?",
+      "d": "For new purchases (not reloads) the saved send time is read back as UTC. A time in the future schedules the message; empty or past sends immediately. The delivery method chooses email or text.",
+      "sys": [
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "Time read back in the server's local zone shifts the schedule by hours",
+          "Card delivered at the wrong time",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Delivery method missing on older drafts defaults to email even when a phone was given",
+          "Card goes to an empty email",
+          "M",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E6",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Card sent by email or text",
+      "d": "Email: header, design, amount, full card number, PIN, QR, personal message, a link to activate (for gifts) and to link the card to a phone. Text: amount, message, full card number, PIN, link to link with phone, redeem link and Reply with STOP to opt out, sent through the post-order Twilio service. Send errors are logged only.",
+      "sys": [
+        "Email service",
+        "Twilio",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Queue or provider failure is swallowed; the guest is told the card was sent",
+          "Card never arrives, no retry",
+          "H",
+          "T,CX",
+          []
+        ],
+        [
+          "Full card number and PIN in plain email and text",
+          "Anyone who sees the message can spend the card",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "Text sent from the order-ready messaging service, not a registered gift card sender",
+          "Carrier filtering, compliance risk",
+          "M",
+          "L,CN",
+          []
+        ],
+        [
+          "Restaurant logo or social links missing when Brand Book is not set",
+          "Unbranded, suspicious-looking email",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "No resend option in Web Dash or for the guest",
+          "Support must fix by hand",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E7",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Scheduled send fires",
+      "d": "A scheduled email or text is held by the scheduler (event named after the environment, business and card) and sent at the chosen time.",
+      "sys": [
+        "Email service",
+        "Twilio"
+      ],
+      "e": [
+        [
+          "Schedule cannot be changed or cancelled after payment",
+          "Wrong date cannot be fixed",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Scheduler failure only logged; card never delivered",
+          "Guest paid, recipient gets nothing",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Restaurant offboarded before the send date",
+          "Message for a closed programme",
+          "L",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F1",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Recipient opens the message",
+      "d": "The recipient sees the design, amount and card details. The activate link carries a signed token; opening it shows the card with its live balance from eCard Systems.",
+      "sys": [
+        "Online ordering",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "Activate token expires before the recipient opens it",
+          "Invalid link, support call",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Balance lookup on eCard Systems fails and the page errors instead of showing the card",
+          "Recipient thinks the gift is broken",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Forwarded message gives a second person full control of the card",
+          "Value taken by someone else",
+          "M",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F2",
+      "b": "F",
+      "k": "cust",
+      "rel": "TBC",
+      "t": "Link card to phone",
+      "d": "The recipient verifies the phone through the link flow. An expired verification code can be resent. After linking, the gifted card belongs in the recipient profile and can be looked up on supported surfaces.",
+      "sys": [
+        "Online ordering",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "A card is assigned to someone other than the verified recipient",
+          "Guest loses access to stored value",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "Country code stored inconsistently (+1 or none), so later phone lookups miss the card",
+          "Card not found at POS or Kiosk",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "Unlinked gifts stay in paid status and some channels refuse them",
+          "Card unusable until linked",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "G1",
+      "b": "G",
+      "k": "op",
+      "rel": "L",
+      "t": "Open a gift card sale",
+      "d": "On POS the staff member opens the current gift card ticket, a separate ticket type kept per employee and location. An unpaid ticket is reused, and items whose card is no longer in stock are dropped. Ticket numbers come from the same sequence as orders.",
+      "sys": [
+        "POS",
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "Duplicate gift card tickets created for one sale",
+          "Purchased totals inflated",
+          "H",
+          "D,R",
+          [
+            "4952"
+          ]
+        ],
+        [
+          "Ticket sequence failure blocks the sale with a payment error message",
+          "Card cannot be sold",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Employee not linked to the location cannot open a ticket",
+          "Sale blocked at the counter",
+          "M",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G2",
+      "b": "G",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Select physical cards or reload items",
+      "d": "For a new physical sale, select in-stock cards at the restaurant and set their amounts. An existing eligible active card can be added as a reload. A digital purchase uses its own ticket and cannot share it with a physical purchase or reload.",
+      "sys": [
+        "POS"
+      ],
+      "e": [
+        [
+          "A cashier expects to sell an already active card as new stock",
+          "The register offers a reload for that card",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "A card is stocked against a different restaurant from the selling register",
+          "The cashier cannot sell that card from the current stock",
+          "M",
+          "OB,CN",
+          []
+        ],
+        [
+          "A report compares discounted proceeds with face value without showing the discount",
+          "The operator cannot explain the difference between cash collected and value loaded",
+          "H",
+          "M,R",
+          []
+        ],
+        [
+          "The register has no valid minimum and maximum when a cashier enters a load amount",
+          "The amount can pass the screen check and still need a server decision",
+          "M",
+          "M",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "G3",
+      "b": "G",
+      "k": "int",
+      "rel": "L",
+      "t": "Take payment for the cards",
+      "d": "Take the net sale amount after any discount by card, cash, another supported tender or gift card. For payment using another gift card, its balance must cover the purchase on this POS flow. If it falls short, the register offers a change of payment method. Confirm the tender outcome before retrying a payment.",
+      "sys": [
+        "POS",
+        "Adyen",
+        "CFD"
+      ],
+      "e": [
+        [
+          "Terminal times out and the webhook arrives later; staff charge again",
+          "Duplicate charge",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "Webhook marks partial paid when the amount differs from the gross total even though a discount was applied",
+          "Ticket status wrong",
+          "M",
+          "D,R",
+          []
+        ],
+        [
+          "A gift card used to buy another gift card is counted as new cash in a reconciliation",
+          "Cash received is overstated",
+          "M",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G4",
+      "b": "G",
+      "k": "soft",
+      "rel": "L",
+      "t": "Cards activated and loaded",
+      "d": "Fulfil each eligible purchase or reload, update the card and record a movement against its gift card ticket item. If the provider and AIO disagree on a partially completed ticket, reconcile the individual lines before retrying.",
+      "sys": [
+        "Marketing Gift cards",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "Some cards load and others fail after the ticket is already marked paid",
+          "Guest paid for a card with no value",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "Void after a failed database update also fails, logged as critical only",
+          "Card holds value AIO does not record",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "A physical card sale is recorded without a link to the buyer",
+          "Staff cannot find the card by the buyer's phone number alone",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H1",
+      "b": "H",
+      "k": "cust",
+      "rel": "L",
+      "t": "Check balance",
+      "d": "Guests and staff can check a balance through the supported online, POS and kiosk flows. Confirm identity, masking and verification for each channel.",
+      "sys": [
+        "Online ordering",
+        "POS",
+        "Kiosk"
+      ],
+      "e": [
+        [
+          "Lookup error wording discloses sensitive verification details",
+          "Cardholder privacy at risk",
+          "C",
+          "S",
+          []
+        ],
+        [
+          "Balance lookup reveals another guest card record",
+          "Guest card details exposed",
+          "C",
+          "S,L",
+          []
+        ],
+        [
+          "A verification credential is exposed during balance enquiry",
+          "Unauthorised access to stored value",
+          "C",
+          "S",
+          []
+        ],
+        [
+          "Repeated unsuccessful balance checks do not trigger effective protection",
+          "Fraud attempts can continue",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "The POS card lookup shows the original amount when the returned balance is zero and the original amount is positive",
+          "Staff can quote value that has already been spent",
+          "H",
+          "M,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H2",
+      "b": "H",
+      "k": "soft",
+      "rel": "L",
+      "t": "Balance read and synced",
+      "d": "Balance validation can query eCard Systems. The dashboard and guest profile project stored balances and transactions. After a payment or provider failure, compare the same card and point in time before treating the values as inconsistent.",
+      "sys": [
+        "eCard Systems",
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "AIO copy stale after a failed sync, so dashboards and the guest profile disagree with the real balance",
+          "Disputes over remaining value",
+          "H",
+          "D,CN",
+          []
+        ],
+        [
+          "Balance shown on one device is not refreshed for the next transaction",
+          "Previous card amount displayed",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "eCard Systems slow or down blocks every lookup with a generic error",
+          "Cannot check or spend cards",
+          "H",
+          "CN,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I1",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "Scan or key in card on POS",
+      "d": "At payment, staff choose gift card and scan or type the number. POS validates the card against active digital and physical cards (and, outside redemption, stock and migrated cards) and shows the balance.",
+      "sys": [
+        "POS",
+        "mPOS",
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "Scan shows POS data sync in progress and the gift card payment cannot be applied",
+          "Guest cannot pay with the card",
+          "H",
+          "CN,T",
+          [
+            "5111"
+          ]
+        ],
+        [
+          "Staff try to spend an imported card while it still requires a balance transfer",
+          "The guest must complete the transfer before paying",
+          "H",
+          "CN,OB",
+          [
+            "5043"
+          ]
+        ],
+        [
+          "The card number exceeds the 19 digits accepted by manual entry",
+          "Staff cannot enter the full number in the payment dialog",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Paid but unlinked gift cards are not active and are refused",
+          "Recipient turned away",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I2",
+      "b": "I",
+      "k": "dec",
+      "rel": "L",
+      "t": "PIN required and correct?",
+      "d": "When the POS PIN setting is on, the guest can enter the gift card PIN on the customer display or at the register. A failed check keeps the payment from advancing. The guest can retry the PIN on the same card.",
+      "sys": [
+        "POS",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "A verification failure gives the guest too little information to distinguish a wrong PIN from a service problem",
+          "The guest retries without knowing whether to use another tender",
+          "M",
+          "CX,T",
+          []
+        ],
+        [
+          "Repeated failed verification attempts are not handled according to the restaurant's policy",
+          "The restaurant cannot rely on consistent payment verification",
+          "M",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I3",
+      "b": "I",
+      "k": "soft",
+      "rel": "L",
+      "t": "Card charged on eCard Systems",
+      "d": "POS submits the chosen amount and any tip for processing. Check the amount charged to the card, the payment posted to the ticket and the remaining bill together. A ticket-level check does not establish the balance available to a different ticket.",
+      "sys": [
+        "eCard Systems",
+        "POS",
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "Sale succeeds on eCard Systems but the payment save then fails and rolls back; the card is debited with no payment",
+          "Guest loses value",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "The POS balance displayed after payment is calculated from the previous balance and tip and differs from the posted card balance",
+          "The guest sees an incorrect amount left on the card",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "Two devices charging the same card at once both pass the balance check",
+          "Overdraw or decline mid-sale",
+          "H",
+          "M,T",
+          []
+        ],
+        [
+          "Charge sent with the location's own credentials; a card issued under a sister location's account is declined",
+          "Multi-location redemption fails",
+          "H",
+          "CN,OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I6",
+      "b": "I",
+      "k": "int",
+      "rel": "L",
+      "t": "CFD shows gift card payment",
+      "d": "The customer-facing display shows the gift card amount applied, the remaining balance and any tip prompt.",
+      "sys": [
+        "CFD",
+        "POS"
+      ],
+      "e": [
+        [
+          "CFD shows the previous gift card amount on the next card transaction",
+          "Guest sees the wrong amount",
+          "H",
+          "CN,T",
+          [
+            "5099"
+          ]
+        ],
+        [
+          "Add Tip text too small on gift card and tender payments",
+          "Guests miss the tip option",
+          "L",
+          "CX",
+          [
+            "5017"
+          ]
+        ],
+        [
+          "The guest selects a gift card tip but the payment flow omits it or fails to offer the configured prompt",
+          "Staff must reconcile the missing tip",
+          "M",
+          "CX,M",
+          [
+            "4938"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "I4",
+      "b": "I",
+      "k": "dec",
+      "rel": "L",
+      "t": "Did the gift card payment settle the order?",
+      "d": "For a restaurant order, staff can apply the full amount due or a smaller amount from the gift card. A remaining amount requires another payment. A gift card purchase paid with another gift card follows a separate full-coverage rule.",
+      "sys": [
+        "POS"
+      ],
+      "e": [
+        [
+          "The register leaves staff unsure whether a partially paid ticket still needs payment",
+          "Staff can miss the amount still due",
+          "H",
+          "M,CX",
+          [
+            "4810",
+            "4869"
+          ]
+        ],
+        [
+          "The payment breakdown and ticket status disagree when one cent remains",
+          "Staff cannot tell whether the ticket is settled",
+          "L",
+          "M",
+          []
+        ],
+        [
+          "Deals and loyalty change the total after the card was charged",
+          "Card overcharged or ticket short",
+          "H",
+          "M,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I5",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "Collect remainder on another tender",
+      "d": "Staff take the rest by card, cash, tender or another gift card. Several gift cards can be applied one after another.",
+      "sys": [
+        "POS",
+        "Adyen"
+      ],
+      "e": [
+        [
+          "Staff close the ticket without collecting the remainder because the screen looks complete",
+          "Revenue lost",
+          "H",
+          "M,CX",
+          []
+        ],
+        [
+          "Receipt lists only one gift card when several were used",
+          "Guest cannot see each card's balance",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "A second tender is voided and the ticket no longer distinguishes it from the gift card payment already applied",
+          "Staff cannot reconcile the remaining bill",
+          "H",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I7",
+      "b": "I",
+      "k": "cust",
+      "rel": "L",
+      "t": "Apply gift card online",
+      "d": "At online checkout the guest applies a linked card or enters number and PIN. The amount covered is stored on the cart and the rest is paid by card through Adyen; if the card covers everything the order goes through the zero-dollar path.",
+      "sys": [
+        "Online ordering",
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "Card balance on the cart is the AIO copy, not checked live, so a card spent in store since is accepted",
+          "Order placed on missing value",
+          "H",
+          "M,CN",
+          []
+        ],
+        [
+          "Tip on an order fully paid by gift card is folded into the total differently from POS",
+          "Tip or total mismatch",
+          "M",
+          "M,R",
+          []
+        ],
+        [
+          "Removing the card does not clear the applied amount on the cart",
+          "Wrong amount charged",
+          "M",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I8",
+      "b": "I",
+      "k": "soft",
+      "rel": "L",
+      "t": "Online sale posted after payment",
+      "d": "After Adyen confirms the card part (or immediately for zero-dollar orders), the gift card amount is charged on eCard Systems and the AIO balance is reduced with half-up rounding.",
+      "sys": [
+        "eCard Systems",
+        "Adyen",
+        "Online ordering",
+        "KDS"
+      ],
+      "e": [
+        [
+          "Card part captured but the gift card sale fails afterwards; order sent to the kitchen with part unpaid",
+          "Restaurant short",
+          "C",
+          "M,T",
+          []
+        ],
+        [
+          "AIO balance reduced even when the eCard sale was not attempted because the card record was missing",
+          "Balances diverge",
+          "H",
+          "D",
+          []
+        ],
+        [
+          "Rounding differs from eCard Systems by a cent",
+          "Small reconciliation breaks",
+          "L",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I9",
+      "b": "I",
+      "k": "cust",
+      "rel": "TBC",
+      "t": "Validate a card at Kiosk",
+      "d": "The Kiosk lookup and validation services resolve eligible cards. The final payment checks the card, current cart and restaurant PIN policy again. The payment service has separate handling for full gift card payment and payment with a second tender.",
+      "sys": [
+        "Kiosk",
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "The card is valid at lookup but its balance changes before the final payment",
+          "The guest needs another tender or an updated amount",
+          "H",
+          "M,CX",
+          []
+        ],
+        [
+          "The second tender fails after part of the order is paid by gift card",
+          "The operator must reconcile both payments and the order",
+          "C",
+          "M,R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "I10",
+      "b": "I",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Transfer the balance to another card",
+      "d": "At POS, transfer the remaining value of a funded migrated card to blank physical stock or to a newly issued digital card. For a digital transfer, confirm the recipient and delivery method. Native active cards use the separate reload or merge flows.",
+      "sys": [
+        "POS",
+        "eCard Systems",
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "Migrated card not found because it was uploaded under another location or with a changed number",
+          "Guest refused",
+          "H",
+          "CN,OB",
+          []
+        ],
+        [
+          "Old card deducted but the new load fails and the reversal also fails",
+          "Value lost, manual reconciliation",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "Staff try to merge a migrated card instead of transferring its remaining balance",
+          "The merge is blocked until staff use the transfer flow",
+          "M",
+          "CX,OB",
+          []
+        ],
+        [
+          "The recipient on a new digital card differs from the person the guest intended",
+          "The transfer succeeds but the intended recipient cannot access the value",
+          "L",
+          "D",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "I11",
+      "b": "I",
+      "k": "soft",
+      "rel": "L",
+      "t": "Ticket paid and receipt issued",
+      "d": "Once the order is settled, the receipt records its tender breakdown. Card details and remaining balance depend on the receipt type and the data returned. Check eligible loyalty earnings separately from the face value of a gift card purchase.",
+      "sys": [
+        "POS",
+        "Online ordering",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "A gift card purchase is incorrectly counted as a qualifying order as well as the later restaurant purchase",
+          "The guest earns points twice for the same spend",
+          "M",
+          "M,CN",
+          []
+        ],
+        [
+          "Online receipt shows the card's initial amount instead of the amount used",
+          "Guest confused about what was spent",
+          "M",
+          "CX,M",
+          []
+        ],
+        [
+          "Receipt shows the wrong card or none when several cards were applied",
+          "Disputes",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J1",
+      "b": "J",
+      "k": "op",
+      "rel": "L",
+      "t": "Refund an order paid by gift card",
+      "d": "Staff refund the gift card payment on a ticket in full or in part. The refund is limited to the amount paid (with a 3 cent rounding allowance).",
+      "sys": [
+        "POS",
+        "Web Dash: Orders Hub"
+      ],
+      "e": [
+        [
+          "The original gift card is no longer accessible when a refund is returned to it",
+          "The guest needs help accessing the refunded value",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Partial refunds across split tenders allocated to the wrong tender",
+          "Value returned to the wrong place",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "A refund proceeds outside the restaurant's configured permissions",
+          "The restaurant must investigate an unauthorised refund",
+          "M",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J2",
+      "b": "J",
+      "k": "soft",
+      "rel": "L",
+      "t": "Value loaded back to the card",
+      "d": "The refund amount is loaded back onto the card on eCard Systems, the balance is re-read and saved, then the payment and ticket refund status, loyalty adjustment and refund record are saved.",
+      "sys": [
+        "eCard Systems",
+        "Marketing Gift cards",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Load succeeds but saving the refund fails; staff retry and the card is credited twice",
+          "Double refund",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "The amount credited to the card exceeds the authorised refund including any eligible tax or tip",
+          "Too much value is returned",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "Partial refunds to gift cards are added back to Outstanding while full refunds are not",
+          "Outstanding wrong",
+          "H",
+          "R,M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J3",
+      "b": "J",
+      "k": "cust",
+      "rel": "L",
+      "t": "Reload a card online",
+      "d": "From Check balance/Reload the guest picks a reload amount and pays by card through Adyen with a one-hour token.",
+      "sys": [
+        "Online ordering",
+        "Adyen"
+      ],
+      "e": [
+        [
+          "Reload amount is not checked against the maximum on the server",
+          "Balances above the programme limit",
+          "M",
+          "M,S",
+          []
+        ],
+        [
+          "A reload is accepted for an unverified card relationship",
+          "Unauthorised card funding",
+          "M",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J4",
+      "b": "J",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Reload credited",
+      "d": "A successful online reload adds funds with the provider and records a reload on the gift card ticket and ledger. Keep the underlying movement distinct when reconciling the Purchased total.",
+      "sys": [
+        "Marketing Gift cards",
+        "eCard Systems",
+        "Adyen"
+      ],
+      "e": [
+        [
+          "AIO balance increased before the eCard load; a failed load leaves AIO showing money the card does not have",
+          "Card declined at the till",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "A reload is read as a newly issued card sale in the combined Purchased total",
+          "The restaurant overstates new card sales",
+          "M",
+          "R",
+          []
+        ],
+        [
+          "No confirmation to the guest",
+          "Guest unsure the reload worked",
+          "L",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "J5",
+      "b": "J",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Request a gift card purchase refund",
+      "d": "On POS, open the original gift card ticket, select refundable purchase items, review the total and enter a reason. Items marked ineligible cannot be selected. The service excludes reloads and previously refunded items. Cash refunds require POS. MoM has a separate supported payment flow.",
+      "sys": [
+        "POS",
+        "Web Dash: Gift Cards",
+        "Adyen",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "A purchase and a reload on the same ticket are treated as one refundable amount",
+          "Staff promise more than the eligible refund",
+          "H",
+          "M,CX",
+          []
+        ],
+        [
+          "A cash refund is attempted from MoM",
+          "The operator must use the appropriate POS workflow",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "J6",
+      "b": "J",
+      "k": "term",
+      "rel": "L",
+      "t": "Card kept with balance",
+      "d": "Cards never expire and there is no inactivity, dormancy or escheatment handling. A zero-balance card is reported as expired on some lookups.",
+      "sys": [
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "No unclaimed property reporting for long-dormant balances",
+          "State escheatment exposure",
+          "H",
+          "L,R",
+          []
+        ],
+        [
+          "Zero-balance card shown as expired",
+          "Guest thinks the card was voided",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Restaurant churns with outstanding balances and no wind-down process",
+          "Guests lose money, legal exposure",
+          "C",
+          "OB,L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "K1",
+      "b": "K",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Reconcile the location totals",
+      "d": "For the selected restaurant and closeout period, Purchased includes purchases, reloads and purchase refunds. Redeemed includes redemption reversals. Unclaimed is purchased less redeemed plus imported balance. An unfiltered date range is all time.",
+      "sys": [
+        "Web Dash: Gift Cards"
+      ],
+      "e": [
+        [
+          "Purchase and Outstanding disagree with gift card records and the sales report",
+          "Operator cannot trust the liability figure",
+          "H",
+          "R,M",
+          [
+            "4952"
+          ]
+        ],
+        [
+          "Outstanding is computed for the selected window, not as a running liability since launch",
+          "Liability misstated",
+          "H",
+          "R,M",
+          []
+        ],
+        [
+          "The operator compares one location with a business-wide report",
+          "An otherwise correct total looks incomplete",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "A purchase refund and a redemption reversal are reconciled as the same event",
+          "Purchased and redeemed appear to move in the wrong direction",
+          "H",
+          "R,M",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "K2",
+      "b": "K",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Find a card in Card Summary",
+      "d": "Filter digital or physical cards and search by full number. Compare the original amount, balance and latest activity. The guest profile provides the card activity detail. A list request failure has a separate Retry action from an empty result.",
+      "sys": [
+        "Web Dash: Gift Cards"
+      ],
+      "e": [
+        [
+          "Search only matches the full card number; no search by guest, email, phone or last four digits",
+          "Support cannot find a card",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Date filter uses last update, so cards jump in and out of the range on each balance check",
+          "Counts unstable",
+          "M",
+          "R",
+          []
+        ],
+        [
+          "A historical card has a balance but an incomplete activity record",
+          "Support cannot explain the full movement from the opening balance",
+          "H",
+          "R,CX",
+          []
+        ],
+        [
+          "Balance column shows the AIO copy, not the eCard balance",
+          "Stale balances",
+          "M",
+          "D",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "K3",
+      "b": "K",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Inspect card ownership and receipts",
+      "d": "In a restaurant guest profile, self-purchased cards belong to their buyer. A gift appears for its recipient after linking. Open the card activity and its available ticket or receipt details. The original purchase and its later refund have separate entries.",
+      "sys": [
+        "Guestbook / CRM",
+        "Web Dash: Gift Cards"
+      ],
+      "e": [
+        [
+          "A guest record displays a card number without the required masking",
+          "Card details disclosed",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "Physical cards sold on POS sit under a placeholder guest and never appear on the real guest",
+          "Incomplete history",
+          "M",
+          "D,CN",
+          []
+        ],
+        [
+          "A gifted card is checked under its purchaser before the recipient links it",
+          "Support concludes the card is missing",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "K4",
+      "b": "K",
+      "k": "op",
+      "rel": "L",
+      "t": "Reconcile with Merchant report",
+      "d": "Gift card sales and redemptions should agree between the Gift Cards overview, the Merchant and sales reports, Adyen payouts and the eCard Systems statement.",
+      "sys": [
+        "Web Dash: Gift Cards",
+        "Adyen",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "Online gift card purchases missing from the Merchant report because the payment row has no card link and no ticket, so the restaurant filter drops it",
+          "Sales under-reported",
+          "H",
+          "R,D",
+          [
+            "4643"
+          ]
+        ],
+        [
+          "Duplicate gift card ticket rows count one sale twice",
+          "Purchased and outstanding overstated",
+          "H",
+          "R,D",
+          [
+            "4952"
+          ]
+        ],
+        [
+          "Gift card redemptions counted as sales and the gift card purchase also counted as sales",
+          "Revenue double counted",
+          "H",
+          "R,M",
+          []
+        ],
+        [
+          "No report reconciling AIO balances against the eCard Systems statement",
+          "Drift never detected",
+          "H",
+          "R,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "K5",
+      "b": "K",
+      "k": "term",
+      "rel": "L",
+      "t": "Books closed for the period",
+      "d": "The operator has the period's gift card sales, redemptions and outstanding liability for accounting.",
+      "sys": [
+        "Web Dash: Gift Cards"
+      ],
+      "e": [
+        [
+          "No export for the accountant",
+          "Figures copied by hand",
+          "M",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J7",
+      "b": "J",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Calculate the eligible purchase refund",
+      "d": "POS shows the refundable amount returned for each card and totals the selected eligible items. The payment service limits refunds to the eligible paid share and remaining value. A later reload or merge can affect eligibility.",
+      "sys": [
+        "Gift Cards",
+        "POS or MoM",
+        "Payment provider"
+      ],
+      "e": [
+        [
+          "Staff quote face value on a discounted or partially spent card",
+          "The guest expects a larger refund",
+          "H",
+          "M,CX",
+          []
+        ],
+        [
+          "An eligible purchase is confused with an already refunded item",
+          "Staff cannot reconcile the remaining amount",
+          "H",
+          "R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "J8",
+      "b": "J",
+      "k": "int",
+      "rel": "TBC",
+      "t": "Confirm or reconcile the refund",
+      "d": "Wait for the tender outcome. A card refund can remain pending until provider or terminal confirmation. An uncertain outcome needs review. Completed returns appear separately from the original purchase in card activity.",
+      "sys": [
+        "Gift Cards",
+        "POS or MoM",
+        "Payment provider"
+      ],
+      "e": [
+        [
+          "A pending card refund is reported as completed",
+          "The guest expects funds before confirmation",
+          "H",
+          "M,CX",
+          []
+        ],
+        [
+          "A provider outcome is uncertain after card value has changed",
+          "The operator must reconcile the card and the payout before another attempt",
+          "C",
+          "M,R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "I12",
+      "b": "I",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Merge balances onto one gift card",
+      "d": "At POS, choose one funded destination card and up to four other distinct funded cards. Migrated cards use transfer instead. The merge screen limits the combined value to $10,000. Recheck the destination and source balances after completion.",
+      "sys": [
+        "POS",
+        "Gift Cards",
+        "eCard Systems"
+      ],
+      "e": [
+        [
+          "The operator expects an empty or inventory card to contribute value",
+          "The merge cannot proceed",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "The destination balance and source activity disagree after an interrupted merge",
+          "Support must reconcile the participating cards",
+          "H",
+          "M,R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "G5",
+      "b": "G",
+      "k": "op",
+      "rel": "TBC",
+      "internalOnly": true,
+      "t": "Sell a digital gift card at POS",
+      "d": "Start a dedicated digital gift card sale, select an amount, enter and review the recipient and email or text delivery details, then pay. Check the paid ticket and recipient delivery separately.",
+      "sys": [
+        "POS",
+        "Gift Cards"
+      ],
+      "e": [
+        [
+          "A physical item or reload is already on the ticket",
+          "The digital sale needs a separate ticket",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "The card is funded but its delivery details are incorrect",
+          "The intended recipient cannot find the purchased card",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H3",
+      "b": "H",
+      "k": "cust",
+      "rel": "TBC",
+      "internalOnly": true,
+      "t": "Read online card activity",
+      "d": "Open transaction history in the online gift card view. Load more entries and check the date, amount, status and channel where available. A refunded card has its own handling on balance and reload screens.",
+      "sys": [
+        "Online ordering",
+        "Gift Cards"
+      ],
+      "e": [
+        [
+          "The guest only checks the first page of activity",
+          "An earlier purchase or redemption appears missing",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "A refunded card is presented as available to reload",
+          "The guest expects a payment to succeed",
+          "H",
+          "M,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I13",
+      "b": "I",
+      "k": "int",
+      "rel": "TBC",
+      "internalOnly": true,
+      "t": "Settle the Kiosk gift card payment",
+      "d": "Confirm the final amount against the cart. For a mixed payment, follow the second tender to completion. Check the resulting payment and ticket before closing the order.",
+      "sys": [
+        "Kiosk",
+        "Payments",
+        "Gift Cards"
+      ],
+      "e": [
+        [
+          "The gift card debit succeeds while the second payment is interrupted",
+          "The ticket and card need reconciliation",
+          "C",
+          "M,R",
+          []
+        ],
+        [
+          "A delayed confirmation is displayed as a failed order",
+          "The guest may restart checkout",
+          "H",
+          "M,CX",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "A3",
+      ""
+    ],
+    [
+      "A3",
+      "B1",
+      "Yes"
+    ],
+    [
+      "A3",
+      "A2",
+      "No: Feature not enabled"
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "B4",
+      ""
+    ],
+    [
+      "B4",
+      "B5",
+      ""
+    ],
+    [
+      "B5",
+      "D1",
+      "Guest follows a link"
+    ],
+    [
+      "B5",
+      "C1",
+      "Physical cards"
+    ],
+    [
+      "B5",
+      "C4",
+      "Moving from another system"
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "G1",
+      "Cards in stock"
+    ],
+    [
+      "C4",
+      "C5",
+      ""
+    ],
+    [
+      "C5",
+      "C6",
+      "Yes"
+    ],
+    [
+      "C5",
+      "C4",
+      "No: fix and re-upload"
+    ],
+    [
+      "C6",
+      "I10",
+      "Guest presents an old card"
+    ],
+    [
+      "D1",
+      "D2",
+      ""
+    ],
+    [
+      "D2",
+      "D3",
+      ""
+    ],
+    [
+      "D3",
+      "D4",
+      "Someone else"
+    ],
+    [
+      "D3",
+      "D5",
+      "Myself"
+    ],
+    [
+      "D4",
+      "D5",
+      ""
+    ],
+    [
+      "D5",
+      "D6",
+      ""
+    ],
+    [
+      "D6",
+      "E1",
+      ""
+    ],
+    [
+      "E1",
+      "E2",
+      "Paid"
+    ],
+    [
+      "E1",
+      "D6",
+      "Declined: retry"
+    ],
+    [
+      "E2",
+      "E3",
+      ""
+    ],
+    [
+      "E3",
+      "E4",
+      ""
+    ],
+    [
+      "E4",
+      "E8",
+      ""
+    ],
+    [
+      "E4",
+      "E5",
+      ""
+    ],
+    [
+      "E8",
+      "E5",
+      ""
+    ],
+    [
+      "E5",
+      "E6",
+      "Send now"
+    ],
+    [
+      "E5",
+      "E7",
+      "Scheduled"
+    ],
+    [
+      "E7",
+      "E6",
+      ""
+    ],
+    [
+      "E6",
+      "F1",
+      ""
+    ],
+    [
+      "F1",
+      "F2",
+      ""
+    ],
+    [
+      "F1",
+      "I7",
+      "Spend without linking"
+    ],
+    [
+      "F2",
+      "H1",
+      ""
+    ],
+    [
+      "F2",
+      "I9",
+      "At the Kiosk"
+    ],
+    [
+      "G1",
+      "G2",
+      ""
+    ],
+    [
+      "G2",
+      "G3",
+      ""
+    ],
+    [
+      "G3",
+      "G2",
+      "Payment fails: edit ticket"
+    ],
+    [
+      "G3",
+      "G4",
+      "Paid"
+    ],
+    [
+      "G4",
+      "I1",
+      "Card in the guest's hands"
+    ],
+    [
+      "G4",
+      "J5",
+      "Sale reversed",
+      1
+    ],
+    [
+      "E4",
+      "J5",
+      "Purchase reversed",
+      1
+    ],
+    [
+      "H1",
+      "H2",
+      ""
+    ],
+    [
+      "H2",
+      "I7",
+      "Spend online"
+    ],
+    [
+      "H2",
+      "I1",
+      "Spend in store"
+    ],
+    [
+      "H2",
+      "J3",
+      "Top up"
+    ],
+    [
+      "I1",
+      "I2",
+      ""
+    ],
+    [
+      "I2",
+      "I3",
+      "Yes or not needed"
+    ],
+    [
+      "I2",
+      "I2",
+      "Incorrect PIN, retry on the same card"
+    ],
+    [
+      "I3",
+      "I6",
+      ""
+    ],
+    [
+      "I6",
+      "I4",
+      ""
+    ],
+    [
+      "I4",
+      "I11",
+      "Yes"
+    ],
+    [
+      "I4",
+      "I5",
+      "No"
+    ],
+    [
+      "I5",
+      "I11",
+      ""
+    ],
+    [
+      "I7",
+      "I8",
+      ""
+    ],
+    [
+      "I8",
+      "I11",
+      ""
+    ],
+    [
+      "I10",
+      "I1",
+      "Pay with the new card"
+    ],
+    [
+      "I11",
+      "J1",
+      "Guest asks for a refund"
+    ],
+    [
+      "I11",
+      "J6",
+      "Balance left"
+    ],
+    [
+      "I11",
+      "K1",
+      "",
+      1
+    ],
+    [
+      "K1",
+      "K4",
+      "Reconcile directly"
+    ],
+    [
+      "J1",
+      "J2",
+      ""
+    ],
+    [
+      "J2",
+      "K1",
+      ""
+    ],
+    [
+      "J3",
+      "J4",
+      ""
+    ],
+    [
+      "J4",
+      "K1",
+      "",
+      1
+    ],
+    [
+      "J5",
+      "K1",
+      "",
+      1
+    ],
+    [
+      "K1",
+      "K2",
+      ""
+    ],
+    [
+      "K2",
+      "K3",
+      ""
+    ],
+    [
+      "K3",
+      "K4",
+      ""
+    ],
+    [
+      "K4",
+      "K5",
+      ""
+    ],
+    [
+      "J5",
+      "J7",
+      ""
+    ],
+    [
+      "J7",
+      "J8",
+      ""
+    ],
+    [
+      "J8",
+      "K1",
+      ""
+    ],
+    [
+      "H2",
+      "I12",
+      ""
+    ],
+    [
+      "I12",
+      "H1",
+      ""
+    ],
+    [
+      "H2",
+      "K2",
+      ""
+    ],
+    [
+      "I9",
+      "I13",
+      ""
+    ],
+    [
+      "I13",
+      "I11",
+      ""
+    ],
+    [
+      "G1",
+      "G5",
+      ""
+    ],
+    [
+      "G5",
+      "G3",
+      ""
+    ],
+    [
+      "G4",
+      "E5",
+      ""
+    ],
+    [
+      "H2",
+      "H3",
+      ""
+    ],
+    [
+      "H2",
+      "G1",
+      ""
+    ],
+    [
+      "G4",
+      "K1",
+      ""
+    ],
+    [
+      "H3",
+      "J6",
+      "Keep the remaining balance"
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Digital purchase",
+    "Physical and migrated cards",
+    "Redemption",
+    "After the sale",
+    "Set-up and reporting"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "Buy a digital gift, sent now",
+      "n": "Baseline: set-up, online purchase for someone else, email sent at once, recipient links and spends online, operator reads the figures.",
+      "s": "A1 A2 A3 B1 B2 B3 B4 B5 D1 D2 D3 D4 D5 D6 E1 E2 E3 E4 E8 E5 E6 F1 F2 H1 H2 I7 I8 I11 K1 K2 K3 K4 K5",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Buy a card for myself",
+      "n": "No recipient; the card is active as soon as it is paid and arrives to the purchaser.",
+      "s": "D1 D2 D3 D5 D6 E1 E2 E3 E4 E5 E6 F1 I7 I8 I11 J6",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 0,
+      "t": "Scheduled gift spent in store",
+      "n": "Send time in the future; the scheduler delivers it and the recipient pays at POS.",
+      "s": "D1 D2 D3 D4 D5 D6 E1 E2 E3 E4 E8 E5 E7 E6 F1 F2 H1 H2 I1 I2 I3 I6 I4 I11 J6",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 0,
+      "t": "Payment declined, then retried",
+      "n": "Adyen declines and the guest pays again on the same draft.",
+      "s": "D5 D6 E1 D6 E1 E2 E3 E4 E5 E6 F1",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Sell a physical card on POS",
+      "n": "Cards ordered from eCard Systems, imported to stock, sold and loaded on POS, then redeemed with a remainder on another tender.",
+      "s": "B5 C1 C2 C3 G1 G2 G3 G4 I1 I2 I3 I6 I4 I5 I11 K1 K4 K5",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "POS card payment fails, ticket edited",
+      "n": "The terminal payment for the cards fails, the ticket is edited and paid again.",
+      "s": "G1 G2 G3 G2 G3 G4 I1",
+      "side": ""
+    },
+    {
+      "id": "P07",
+      "g": 1,
+      "t": "Migrate cards from a previous system",
+      "n": "File rejected and fixed, imported, then a guest's old card is moved to a new physical card and spent.",
+      "s": "B5 C4 C5 C4 C5 C6 I10 I1 I2 I3 I6 I4 I11",
+      "side": ""
+    },
+    {
+      "id": "P08",
+      "g": 2,
+      "t": "Partial payment with remainder",
+      "n": "Card balance below the bill; the rest is taken on another tender.",
+      "s": "I1 I2 I3 I6 I4 I5 I11 J6",
+      "side": ""
+    },
+    {
+      "id": "P09",
+      "g": 2,
+      "t": "Wrong PIN at POS",
+      "n": "PIN required and wrong; staff re-enter before the charge.",
+      "s": "I1 I2 I2 I3 I6 I4 I11",
+      "side": ""
+    },
+    {
+      "id": "P10",
+      "g": 2,
+      "t": "Pay at the Kiosk",
+      "n": "Use the current Kiosk PIN setting, settle the cart and check the receipt.",
+      "s": "F1 F2 I9 I13 I11",
+      "side": ""
+    },
+    {
+      "id": "P11",
+      "g": 3,
+      "t": "Refund an order paid by gift card",
+      "n": "Value is loaded back to the card and the figures change.",
+      "s": "I11 J1 J2 K1 K2",
+      "side": ""
+    },
+    {
+      "id": "P12",
+      "g": 3,
+      "t": "Check balance and reload online",
+      "n": "Guest checks the balance and tops up through Adyen.",
+      "s": "H1 H2 J3 J4 K1",
+      "side": ""
+    },
+    {
+      "id": "P13",
+      "g": 3,
+      "t": "Refund selected gift card purchases",
+      "n": "Follow the original sale through refund eligibility, tender confirmation and reconciliation.",
+      "s": "G1 G2 G3 G4 J5 J7 J8 K1 K4 K5",
+      "side": "E4"
+    },
+    {
+      "id": "P14",
+      "g": 4,
+      "t": "Enablement with missing credentials",
+      "n": "Web Dash shows Feature not enabled until Ops completes the credentials.",
+      "s": "A1 A2 A3 A2 A3 B1",
+      "side": ""
+    },
+    {
+      "id": "P15",
+      "g": 4,
+      "t": "Month-end reporting",
+      "n": "Operator reads the overview, the card list and the guest view, and reconciles with the Merchant report.",
+      "s": "K1 K2 K3 K4 K5",
+      "side": ""
+    },
+    {
+      "id": "P16",
+      "g": 2,
+      "t": "Merge cards and check their balances",
+      "n": "Check funded cards before merging and reconcile the resulting balances and activity.",
+      "s": "H1 H2 I12 H1 H2 K2 K3",
+      "side": ""
+    },
+    {
+      "id": "P17",
+      "g": 1,
+      "t": "Sell a digital card from POS",
+      "n": "Use its own ticket, complete the sale and check recipient delivery.",
+      "s": "G1 G5 G3 G4 E5 E6 F1 F2 H1 H2 H3",
+      "side": ""
+    },
+    {
+      "id": "P18",
+      "g": 2,
+      "t": "Reload an active card at POS",
+      "n": "Check an existing card, fund a reload and verify its movement against the original ticket.",
+      "s": "H1 H2 G1 G2 G3 G4 K1 K2",
+      "side": ""
+    }
+  ],
+  "NOTES": [
+    "eCard Systems (SmartTrack SOAP gateway) is the system of record for every balance; AIO stores a copy that is refreshed on lookups. Most money risks come from eCard calls made outside the database transaction.",
+    "Android POS internal d2b5329 confirms the register and customer display flows for purchase, lookup, transfer, merge, PIN, payment, tips and purchase refund selection. PROD-5111 and PROD-5099 remain historical field reports. Device reproduction, mPOS behaviour and provider settlement require separate evidence.",
+    "Kiosk has dedicated lookup, validation and payment services, including mixed tender. Device prompts, actual terminal behaviour and provider settlement still need an operational check.",
+    "Gift Cards and Guest Book display read-only activity. POS reads refundable amounts and eligibility per purchase item, then passes the selected items into the reason and tender flow. Verify MoM controls and final provider settlement separately.",
+    "Legacy Web Dash gift card screens (Look up, Import tab, Create) exist in the legacy folder; the live pages mapped are the Overview and Configure pages in the new marketing module.",
+    "PROD-4810 and PROD-4869 were closed as configuration or training issues by support, but the scrum team disputes this; mapped as a partial payment display gap.",
+    "PROD-4871 root cause per the scrum notes: missing gift card ticket record and a duplicate payment. PROD-4952: duplicate rows in gift card tickets. PROD-4643: payment row with no card link, so the restaurant filter dropped it.",
+    "PROD 4705 is mapped to the guest opening the digital gift card page in both Website and Gift Cards.",
+    "Zeus internal, 02473c3bac9. See marketing/gift-card/gift-card-dashboard.service.ts and the Guest Book GiftCardsDrawer.",
+    "Purchase refunds and refunds of an order paid by gift card are distinct. See payment-management/gift-card-refund and user-management/user-gift-card/services for refund, transfer and merge rules."
+  ]
+}

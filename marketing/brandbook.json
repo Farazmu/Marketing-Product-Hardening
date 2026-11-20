@@ -1,0 +1,848 @@
+{
+  "key": "brandbook",
+  "name": "Brand Book",
+  "title": "Brand Book: operator paths, consumers and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Access and first view",
+      "s": "Opening the Brand Book for a location and what is there on first visit"
+    },
+    {
+      "id": "B",
+      "t": "Build the brand",
+      "s": "Logos, colours, fonts with their Done mark, content images, brand voice and social links"
+    },
+    {
+      "id": "C",
+      "t": "Save",
+      "s": "The Save button, what is sent and what the server stores"
+    },
+    {
+      "id": "D",
+      "t": "Consumers pick it up",
+      "s": "Website builder sync, new website drafts, emails, menu boards and media pickers"
+    },
+    {
+      "id": "E",
+      "t": "Later changes",
+      "s": "Editing or deleting brand items after other products already use them"
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Operator opens Brand Book",
+      "d": "The operator opens Marketing, Brand Book in Web Dash. Access is behind the Brand Book feature permission. The Brand Book belongs to the selected restaurant (location).",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "Multi-location brand must set up the same Brand Book once per location, with no copy between locations",
+          "Duplicate work and drift between stores",
+          "M",
+          "OB,D",
+          []
+        ],
+        [
+          "Permission missing, the page is simply absent from the sidebar",
+          "Operator cannot find it",
+          "L",
+          "OB,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "First view and defaults",
+      "d": "On first visit the page shows default items: Heading, Sub-heading and Paragraph fonts, default colours and a list of brand voice options. No AI generated Brand Book from the restaurant details or an existing website was found in the live code.",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "Defaults look like a finished brand, operator never customises them and every consumer uses generic styles",
+          "Unbranded website and emails",
+          "M",
+          "OB,CX",
+          []
+        ],
+        [
+          "Page loads with a spinner and no data when the content request fails, with no error message",
+          "Operator cannot work",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Restaurant logo already uploaded elsewhere (online ordering, receipts) is not offered here",
+          "Logo uploaded twice, versions drift",
+          "L",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Upload logos",
+      "d": "The operator uploads one or more logos through a signed upload to file storage; each is saved as a logo item linked to the stored file.",
+      "sys": [
+        "Web Dash: Brand Book",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Logo variants (light, dark, icon) are not labelled, consumers pick the first one even when it does not suit a dark background",
+          "Invisible logo on dark headers or boards",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Very large or transparent-less logo files accepted without guidance",
+          "Blurry or boxed logos downstream",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Upload succeeds but the save never happens, the file sits in storage unlinked",
+          "Logo missing in consumers",
+          "M",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Set brand colours",
+      "d": "The operator adds, names and edits colours stored as hex values.",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "No contrast check between brand colours, text and background combinations built from them are unreadable",
+          "Accessibility exposure on the website",
+          "H",
+          "L,CX",
+          []
+        ],
+        [
+          "Colour names are free text with no role (primary, accent, background), consumers cannot tell which colour to use where",
+          "Inconsistent brand use",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Invalid or short hex value accepted",
+          "Wrong colour downstream",
+          "L",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Set fonts and mark Done",
+      "d": "Heading, Sub-heading and Paragraph fonts each have family, style, size, weight, line height and letter spacing, from the font list or an uploaded custom font. Each font item is edited open and must be marked Done; Save skips any font still open and is disabled while a default font is open.",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "Sub-heading and Paragraph fonts not marked Done are never saved, so they are missing for every consumer",
+          "Website sync crashes or does nothing",
+          "H",
+          "D,CN,CX",
+          [
+            "4836"
+          ]
+        ],
+        [
+          "Done mark is easy to miss and there is no unsaved state per font",
+          "Operator thinks fonts are saved",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Empty font family silently saved as Poppins",
+          "Brand font replaced without notice",
+          "M",
+          "D,CX",
+          []
+        ],
+        [
+          "Custom uploaded font not available on the published website",
+          "Fonts fall back on the live site",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B4",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Add content images",
+      "d": "The operator adds brand photos to the content library (compressed on upload), used later as media in other products.",
+      "sys": [
+        "Web Dash: Brand Book",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Image deleted here while used by a website, email or board",
+          "Broken images downstream",
+          "M",
+          "D,CN",
+          []
+        ],
+        [
+          "No rights or source recorded for uploaded photos",
+          "Copyright exposure",
+          "M",
+          "L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B5",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Pick brand voice",
+      "d": "The operator selects brand voice options (tone words) and can add custom ones. The campaign SMS writing assistant includes the active voice selections in its generation request.",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "An outdated voice is still selected when a campaign is rewritten",
+          "The generated text sounds wrong for the restaurant",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Removing a custom voice and saving deletes it with no undo",
+          "Lost setting",
+          "L",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B6",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Add social links",
+      "d": "Links for social networks (Facebook, Instagram, X, TikTok and so on) that feed the website footer icons.",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "Link saved without https or as a handle, website icon goes nowhere",
+          "Dead social icons",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Network name not mapped to a website icon, the link is ignored on sync",
+          "Missing social icon",
+          "L",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Save the Brand Book",
+      "d": "One Save button sends every colour, voice, closed font, social link and logo plus a list of deleted items. There is a leave page warning for unsaved changes.",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "Save fails and only logs to the console, the button returns to Save with no error",
+          "Operator believes it saved",
+          "H",
+          "T,CX",
+          []
+        ],
+        [
+          "Two managers save at once, the later save overwrites the other's changes",
+          "Lost edits",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Fonts left open are silently left out of the save",
+          "Missing fonts downstream",
+          "H",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Store brand items",
+      "d": "The server creates new items, updates changed ones by id and deletes the ids listed as removed, and the Brand Book updated date moves on so the website builder can spot the change.",
+      "sys": [
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "An edit or deletion affects an item owned by another restaurant",
+          "Another location loses brand assets",
+          "H",
+          "S,D",
+          []
+        ],
+        [
+          "Creates, updates and deletes are not in one transaction, a failure leaves a half saved brand",
+          "Inconsistent brand data",
+          "M",
+          "D,T",
+          []
+        ],
+        [
+          "Updated date not moved when only a delete happens, the website never offers a sync",
+          "Website keeps the old brand",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "dec",
+      "rel": "L",
+      "t": "Saved successfully?",
+      "d": "On success the page reloads the saved items and refreshes the cached Brand Book for other screens.",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "Other open screens keep a cached Brand Book until reloaded",
+          "Consumers show old colours or logos",
+          "L",
+          "T",
+          []
+        ],
+        [
+          "No success confirmation shown",
+          "Operator saves repeatedly",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "dec",
+      "rel": "L",
+      "t": "Website builder spots a change?",
+      "d": "When the website builder opens, it compares the Brand Book updated date with the copy stored in the draft and, if newer, shows New changes made in brand book with Later or Sync now.",
+      "sys": [
+        "Website builder",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Change only noticed when someone opens the builder, the live website keeps the old brand indefinitely",
+          "Brand drift on the website",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Each draft tracks its own copy, syncing one draft leaves the others out of date",
+          "Inconsistent drafts",
+          "L",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Sync now in the builder",
+      "d": "Sync now copies fonts (only properties that changed), logos, colours and social links into the draft and shows a success message. Colours go to the palette but do not rewrite section colour styles. The live site changes only after republishing.",
+      "sys": [
+        "Website builder",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Sync now crashes or fails to bring the saved Brand Book changes into the site",
+          "Operator cannot apply the brand",
+          "H",
+          "CN,T",
+          [
+            "4836",
+            "4781"
+          ]
+        ],
+        [
+          "Sync overwrites font changes made by hand in the builder for the same property",
+          "Custom styling lost",
+          "M",
+          "D,CX",
+          []
+        ],
+        [
+          "Changed colours do not update colour styles in use, so the site does not look different after sync",
+          "Operator thinks sync failed",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Success shown even when the Brand Book request failed",
+          "False confirmation",
+          "M",
+          "T,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "soft",
+      "rel": "L",
+      "t": "New website draft takes the brand",
+      "d": "When a new website draft is created, the builder applies all Brand Book fonts to the global text and button styles, sets social links and stores a copy of the Brand Book.",
+      "sys": [
+        "Website builder",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Missing fonts leave template defaults in place without a warning",
+          "Site does not match the brand",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Empty Brand Book gives a generic site",
+          "Unbranded site",
+          "L",
+          "OB,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "int",
+      "rel": "L",
+      "t": "Use brand assets in campaign content",
+      "d": "The campaign and journey email builders offer Brand Book colours in the colour palette and Brand Book images and logos in media pickers. Values are copied into each email when chosen. The SMS rewrite request also includes active brand voices.",
+      "sys": [
+        "Marketing Campaigns",
+        "Marketing Journeys",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Brand colour changed later, emails already built keep the old colour",
+          "Inconsistent emails",
+          "L",
+          "CN",
+          []
+        ],
+        [
+          "Logo deleted from the Brand Book, scheduled emails show a broken image",
+          "Unprofessional email sent to guests",
+          "M",
+          "CN,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D5",
+      "b": "D",
+      "k": "int",
+      "rel": "L",
+      "t": "Menu boards use the brand",
+      "d": "The menu board canvas offers Brand Book colours, fonts and logos and keeps a reference to the Brand Book colour on elements that use it.",
+      "sys": [
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Brand colour deleted while a board element still references it",
+          "Board falls back to a default colour",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Brand font not available on the TV app",
+          "Font falls back on the board",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D6",
+      "b": "D",
+      "k": "int",
+      "rel": "L",
+      "t": "Media pickers use brand images",
+      "d": "Deals, spotlights, gift cards and other forms offer Brand Book content images in their image pickers.",
+      "sys": [
+        "Marketing Deals",
+        "Marketing Gift cards",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Image removed from the Brand Book disappears from live deals or gift card designs",
+          "Broken images for guests",
+          "M",
+          "CN,D",
+          []
+        ],
+        [
+          "Large uncompressed images chosen for small slots",
+          "Slow pages and apps",
+          "L",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Edit the Brand Book later",
+      "d": "The operator changes fonts, colours, logos or links after other products already use them, then saves again.",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "Operator expects every product to update automatically, but website, emails and boards only change when each is re-synced, edited or republished",
+          "Brand inconsistent across channels",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Re-opening a font to edit it removes it from the next save until marked Done again",
+          "Font lost",
+          "H",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Delete brand items",
+      "d": "Colours, voices, social links and logos removed on the page are deleted on the next save.",
+      "sys": [
+        "Web Dash: Brand Book"
+      ],
+      "e": [
+        [
+          "No check whether the item is used by a website, email or board before deleting",
+          "Broken references downstream",
+          "M",
+          "CN,D",
+          []
+        ],
+        [
+          "Deleting all fonts or colours leaves consumers with nothing to read",
+          "Fallback styles everywhere",
+          "L",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "term",
+      "rel": "L",
+      "t": "Brand applied",
+      "d": "The brand is stored and the consumers that were synced or edited show it.",
+      "sys": [],
+      "e": [
+        [
+          "No single view of which products are using an out of date Brand Book",
+          "Drift goes unnoticed",
+          "L",
+          "R,CN",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "B1",
+      "Set up"
+    ],
+    [
+      "A2",
+      "B3",
+      "Change fonts only"
+    ],
+    [
+      "A2",
+      "E1",
+      "Edit existing"
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "B4",
+      ""
+    ],
+    [
+      "B4",
+      "B5",
+      ""
+    ],
+    [
+      "B5",
+      "B6",
+      ""
+    ],
+    [
+      "B6",
+      "C1",
+      ""
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "C1",
+      "No, retry"
+    ],
+    [
+      "C3",
+      "D1",
+      "Yes, website exists"
+    ],
+    [
+      "C3",
+      "D3",
+      "Yes, new website draft"
+    ],
+    [
+      "C3",
+      "D4",
+      "Yes, emails"
+    ],
+    [
+      "C3",
+      "D5",
+      "Yes, menu boards"
+    ],
+    [
+      "C3",
+      "D6",
+      "Yes, media pickers"
+    ],
+    [
+      "D1",
+      "D2",
+      "Yes, Sync now"
+    ],
+    [
+      "D1",
+      "E3",
+      "No change or Later"
+    ],
+    [
+      "D2",
+      "E3",
+      ""
+    ],
+    [
+      "D3",
+      "E3",
+      ""
+    ],
+    [
+      "D4",
+      "E3",
+      ""
+    ],
+    [
+      "D5",
+      "E3",
+      ""
+    ],
+    [
+      "D6",
+      "E3",
+      ""
+    ],
+    [
+      "E1",
+      "E2",
+      "Remove items"
+    ],
+    [
+      "E1",
+      "C1",
+      "Save changes"
+    ],
+    [
+      "E2",
+      "C1",
+      ""
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Set up",
+    "Consumers",
+    "Recovery and later changes"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "First set-up for a new website",
+      "n": "Baseline: every section filled, saved, then a new website draft takes the brand.",
+      "s": "A1 A2 B1 B2 B3 B4 B5 B6 C1 C2 C3 D3 E3",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 1,
+      "t": "Edit and Sync now on the website",
+      "n": "Brand changed later, the builder offers Sync now.",
+      "s": "A1 A2 E1 C1 C2 C3 D1 D2 E3",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 2,
+      "t": "Fonts not marked Done, sync fails",
+      "n": "Fonts left open are skipped on save, so Sync now crashes or does nothing.",
+      "s": "A1 A2 B3 B4 B5 B6 C1 C2 C3 D1 D2 E3",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 2,
+      "t": "Save fails, then retry",
+      "n": "Recovery: the save request fails silently and the operator saves again.",
+      "s": "A1 A2 E1 C1 C2 C3 C1 C2 C3 D1 D2 E3",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Emails, menu boards and media",
+      "n": "Other products read brand colours, fonts and images when they are next edited.",
+      "s": "A1 A2 E1 C1 C2 C3 D4 E3",
+      "side": "D5 D6"
+    },
+    {
+      "id": "P06",
+      "g": 2,
+      "t": "Delete items used elsewhere",
+      "n": "Exit: items removed while menu boards still reference them.",
+      "s": "A1 A2 E1 E2 C1 C2 C3 D5 E3",
+      "side": "D6"
+    }
+  ],
+  "NOTES": [
+    "No AI generation of the Brand Book (from restaurant details or an existing website) was found in the live code; first-time set-up is manual with default items.",
+    "The campaign copy request reads active brand voices for SMS suggestions. Check the saved selection when the generated tone is unexpected.",
+    "The Save button is now disabled while a default font is still open, a guard added after the Done related tickets; non-default fonts left open are still skipped.",
+    "Engineering should confirm that every Brand Book change is limited to assets owned by the selected restaurant.",
+    "Menu boards, email builders and media pickers were confirmed to read the Brand Book from file names and imports; exact live versus copy behaviour per consumer was assumed to be copy on choose.",
+    "The Brand Book is per restaurant (location); no copy between locations was found.",
+    "Zeus internal, 02473c3bac9. See the Web Dash Brand Book, campaign SMS composer and campaign_brand_voices in the AI request."
+  ]
+}

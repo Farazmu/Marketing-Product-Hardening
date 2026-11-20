@@ -1,0 +1,329 @@
+Snapshot 2026-11-10 plus live top-up to 16 Nov. 87 of 444 tickets look marketing-related.
+
+PROD-5111 | Bug | RCA DONE | Highest | 2026-11-12 | module: POS | product: Pos > Payment
+  Rendezvous -  Gift card scan shows 'POS data sync in progress' error and fails to apply payment
+PROD-5099 | Bug | Newly Reported | Highest | 2026-11-11 | module: POS | product: Pos > CFD
+  LGCRC - POS/CFD - Display of previous gift card amount on subsequent card transaction
+PROD-5067 | Bug | Newly Reported | High | 2026-11-04 | module: Menu Boards | product: Menu Boards > Hardware
+  Oceanna Deli | Menu Board | Dongle Not Powering On
+PROD-5045 | Feature request | Moved to Roadmap | Low | 2026-10-31 | module: POS | product: Pos > -
+  Vivot Craft Cafe-POS- Allow Editing Existing Customer Name in Guestbook on POS
+PROD-5043 | Bug | Resolved and Deployed on Production | Burning Fire | 2026-10-30 | module: POS | product: Pos > Giftcard
+  LGCRC - POS - Migrated gift cards not found
+PROD-5032 | Bug | In Progress By Dev | Medium | 2026-10-29 | module: MoM | product: Mom > Review Management
+  Maple House- MOM- Reviews not syncing
+  RCA: I think we should try some other way to get to the Root cause.
+PROD-5017 | Bug | Resolved and Deployed on Production | Medium | 2026-10-27 | module: POS | product: Pos > CFD
+  “Add Tip” Text Is Too Small on CFD for Gift Card and Tender Payments
+PROD-5002 | Bug | Resolved By Dev - PR Open | Burning Fire | 2026-10-26 | module: MoM, Menu Boards | product: Environment > Infrastructure
+  [Eclipse] Bump Node.js 22.13.0 pins and CI jobs to 22.23.4+, and fix one 20.19.4 job (CVE-2026-111497)
+PROD-5001 | Bug | Resolved and Deployed on Production | Burning Fire | 2026-10-26 | module: Website | product: Environment > Infrastructure
+  [zeus] web-dash: bump Node.js 22.20.0 pin to 22.23.4+ (CVE-2026-111497)
+PROD-5000 | Bug | In Progress By Dev | Burning Fire | 2026-10-26 | module: Website | product: Environment > Infrastructure
+  [zeus] Next.js portal (portal/online): move Dockerfile from Node 18.17.0 to patched 22.x (CVE-2026-111497)
+PROD-4999 | Bug | Newly Reported | Highest | 2026-10-26 | module: Webdash, Website | product: Environment > Infrastructure
+  [zeus] CI workflows: update Node.js versions to patched 22.x/24.x (CVE-2026-111497)
+PROD-4998 | Bug | In Progress By Dev | Burning Fire | 2026-10-26 | module: Webdash, Website | product: Environment > Infrastructure
+  [zeus] Backend Dockerfiles: move node:20.20.1-alpine to patched Node 22.23.4+ (CVE-2026-111497)
+PROD-4997 | Bug | Newly Reported | Burning Fire | 2026-10-26 | module: MoM, Webdash, Website, Menu Boards | product: Environment > Infrastructure
+  CVE-2026-111497: Upgrade Node.js runtimes (Brotli decoder RCE) across Argus projects
+PROD-4996 | Bug | Verified - UAT | Highest | 2026-10-26 | module: Website | product: Web Builder > Design
+  Unable to Edit Existing Questions in Duplicated Forms Across All Tenants
+PROD-4976 | Bug | Not Reproduced / Closed | Medium | 2026-10-23 | module: POS | product: Pos > CFD
+  Vivot Craft Cafe - POS|CFD - Stuck/frozen on the loyalty points screen
+  RCA: I checked all possible scenarios but could not reproduce the issue.
+PROD-4966 | Bug | Verified - UAT | Highest | 2026-10-22 | module: POS | product: Pos > Loyalty
+  LGCRC - POS - Dummy guest appearing on the receipt
+PROD-4964 | Bug | Newly Reported | Medium | 2026-10-22 | module: Menu Boards | product: Menu Boards > Hardware
+  House of Bagels - Menu Board - Android Recovery Error
+PROD-4958 | Bug | Config Issue/Non-issue | High | 2026-10-22 | module: Menu Boards | product: Menu Boards > Connectivity / No Signal
+  Karahi house - Menu boards - Unable to open (Stuck on "Device is not mapped)
+PROD-4952 | Bug | RCA DONE | High | 2026-10-21 | module: Reports, Marketing | product: Marketing > Giftcards
+  Pilot Light Cafe - Gift Card Purchase and Outstanding Amount Discrepancy
+PROD-4951 | Bug | Config Issue/Non-issue | Medium | 2026-10-21 | module: Website | product: Web Builder > Design
+  Add Zero and Negative Letter Spacing Options in WebDash
+PROD-4949 | Feature request | Moved to Roadmap | Highest | 2026-10-21 | module: QR/Online | product: Online and QR > SMS Receipt/Order Confirmation Delivery Failure
+  Maple house - Online ordering - Alternative way of sending "Order ready" alerts
+PROD-4939 | Bug | Resolved and Deployed on Production | High | 2026-10-20 | module: Website | product: Web Builder > Publishing
+  Creative Ideas Cafe - Website - Updated business hours are unable to sync
+PROD-4938 | Feature request | Moved to Roadmap | Medium | 2026-10-16 | module: POS | product: Pos > Giftcard
+  Maple House | POS | Request to Allow Tips on Gift Card Payments
+PROD-4923 | Bug | Resolved and Deployed on Production | Highest | 2026-10-16 | module: Website | product: Web Builder > Design
+  Tenant 2005 (Baba's Cuisine): “Invalid URL” Error When Adding Order Online Link
+PROD-4922 | Bug | Config Issue/Non-issue | Highest | 2026-10-16 | module: Website | product: Web Builder > Publishing
+  Flights on Stage: Preview Link Not Working After Publishing to Temporary Domain
+PROD-4919 | Bug | Config Issue/Non-issue | Burning Fire | 2026-10-16 | module: KIOSK | product: Menu Manager > Database
+  Main Menu Not Displaying on Kiosk – Only Loyalty Menu Visible
+PROD-4913 | Bug | Not Reproduced / Closed | Highest | 2026-10-16 | module: Menu Boards | product: Menu Boards > Other Menu Board issues
+  Rocharin -  Menu board screensaver fails to refresh after published update, requires manual cache clear
+PROD-4898 | Bug | Resolved and Deployed on Production | Medium | 2026-10-13 | module: POS | product: Pos > Breaks
+  Meal break compliance popups can be delayed or skipped after PIN login when the app is still loading menu/deals data
+  RCA: On PIN login, POS armed meal-break checks and emitted `mealPopupFlow` before any host Activity was collecting. The flow was a zero-buffer `MutableSharedFlow`, so the reminder was dropped and the compliance popup was skipped or del
+PROD-4888 | Bug | Resolved and Deployed on Production | High | 2026-10-12 | module: KIOSK | product: Kiosk > Loyalty
+  Ole Ole Burrito - Loyalty points - Unable to transfer loyalty points for a KIOSK order
+PROD-4879 | Bug | Resolved and Deployed on Production | Burning Fire | 2026-10-12 | module: Website | product: Web Builder > Web Analytics
+  GTM Tag Toggle Turned Off After Latest Release
+PROD-4871 | Bug | On Stage | High | 2026-10-09 | module: QR/Online, Website, Marketing | product: Online and QR > Online Giftcards
+  Pilot Light Cafe | Gift Card Receipt Issue Due to Incorrect Email Address
+PROD-4869 | Bug | Config Issue/Non-issue | High | 2026-10-09 | module: POS, Marketing | product: Pos > Giftcard
+  Repeated - Los Gatos Coffee Roasting | Gift Card | Partial Payment / Ticket Closure Issue
+PROD-4866 | Bug | Not Reproduced / Closed | Medium | 2026-10-09 | module: Menu Boards | product: Menu Boards > App Crash / Frozen
+  Ole Ole - Menu board - Abrupt closing of the app
+PROD-4862 | Bug | Resolved and Deployed on Production | Highest | 2026-10-08 | module: Website | product: Web Builder > Design
+  Category Heading Issue on Menu Page
+  RCA: Not fixed, Font size is working but toggle is not
+PROD-4860 | Bug | Resolved and Deployed on Production | Highest | 2026-10-08 | module: Reports | product: Online and QR > Miscellaneous
+  One Love Cafe | Website | Overpayment of $1.80 Reflecting on Dashboard as well | Data dated 6 Oct 2026
+PROD-4858 | Bug | Resolved and Deployed on Production | Highest | 2026-10-08 | module: Menu Boards | product: Menu Boards > Connectivity / No Signal
+  Ca phe viet -  Menu board displays blank screen with offline message despite active WiFi connection
+PROD-4851 | Feature request | Moved to Roadmap | Highest | 2026-10-07 | module: Menu Boards | product: Menu Boards > Canvas Editor Limitations
+  Menu Boards - Nested Modifiers needed in Canvas Builder
+PROD-4848 | Feature request | Config Issue/Non-issue | High | 2026-10-07 | module: KIOSK | product: Kiosk > Loyalty
+  Ole Ole Burrito | Kiosk | Request to Remove
+PROD-4847 | Bug | Not Reproduced / Closed | High | 2026-10-07 | module: QR/Online | product: Online and QR > Restaurant Page
+  Ole Ole Burrito Express | Website | Items Showing as Unavailable for Customer
+PROD-4844 | Bug | Config Issue/Non-issue | Burning Fire | 2026-10-06 | module: Menu Boards | product: Menu Boards > Editor-to-Board Rendering Mismatch
+  Repeated - Menu Board layout changes between editor, preview, and mapped output
+  RCA: The issue is still persistent, the json for The good life Deli (1991) is attached.
+PROD-4843 | Bug | Config Issue/Non-issue | Burning Fire | 2026-10-06 | module: Menu Boards | product: Menu Boards > Design
+  Menu item prices get cut off with dots appearing on live menu board.
+PROD-4841 | Bug | Resolved and Deployed on Production | Highest | 2026-10-06 | module: Website | product: Web Builder > Design
+  Order Online URL Shows "URL Invalid" When Added to Primary and Secondary Buttons – Tenant 1986
+PROD-4836 | Bug | Not Reproduced / Closed | Highest | 2026-10-05 | module: Website | product: Marketing > Brand book
+  Dashboard Crashes When Syncing Brand Guidelines to Website Template – Aribar (1306)
+  RCA: Because Sub Heading and Paragraph were not marked Done they were never saved.
+PROD-4835 | Bug | Resolved and Deployed on Production | Burning Fire | 2026-10-05 | module: Menu Boards | product: Menu Boards > Blank / Not Loading
+  Menu Blocks Items Not Visible in Menu Boards – Baba’s Cuisine (2043)
+PROD-4818 | Bug | Moved to Roadmap | Medium | 2026-10-01 | module: Website | product: Web Builder > Design
+  Spacing issue (Design) on FAQ Section for Website - Ole Ole Burritos 1924
+PROD-4817 | Bug | Resolved and Deployed on Production | Highest | 2026-10-01 | module: Website | product: Web Builder > Design
+  Menu Navbar Highlight Issue for Active Page on every website - Example Araujo's Mexican Grill
+PROD-4816 | Bug | Config Issue/Non-issue | Highest | 2026-10-01 | module: Reports | product: Reports > Sales Controller / Data Feed
+  The Picnic Basket – Website – Order Not Reflecting on Dashboard – Data Dated 29 Sep
+PROD-4810 | Bug | Config Issue/Non-issue | High | 2026-09-30 | module: POS, Marketing | product: Pos > Giftcard
+  Los Gatos Coffee Roasting | Gift Card | Partial Payment / Ticket Closure Issue
+PROD-4807 | Bug | Resolved and Deployed on Production | Highest | 2026-09-29 | module: Menu Boards | product: Menu Boards > Blank / Not Loading
+  Taqueria La Monera - Menu Board - Half of the screen has gone blank
+PROD-4793 | Bug | Resolved and Deployed on Production | Highest | 2026-09-25 | module: Website | product: Web Builder > SEO
+  Araujo’s Mexican Grill Sitemap Shows Temporary Domain URLs
+PROD-4784 | Bug | Config Issue/Non-issue | High | 2026-09-24 | module: Menu Boards | product: Menu Boards > Visibility / Template Config Bug
+  Oceanna’s Deli Hayward | Menu Board – Menu Content Disappearing Daily
+  RCA: This was a config issue, menu timings were not set in the menu manager.
+PROD-4783 | Bug | Resolved and Deployed on Production | Highest | 2026-09-23 | module: Menu Boards | product: Menu Boards > Canvas Editor Limitations
+  Menu Boards – Narrowing a Menu Block that uses column modifiers breaks the layout of the whole block (item names wrap letter by letter
+PROD-4782 | Feature request | Config Issue/Non-issue | Highest | 2026-09-23 | module: Menu Boards | product: Menu Boards > Canvas Editor Limitations
+  Menu Boards – Modifiers can't be displayed as menu items (no description support; pill and pipe layouts break the design)
+PROD-4781 | Bug | Config Issue/Non-issue | Highest | 2026-09-23 | module: Website | product: Marketing > Brand book
+  Pop Haus (Tenant 1983): Brand Book changes not syncing to website — builder crashes on "Sync now"
+PROD-4768 | Bug | Config Issue/Non-issue | High | 2026-09-22 | module: Reports | product: Reports > Net Sales
+  Mission Hill - Website Orders Non-Taxable Items Misclassified as Taxable Sales - Data dated Aug 2026
+  RCA: Root cause: The sales report classifies each sale as taxable/exempted based on a `taxExemption` flag stamped on the ticket item at order-creation time.
+PROD-4751 | Bug | Config Issue/Non-issue | Highest | 2026-09-18 | module: Menu Boards | product: Menu Boards > Configuration
+  Menuboard - Prices look fine in editor and preview mode, they show 0$ after mapping on tv
+PROD-4750 | Bug | Resolved and Deployed on Production | Highest | 2026-09-18 | module: Website | product: Web Builder > Publishing
+  Araujo's (764)-Staging Website publish fails and Unpublish does not work, preventing  website from being republished on the temp domain
+PROD-4745 | Bug | Config Issue/Non-issue | Medium | 2026-09-18 | module: QR/Online | product: Online and QR > SMS Receipt/Order Confirmation Delivery Failure
+  Ole Ole - SMS receipts and order confirmations fail to deliver to customers
+  RCA: Current Implementation: // payment-webhook.service.ts:3799 if (paymentBody.metadata.appName === AppNames.ONLINE && paymentBody.metadata.isGuest) { // ...
+PROD-4729 | Bug | Resolved and Deployed on Production | Highest | 2026-09-16 | module: Website | product: Web Builder > Design
+  Menu dropdown gets clipped on the Menu page as Second item cut off mid-text (Flights staging + One Love Cafe prod)
+PROD-4724 | Bug | Resolved and Deployed on Production | Highest | 2026-09-15 | module: Website | product: Web Builder > Publishing
+  Google Maps fails to load (flightsrestaurants.com) on Staging Enviornment
+PROD-4723 | Bug | Resolved and Deployed on Production | Highest | 2026-09-15 | module: Website | product: Web Builder > Design
+  Custom Form invisible on light Color Style in One Love Cafe Custom Domain > Page Parties
+PROD-4721 | Bug | Config Issue/Non-issue | Highest | 2026-09-15 | module: KDS | product: Kiosk > Order Ready Alert
+  Choco Crepe - KDS fulfillment texts not sending to customers from kiosk or POS orders
+  RCA: However, for this specific ticket, this field was set to null because of which the alert could not be sent.
+PROD-4716 | Bug | Resolved and Deployed on Production | Highest | 2026-09-14 | module: Website | product: Web Builder > ADA
+  ADA Compliant Report Issue on Prod. Environment
+PROD-4711 | Bug | Config Issue/Non-issue | High | 2026-09-14 | module: Menu Boards | product: Menu Boards > Blank / Not Loading
+  Karahi House - Menu board not displaying menu.
+PROD-4705 | Feature request | Moved to Roadmap | High | 2026-09-11 | module: Website | product: Marketing > Giftcards
+  Digital Gift Cards 404 Error on Website
+PROD-4702 | Bug | Resolved and Deployed on Production | Highest | 2026-09-11 | module: Website | product: Web Builder > Design
+  Font Style Issue on Prod Environment After Publishing site on Temporary Domain
+PROD-4701 | Bug | Resolved and Deployed on Production | Highest | 2026-09-11 | module: Website | product: Web Builder > Publishing
+  Button Navigation issues on Prod Environment
+PROD-4692 | Bug | Resolved and Deployed on Production | Highest | 2026-09-10 | module: Menu Boards | product: Menu Boards > Canvas Editor Limitations
+  Menu Board elements shift position instead of rotating and alignment issues persist
+PROD-4690 | Bug | Config Issue/Non-issue | Medium | 2026-09-10 | module: Website | product: Web Builder > Design
+  Extra Sections on Web Builder - UAT Environment for Notus
+PROD-4688 | Bug | Resolved and Deployed on Production | Burning Fire | 2026-09-10 | module: Website | product: Web Builder > Publishing
+  Top Up Tea Publishing Issue Tenant no. 1970
+PROD-4687 | Bug | Resolved and Deployed on Production | Highest | 2026-09-10 | module: Website | product: Web Builder > Design
+  Footer Color Style Issue on Tenant no. 1970 (Top Up Tea)
+PROD-4682 | Bug | Resolved and Deployed on Production | Highest | 2026-09-09 | module: Menu Boards | product: Menu Boards > Design
+  Menu item prices get cut off when displayed in bold text style
+PROD-4681 | Bug | Resolved and Deployed on Production | Highest | 2026-09-09 | module: Website | product: Web Builder > Design
+  Fonts change to Times New Roman after website is published
+PROD-4680 | Feature request | Moved to Roadmap | High | 2026-09-09 | module: Webdash | product: Marketing > Campaigns
+  Emailer Design Tool Gaps
+PROD-4676 | Bug | Resolved and Deployed on Production | Highest | 2026-09-09 | module: Menu Boards | product: Menu Boards > "Restaurant Closed" Shown Incorrectly
+  Huanchaco - Menu boards showing the restaurant is closed
+PROD-4673 | Feature request | Moved to Roadmap | Highest | 2026-09-08 | module: Webdash | product: Marketing > Deals
+  Deals – Menu Item Limit Too Low to Support Partial Category Selection
+PROD-4672 | Feature request | Moved to Roadmap | High | 2026-09-08 | module: Website | product: Web Builder > SEO
+  SEO Implementations for Webdash (Checklist)
+PROD-4661 | Bug | Moved to Roadmap | Highest | 2026-09-04 | module: Menu Boards | product: Menu Boards > Hardware
+  Mersea - Menu boards - Unable to open until force stopped and storage clearance
+  RCA: The issue was likely not caused by the React Native app alone, as YouTube also failed to open.
+PROD-4659 | Bug | Moved to Roadmap | Highest | 2026-09-04 | module: Menu Boards | product: Menu Manager > Menu
+  Menu Visibility Requires All Items to Be Manually Configured for All-Day Availability
+PROD-4658 | Bug | Resolved and Deployed on Production | Highest | 2026-09-04 | module: Webdash | product: Web Builder > Publishing
+  Website cant be published on temp. link, shows as published but the published link does not work
+PROD-4657 | Bug | Not Reproduced / Closed | Highest | 2026-09-04 | module: Website | product: Web Builder > Design
+  CTA and Form sections are duplicated across every page without being added
+  RCA: The issue has been fixed with a workaround, and this is for QA to reproduce for RCA.
+PROD-4654 | Feature request | Moved to Roadmap | Highest | 2026-09-04 | module: Menu Boards | product: Menu Boards > Playlist Scheduling Control
+  Centralize Menuboard display scheduling control at the Playlist level
+PROD-4653 | Bug | Resolved and Deployed on Production | Burning Fire | 2026-09-04 | module: Menu Boards | product: Menu Boards > Editor-to-Board Rendering Mismatch
+  Menu Board layout changes between editor, preview, and mapped output
+PROD-4652 | Bug | Config Issue/Non-issue | Highest | 2026-09-04 | module: Menu Boards | product: Menu Boards > Auto-Update Failure
+  Menu Boards app fails to auto-update to v6.0 at Ole Ole, remains on v1.0 despite auto-update
+PROD-4651 | Bug | Resolved and Deployed on Production | High | 2026-09-04 | module: Webdash | product: Marketing > Campaigns
+  Ole Ole - Campaigns - Redundant delivery of a single email on approval
+PROD-4643 | Bug | Resolved and Deployed on Production | High | 2026-09-03 | module: Reports | product: Reports > Merchant Report
+  LGCRC - Gift Card Purchase not reflecting in Merchant Report
+  RCA: The $90 discrepancy was because payment entry for the giftcard has user_gift_card_id = NULL So, the restaurant id check below checks ticket or gift card restaurant id both of which are null A possible fix is: !
+PROD-4626 | Bug | Config Issue/Non-issue | Highest | 2026-09-02 | module: Menu Boards | product: Menu Boards > Design
+  NY Pizza - Menu board displays black background on both sides after system update.
+  RCA: Restaurant ID: 1223 Tenant ID: 1289 TV ID: 1, 2 & 3 It looks like more of a UI rendering issue because the content is being provided successfully but somehow either it is not properly aligned with the TV dimesions or its a renderi
+
+
+=== Scrum sub-area notes (summary, failure points, root causes) ===
+
+[Pos::Loyalty] One ticket: a dummy guest appeared on the printed receipt when no customer was attached.
+  Flow: Ticket > Loyalty > Receipt
+  Failure points: Dummy guest printed on the receipt
+  Cause: PROD-4966: the POS now hides the dummy guest when no customer is available.
+
+[Pos::Giftcard] Migrated cards were not found, and partial gift-card payments do not show as incomplete on the payment screen.
+  Flow: Gift card > Redeem > Partial payment > Ticket
+  Failure points: Migrated gift cards not found | Partial payment not shown as incomplete, ticket closes
+  Cause: PROD-5043: the cards were already migrated from the old gift-card system, so re-uploading gives a validation error.
+  Cause: PROD-4810, 4869: a partial gift-card payment does not show as partial on the payment screen. Support called it training; the team pushed back.
+
+[Kiosk::Loyalty] One ticket: loyalty points could not be transferred for a kiosk order.
+  Flow: Order > Loyalty
+  Failure points: Unable to transfer loyalty points
+
+
+[Kiosk::Order Ready Alert] One ticket: fulfilment texts were not sent from kiosk or POS orders.
+  Flow: Order > KDS fulfil > Text
+  Failure points: Phone field null so no text was sent
+  Cause: PROD-4721: for that ticket the phone field was null.
+
+[Menu Boards::Hardware] The dongle or the Android device will not start.
+  Flow: Power > Boot > Menu app
+  Failure points: Dongle not powering on | Android recovery error on corrupted dongles | Will not open until force-stopped
+  Cause: PROD-4661: YouTube also failed to open, so it was not the React Native app alone.
+
+[Menu Boards::Design] Prices get cut off with dots or a black background appears on the TV.
+  Flow: Canvas > Publish > TV
+  Failure points: Prices cut off with dots or in bold | Black background on both sides after a system update
+  Cause: PROD-4843: re-adding the menu block fixes it.
+
+[Menu Boards::Blank / Not Loading] The board shows nothing, half a screen, or items missing.
+  Flow: Canvas > Publish > TV
+  Failure points: Half the screen blank (canvas could not save) | Menu block items not visible | Menu not displaying
+  Cause: PROD-4807: the problem was on the dashboard canvas side, not the Menu app.
+
+[Menu Boards::Connectivity / No Signal] The board is stuck or offline despite working Wi-Fi.
+  Flow: App > Device mapping > Network
+  Failure points: Stuck on Device is not mapped | Offline message with active Wi-Fi
+
+
+[Menu Boards::Editor-to-Board Rendering Mismatch] Spacing and font sizing differ between editor, preview and the TV.
+  Flow: Editor > Preview > TV
+  Failure points: Layout differs between editor, preview and mapped output
+
+
+[Menu Boards::Canvas Editor Limitations] Elements shift or a block breaks when narrowed.
+  Flow: Canvas > Menu block > TV
+  Failure points: Rotating elements shifts them | Narrowing a column-modifier block breaks the layout
+
+
+[Menu Boards::Other Menu Board issues] One ticket: the screensaver did not refresh after publishing.
+  Flow: Publish > TV
+  Failure points: Screensaver not refreshing (takes about 5 minutes)
+  Cause: PROD-4913: published changes appear after about 5 minutes.
+
+[Menu Boards::App Crash / Frozen] One ticket: the app closed abruptly.
+  Flow: Menu app
+  Failure points: App closed abruptly (memory)
+  Cause: PROD-4866: logs point to a memory issue.
+
+[Menu Boards::Visibility / Template Config Bug] One ticket: the menu disappeared daily.
+  Flow: Menu timings > Menu board
+  Failure points: Menu disappeared because timings were not set
+
+
+[Menu Boards::Configuration] One ticket: prices showed $0 on the TV.
+  Flow: Canvas > TV
+  Failure points: Prices $0 because the canvas data was $0.00
+
+
+[Menu Boards::"Restaurant Closed" Shown Incorrectly] One ticket: boards showed Restaurant Closed.
+  Flow: Open or close event > Menu board
+  Failure points: Showed closed (old app version)
+
+
+[Menu Boards::Auto-Update Failure] One ticket: the app stayed on v1.0 instead of v6.0.
+  Flow: Install > Auto-update
+  Failure points: Auto-update failed; old version installed originally
+  Cause: PROD-4652: the origin of the v1.0 install is still unknown.
+
+[Mom::Review Management] One ticket: Google reviews are not syncing.
+  Flow: Google account > Reviews
+  Failure points: Reviews not syncing
+  Cause: PROD-5032: reconnecting the Google account works around it; the root cause is still open.
+
+[Web Builder::Design] Fourteen styling and layout problems in the website builder: fonts, footers, sections, forms, links and spacing.
+  Flow: Builder edit > Preview > Live site
+  Failure points: Fonts or colours change after publishing | Invalid URL or navigation highlight issue | Sections or form duplicated, extra sections | Dropdown clipped, category heading toggle, FAQ spacing | Letter-spacing options missing
+  Cause: PROD-4681: fonts change to Times New Roman after publishing.
+
+[Web Builder::Publishing] Publishing to the temporary domain fails or the published site does not work.
+  Flow: Publish > Preview > Live site
+  Failure points: Publish fails or shows published but the link does not work | Preview link not working | Maps, buttons or business hours not working on the published site
+  Cause: PROD-4724: the Google Maps API key blocked the staging URL.
+
+[Web Builder::Web Analytics] One ticket: the GTM tag toggle turned off after a release.
+  Flow: Website settings > Release
+  Failure points: GTM tag toggle turned off
+
+
+[Web Builder::SEO] One ticket: sitemap showed temporary domain URLs.
+  Flow: Publish
+  Failure points: Sitemap lists temporary URLs
+
+
+[Web Builder::ADA] One ticket: ADA accessibility report problem.
+  Flow: Accessibility test
+  Failure points: ADA report issue on prod
+
+
+[Online and QR::Online Giftcards] One ticket: a gift card receipt went to a wrong email.
+  Flow: Purchase > Email
+  Failure points: Receipt sent to an incorrect email address
+  Cause: PROD-4871: missing gift_card_ticket record and duplicate payment.
+
+[Online and QR::SMS Receipt/Order Confirmation Delivery Failure] One ticket: SMS receipts did not reach some customers.
+  Flow: Order placed > Payment webhook > Customer
+  Failure points: Only guest users receive texts, by design
+
+
+[Marketing::Brand book] Brand book changes do not sync to the website template.
+  Flow: Brand book > Sync now
+  Failure points: Sync crashes or does nothing until fonts are marked done
+  Cause: PROD-4836: Sub Heading and Paragraph fonts were not marked Done, so they were not synced.
+
+[Marketing::Giftcards] One ticket: gift card purchase and outstanding amount discrepancy.
+  Flow: Purchase > gift_card_ticket > Marketing page
+  Failure points: Duplicate rows inserted into gift_card_ticket
+
+
+[Marketing::Campaigns] One ticket: an email was delivered twice on approval.
+  Flow: Approve campaign > Email
+  Failure points: Redundant delivery of a single email
+

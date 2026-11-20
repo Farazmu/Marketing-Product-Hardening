@@ -1,0 +1,1318 @@
+[
+ {
+  "k": "5111",
+  "t": "Rendezvous -  Gift card scan shows 'POS data sync in progress' error and fails to apply payment",
+  "s": "RCA DONE",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-11-12",
+  "m": [
+   "POS"
+  ],
+  "rc": "",
+  "pp": "Pos",
+  "pc": "Payment",
+  "ff": ""
+ },
+ {
+  "k": "5099",
+  "t": "LGCRC - POS/CFD - Display of previous gift card amount on subsequent card transaction",
+  "s": "Newly Reported",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-11-11",
+  "m": [
+   "POS"
+  ],
+  "rc": "",
+  "pp": "Pos",
+  "pc": "CFD",
+  "ff": ""
+ },
+ {
+  "k": "5067",
+  "t": "Oceanna Deli | Menu Board | Dongle Not Powering On",
+  "s": "Newly Reported",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-11-04",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Hardware",
+  "ff": "Menu Boards::Hardware#0"
+ },
+ {
+  "k": "5045",
+  "t": "Vivot Craft Cafe-POS- Allow Editing Existing Customer Name in Guestbook on POS",
+  "s": "Moved to Roadmap",
+  "ty": "Feature request",
+  "p": "Low",
+  "c": "2026-10-31",
+  "m": [
+   "POS"
+  ],
+  "rc": "",
+  "pp": "Pos",
+  "pc": "",
+  "ff": ""
+ },
+ {
+  "k": "5043",
+  "t": "LGCRC - POS - Migrated gift cards not found",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-30",
+  "m": [
+   "POS"
+  ],
+  "rc": "",
+  "pp": "Pos",
+  "pc": "Giftcard",
+  "ff": "Pos::Giftcard#0"
+ },
+ {
+  "k": "5032",
+  "t": "Maple House- MOM- Reviews not syncing",
+  "s": "In Progress By Dev",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-10-29",
+  "m": [
+   "MoM"
+  ],
+  "rc": "I think we should try some other way to get to the Root cause.",
+  "pp": "Mom",
+  "pc": "Review Management",
+  "ff": "Mom::Review Management#0"
+ },
+ {
+  "k": "5017",
+  "t": "“Add Tip” Text Is Too Small on CFD for Gift Card and Tender Payments",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-10-27",
+  "m": [
+   "POS"
+  ],
+  "rc": "",
+  "pp": "Pos",
+  "pc": "CFD",
+  "ff": "Pos::CFD#0"
+ },
+ {
+  "k": "5002",
+  "t": "[Eclipse] Bump Node.js 22.13.0 pins and CI jobs to 22.23.4+, and fix one 20.19.4 job (CVE-2026-111497)",
+  "s": "Resolved By Dev - PR Open",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-26",
+  "m": [
+   "MoM",
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Environment",
+  "pc": "Infrastructure",
+  "ff": "Environment::Infrastructure#0"
+ },
+ {
+  "k": "5001",
+  "t": "[zeus] web-dash: bump Node.js 22.20.0 pin to 22.23.4+ (CVE-2026-111497)",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-26",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Environment",
+  "pc": "Infrastructure",
+  "ff": "Environment::Infrastructure#0"
+ },
+ {
+  "k": "5000",
+  "t": "[zeus] Next.js portal (portal/online): move Dockerfile from Node 18.17.0 to patched 22.x (CVE-2026-111497)",
+  "s": "In Progress By Dev",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-26",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Environment",
+  "pc": "Infrastructure",
+  "ff": "Environment::Infrastructure#0"
+ },
+ {
+  "k": "4999",
+  "t": "[zeus] CI workflows: update Node.js versions to patched 22.x/24.x (CVE-2026-111497)",
+  "s": "Newly Reported",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-26",
+  "m": [
+   "Webdash",
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Environment",
+  "pc": "Infrastructure",
+  "ff": "Environment::Infrastructure#0"
+ },
+ {
+  "k": "4998",
+  "t": "[zeus] Backend Dockerfiles: move node:20.20.1-alpine to patched Node 22.23.4+ (CVE-2026-111497)",
+  "s": "In Progress By Dev",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-26",
+  "m": [
+   "Webdash",
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Environment",
+  "pc": "Infrastructure",
+  "ff": "Environment::Infrastructure#0"
+ },
+ {
+  "k": "4997",
+  "t": "CVE-2026-111497: Upgrade Node.js runtimes (Brotli decoder RCE) across Argus projects",
+  "s": "Newly Reported",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-26",
+  "m": [
+   "MoM",
+   "Webdash",
+   "Website",
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Environment",
+  "pc": "Infrastructure",
+  "ff": "Environment::Infrastructure#0"
+ },
+ {
+  "k": "4996",
+  "t": "Unable to Edit Existing Questions in Duplicated Forms Across All Tenants",
+  "s": "Verified - UAT",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-26",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#2"
+ },
+ {
+  "k": "4976",
+  "t": "Vivot Craft Cafe - POS|CFD - Stuck/frozen on the loyalty points screen",
+  "s": "Not Reproduced / Closed",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-10-23",
+  "m": [
+   "POS"
+  ],
+  "rc": "I checked all possible scenarios but could not reproduce the issue.",
+  "pp": "Pos",
+  "pc": "CFD",
+  "ff": "Pos::CFD#1"
+ },
+ {
+  "k": "4966",
+  "t": "LGCRC - POS - Dummy guest appearing on the receipt",
+  "s": "Verified - UAT",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-22",
+  "m": [
+   "POS"
+  ],
+  "rc": "",
+  "pp": "Pos",
+  "pc": "Loyalty",
+  "ff": "Pos::Loyalty#0"
+ },
+ {
+  "k": "4964",
+  "t": "House of Bagels - Menu Board - Android Recovery Error",
+  "s": "Newly Reported",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-10-22",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Hardware",
+  "ff": "Menu Boards::Hardware#1"
+ },
+ {
+  "k": "4958",
+  "t": "Karahi house - Menu boards - Unable to open (Stuck on \"Device is not mapped)",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-10-22",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Connectivity / No Signal",
+  "ff": "Menu Boards::Connectivity / No Signal#0"
+ },
+ {
+  "k": "4952",
+  "t": "Pilot Light Cafe - Gift Card Purchase and Outstanding Amount Discrepancy",
+  "s": "RCA DONE",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-10-21",
+  "m": [
+   "Reports",
+   "Marketing"
+  ],
+  "rc": "",
+  "pp": "Marketing",
+  "pc": "Giftcards",
+  "ff": "Marketing::Giftcards#0"
+ },
+ {
+  "k": "4951",
+  "t": "Add Zero and Negative Letter Spacing Options in WebDash",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-10-21",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#4"
+ },
+ {
+  "k": "4949",
+  "t": "Maple house - Online ordering - Alternative way of sending \"Order ready\" alerts",
+  "s": "Moved to Roadmap",
+  "ty": "Feature request",
+  "p": "Highest",
+  "c": "2026-10-21",
+  "m": [
+   "QR/Online"
+  ],
+  "rc": "",
+  "pp": "Online and QR",
+  "pc": "SMS Receipt/Order Confirmation Delivery Failure",
+  "ff": ""
+ },
+ {
+  "k": "4939",
+  "t": "Creative Ideas Cafe - Website - Updated business hours are unable to sync",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-10-20",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Publishing",
+  "ff": "Web Builder::Publishing#2"
+ },
+ {
+  "k": "4938",
+  "t": "Maple House | POS | Request to Allow Tips on Gift Card Payments",
+  "s": "Moved to Roadmap",
+  "ty": "Feature request",
+  "p": "Medium",
+  "c": "2026-10-16",
+  "m": [
+   "POS"
+  ],
+  "rc": "",
+  "pp": "Pos",
+  "pc": "Giftcard",
+  "ff": ""
+ },
+ {
+  "k": "4923",
+  "t": "Tenant 2005 (Baba's Cuisine): “Invalid URL” Error When Adding Order Online Link",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-16",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#1"
+ },
+ {
+  "k": "4922",
+  "t": "Flights on Stage: Preview Link Not Working After Publishing to Temporary Domain",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-16",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Publishing",
+  "ff": "Web Builder::Publishing#1"
+ },
+ {
+  "k": "4919",
+  "t": "Main Menu Not Displaying on Kiosk – Only Loyalty Menu Visible",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-16",
+  "m": [
+   "KIOSK"
+  ],
+  "rc": "",
+  "pp": "Menu Manager",
+  "pc": "Database",
+  "ff": "Menu Manager::Database#0"
+ },
+ {
+  "k": "4913",
+  "t": "Rocharin -  Menu board screensaver fails to refresh after published update, requires manual cache clear",
+  "s": "Not Reproduced / Closed",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-16",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Other Menu Board issues",
+  "ff": "Menu Boards::Other Menu Board issues#0"
+ },
+ {
+  "k": "4898",
+  "t": "Meal break compliance popups can be delayed or skipped after PIN login when the app is still loading menu/deals data",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-10-13",
+  "m": [
+   "POS"
+  ],
+  "rc": "On PIN login, POS armed meal-break checks and emitted `mealPopupFlow` before any host Activity was collecting. The flow was a zero-buffer `MutableSharedFlow`, so the reminder was dropped and the compliance popup was skipped or del",
+  "pp": "Pos",
+  "pc": "Breaks",
+  "ff": "Pos::Breaks#0"
+ },
+ {
+  "k": "4888",
+  "t": "Ole Ole Burrito - Loyalty points - Unable to transfer loyalty points for a KIOSK order",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-10-12",
+  "m": [
+   "KIOSK"
+  ],
+  "rc": "",
+  "pp": "Kiosk",
+  "pc": "Loyalty",
+  "ff": "Kiosk::Loyalty#0"
+ },
+ {
+  "k": "4879",
+  "t": "GTM Tag Toggle Turned Off After Latest Release",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-12",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Web Analytics",
+  "ff": "Web Builder::Web Analytics#0"
+ },
+ {
+  "k": "4871",
+  "t": "Pilot Light Cafe | Gift Card Receipt Issue Due to Incorrect Email Address",
+  "s": "On Stage",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-10-09",
+  "m": [
+   "QR/Online",
+   "Website",
+   "Marketing"
+  ],
+  "rc": "",
+  "pp": "Online and QR",
+  "pc": "Online Giftcards",
+  "ff": "Online and QR::Online Giftcards#0"
+ },
+ {
+  "k": "4869",
+  "t": "Repeated - Los Gatos Coffee Roasting | Gift Card | Partial Payment / Ticket Closure Issue",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-10-09",
+  "m": [
+   "POS",
+   "Marketing"
+  ],
+  "rc": "",
+  "pp": "Pos",
+  "pc": "Giftcard",
+  "ff": "Pos::Giftcard#1"
+ },
+ {
+  "k": "4866",
+  "t": "Ole Ole - Menu board - Abrupt closing of the app",
+  "s": "Not Reproduced / Closed",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-10-09",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "App Crash / Frozen",
+  "ff": "Menu Boards::App Crash / Frozen#0"
+ },
+ {
+  "k": "4862",
+  "t": "Category Heading Issue on Menu Page",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-08",
+  "m": [
+   "Website"
+  ],
+  "rc": "Not fixed, Font size is working but toggle is not",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#3"
+ },
+ {
+  "k": "4860",
+  "t": "One Love Cafe | Website | Overpayment of $1.80 Reflecting on Dashboard as well | Data dated 6 Oct 2026",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-08",
+  "m": [
+   "Reports"
+  ],
+  "rc": "",
+  "pp": "Online and QR",
+  "pc": "Miscellaneous",
+  "ff": "Online and QR::Miscellaneous#0"
+ },
+ {
+  "k": "4858",
+  "t": "Ca phe viet -  Menu board displays blank screen with offline message despite active WiFi connection",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-08",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Connectivity / No Signal",
+  "ff": "Menu Boards::Connectivity / No Signal#1"
+ },
+ {
+  "k": "4851",
+  "t": "Menu Boards - Nested Modifiers needed in Canvas Builder",
+  "s": "Moved to Roadmap",
+  "ty": "Feature request",
+  "p": "Highest",
+  "c": "2026-10-07",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Canvas Editor Limitations",
+  "ff": ""
+ },
+ {
+  "k": "4848",
+  "t": "Ole Ole Burrito | Kiosk | Request to Remove",
+  "s": "Config Issue/Non-issue",
+  "ty": "Feature request",
+  "p": "High",
+  "c": "2026-10-07",
+  "m": [
+   "KIOSK"
+  ],
+  "rc": "",
+  "pp": "Kiosk",
+  "pc": "Loyalty",
+  "ff": ""
+ },
+ {
+  "k": "4847",
+  "t": "Ole Ole Burrito Express | Website | Items Showing as Unavailable for Customer",
+  "s": "Not Reproduced / Closed",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-10-07",
+  "m": [
+   "QR/Online"
+  ],
+  "rc": "",
+  "pp": "Online and QR",
+  "pc": "Restaurant Page",
+  "ff": "Online and QR::Restaurant Page#0"
+ },
+ {
+  "k": "4844",
+  "t": "Repeated - Menu Board layout changes between editor, preview, and mapped output",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-06",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "The issue is still persistent, the json for The good life Deli (1991) is attached.",
+  "pp": "Menu Boards",
+  "pc": "Editor-to-Board Rendering Mismatch",
+  "ff": "Menu Boards::Editor-to-Board Rendering Mismatch#0"
+ },
+ {
+  "k": "4843",
+  "t": "Menu item prices get cut off with dots appearing on live menu board.",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-06",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Design",
+  "ff": "Menu Boards::Design#0"
+ },
+ {
+  "k": "4841",
+  "t": "Order Online URL Shows \"URL Invalid\" When Added to Primary and Secondary Buttons – Tenant 1986",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-06",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#1"
+ },
+ {
+  "k": "4836",
+  "t": "Dashboard Crashes When Syncing Brand Guidelines to Website Template – Aribar (1306)",
+  "s": "Not Reproduced / Closed",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-05",
+  "m": [
+   "Website"
+  ],
+  "rc": "Because Sub Heading and Paragraph were not marked Done they were never saved.",
+  "pp": "Marketing",
+  "pc": "Brand book",
+  "ff": "Marketing::Brand book#0"
+ },
+ {
+  "k": "4835",
+  "t": "Menu Blocks Items Not Visible in Menu Boards – Baba’s Cuisine (2043)",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-10-05",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Blank / Not Loading",
+  "ff": "Menu Boards::Blank / Not Loading#1"
+ },
+ {
+  "k": "4818",
+  "t": "Spacing issue (Design) on FAQ Section for Website - Ole Ole Burritos 1924",
+  "s": "Moved to Roadmap",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-10-01",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#3"
+ },
+ {
+  "k": "4817",
+  "t": "Menu Navbar Highlight Issue for Active Page on every website - Example Araujo's Mexican Grill",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-01",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#1"
+ },
+ {
+  "k": "4816",
+  "t": "The Picnic Basket – Website – Order Not Reflecting on Dashboard – Data Dated 29 Sep",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-10-01",
+  "m": [
+   "Reports"
+  ],
+  "rc": "",
+  "pp": "Reports",
+  "pc": "Sales Controller / Data Feed",
+  "ff": "Reports::Sales Controller / Data Feed#1"
+ },
+ {
+  "k": "4810",
+  "t": "Los Gatos Coffee Roasting | Gift Card | Partial Payment / Ticket Closure Issue",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-09-30",
+  "m": [
+   "POS",
+   "Marketing"
+  ],
+  "rc": "",
+  "pp": "Pos",
+  "pc": "Giftcard",
+  "ff": "Pos::Giftcard#1"
+ },
+ {
+  "k": "4807",
+  "t": "Taqueria La Monera - Menu Board - Half of the screen has gone blank",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-29",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Blank / Not Loading",
+  "ff": "Menu Boards::Blank / Not Loading#0"
+ },
+ {
+  "k": "4793",
+  "t": "Araujo’s Mexican Grill Sitemap Shows Temporary Domain URLs",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-25",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "SEO",
+  "ff": "Web Builder::SEO#0"
+ },
+ {
+  "k": "4784",
+  "t": "Oceanna’s Deli Hayward | Menu Board – Menu Content Disappearing Daily",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-09-24",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "This was a config issue, menu timings were not set in the menu manager.",
+  "pp": "Menu Boards",
+  "pc": "Visibility / Template Config Bug",
+  "ff": "Menu Boards::Visibility / Template Config Bug#0"
+ },
+ {
+  "k": "4783",
+  "t": "Menu Boards – Narrowing a Menu Block that uses column modifiers breaks the layout of the whole block (item names wrap letter by letter",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-23",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Canvas Editor Limitations",
+  "ff": "Menu Boards::Canvas Editor Limitations#1"
+ },
+ {
+  "k": "4782",
+  "t": "Menu Boards – Modifiers can't be displayed as menu items (no description support; pill and pipe layouts break the design)",
+  "s": "Config Issue/Non-issue",
+  "ty": "Feature request",
+  "p": "Highest",
+  "c": "2026-09-23",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Canvas Editor Limitations",
+  "ff": ""
+ },
+ {
+  "k": "4781",
+  "t": "Pop Haus (Tenant 1983): Brand Book changes not syncing to website — builder crashes on \"Sync now\"",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-23",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Marketing",
+  "pc": "Brand book",
+  "ff": "Marketing::Brand book#0"
+ },
+ {
+  "k": "4768",
+  "t": "Mission Hill - Website Orders Non-Taxable Items Misclassified as Taxable Sales - Data dated Aug 2026",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-09-22",
+  "m": [
+   "Reports"
+  ],
+  "rc": "Root cause: The sales report classifies each sale as taxable/exempted based on a `taxExemption` flag stamped on the ticket item at order-creation time.",
+  "pp": "Reports",
+  "pc": "Net Sales",
+  "ff": "Reports::Net Sales#0"
+ },
+ {
+  "k": "4751",
+  "t": "Menuboard - Prices look fine in editor and preview mode, they show 0$ after mapping on tv",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-18",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Configuration",
+  "ff": "Menu Boards::Configuration#0"
+ },
+ {
+  "k": "4750",
+  "t": "Araujo's (764)-Staging Website publish fails and Unpublish does not work, preventing  website from being republished on the temp domain",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-18",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Publishing",
+  "ff": "Web Builder::Publishing#0"
+ },
+ {
+  "k": "4745",
+  "t": "Ole Ole - SMS receipts and order confirmations fail to deliver to customers",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-09-18",
+  "m": [
+   "QR/Online"
+  ],
+  "rc": "Current Implementation: // payment-webhook.service.ts:3799 if (paymentBody.metadata.appName === AppNames.ONLINE && paymentBody.metadata.isGuest) { // ...",
+  "pp": "Online and QR",
+  "pc": "SMS Receipt/Order Confirmation Delivery Failure",
+  "ff": "Online and QR::SMS Receipt/Order Confirmation Delivery Failure#0"
+ },
+ {
+  "k": "4729",
+  "t": "Menu dropdown gets clipped on the Menu page as Second item cut off mid-text (Flights staging + One Love Cafe prod)",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-16",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#3"
+ },
+ {
+  "k": "4724",
+  "t": "Google Maps fails to load (flightsrestaurants.com) on Staging Enviornment",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-15",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Publishing",
+  "ff": "Web Builder::Publishing#2"
+ },
+ {
+  "k": "4723",
+  "t": "Custom Form invisible on light Color Style in One Love Cafe Custom Domain > Page Parties",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-15",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#0"
+ },
+ {
+  "k": "4721",
+  "t": "Choco Crepe - KDS fulfillment texts not sending to customers from kiosk or POS orders",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-15",
+  "m": [
+   "KDS"
+  ],
+  "rc": "However, for this specific ticket, this field was set to null because of which the alert could not be sent.",
+  "pp": "Kiosk",
+  "pc": "Order Ready Alert",
+  "ff": "Kiosk::Order Ready Alert#0"
+ },
+ {
+  "k": "4716",
+  "t": "ADA Compliant Report Issue on Prod. Environment",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-14",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "ADA",
+  "ff": "Web Builder::ADA#0"
+ },
+ {
+  "k": "4711",
+  "t": "Karahi House - Menu board not displaying menu.",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-09-14",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Blank / Not Loading",
+  "ff": "Menu Boards::Blank / Not Loading#2"
+ },
+ {
+  "k": "4705",
+  "t": "Digital Gift Cards 404 Error on Website",
+  "s": "Moved to Roadmap",
+  "ty": "Feature request",
+  "p": "High",
+  "c": "2026-09-11",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Marketing",
+  "pc": "Giftcards",
+  "ff": ""
+ },
+ {
+  "k": "4702",
+  "t": "Font Style Issue on Prod Environment After Publishing site on Temporary Domain",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-11",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#0"
+ },
+ {
+  "k": "4701",
+  "t": "Button Navigation issues on Prod Environment",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-11",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Publishing",
+  "ff": "Web Builder::Publishing#2"
+ },
+ {
+  "k": "4692",
+  "t": "Menu Board elements shift position instead of rotating and alignment issues persist",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-10",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Canvas Editor Limitations",
+  "ff": "Menu Boards::Canvas Editor Limitations#0"
+ },
+ {
+  "k": "4690",
+  "t": "Extra Sections on Web Builder - UAT Environment for Notus",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Medium",
+  "c": "2026-09-10",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#2"
+ },
+ {
+  "k": "4688",
+  "t": "Top Up Tea Publishing Issue Tenant no. 1970",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-09-10",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Publishing",
+  "ff": "Web Builder::Publishing#0"
+ },
+ {
+  "k": "4687",
+  "t": "Footer Color Style Issue on Tenant no. 1970 (Top Up Tea)",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-10",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#0"
+ },
+ {
+  "k": "4682",
+  "t": "Menu item prices get cut off when displayed in bold text style",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-09",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Design",
+  "ff": "Menu Boards::Design#0"
+ },
+ {
+  "k": "4681",
+  "t": "Fonts change to Times New Roman after website is published",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-09",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#0"
+ },
+ {
+  "k": "4680",
+  "t": "Emailer Design Tool Gaps",
+  "s": "Moved to Roadmap",
+  "ty": "Feature request",
+  "p": "High",
+  "c": "2026-09-09",
+  "m": [
+   "Webdash"
+  ],
+  "rc": "",
+  "pp": "Marketing",
+  "pc": "Campaigns",
+  "ff": ""
+ },
+ {
+  "k": "4676",
+  "t": "Huanchaco - Menu boards showing the restaurant is closed",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-09",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "\"Restaurant Closed\" Shown Incorrectly",
+  "ff": "Menu Boards::\"Restaurant Closed\" Shown Incorrectly#0"
+ },
+ {
+  "k": "4673",
+  "t": "Deals – Menu Item Limit Too Low to Support Partial Category Selection",
+  "s": "Moved to Roadmap",
+  "ty": "Feature request",
+  "p": "Highest",
+  "c": "2026-09-08",
+  "m": [
+   "Webdash"
+  ],
+  "rc": "",
+  "pp": "Marketing",
+  "pc": "Deals",
+  "ff": ""
+ },
+ {
+  "k": "4672",
+  "t": "SEO Implementations for Webdash (Checklist)",
+  "s": "Moved to Roadmap",
+  "ty": "Feature request",
+  "p": "High",
+  "c": "2026-09-08",
+  "m": [
+   "Website"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "SEO",
+  "ff": ""
+ },
+ {
+  "k": "4661",
+  "t": "Mersea - Menu boards - Unable to open until force stopped and storage clearance",
+  "s": "Moved to Roadmap",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-04",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "The issue was likely not caused by the React Native app alone, as YouTube also failed to open.",
+  "pp": "Menu Boards",
+  "pc": "Hardware",
+  "ff": "Menu Boards::Hardware#2"
+ },
+ {
+  "k": "4659",
+  "t": "Menu Visibility Requires All Items to Be Manually Configured for All-Day Availability",
+  "s": "Moved to Roadmap",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-04",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Manager",
+  "pc": "Menu",
+  "ff": "Menu Manager::Menu#0"
+ },
+ {
+  "k": "4658",
+  "t": "Website cant be published on temp. link, shows as published but the published link does not work",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-04",
+  "m": [
+   "Webdash"
+  ],
+  "rc": "",
+  "pp": "Web Builder",
+  "pc": "Publishing",
+  "ff": "Web Builder::Publishing#0"
+ },
+ {
+  "k": "4657",
+  "t": "CTA and Form sections are duplicated across every page without being added",
+  "s": "Not Reproduced / Closed",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-04",
+  "m": [
+   "Website"
+  ],
+  "rc": "The issue has been fixed with a workaround, and this is for QA to reproduce for RCA.",
+  "pp": "Web Builder",
+  "pc": "Design",
+  "ff": "Web Builder::Design#2"
+ },
+ {
+  "k": "4654",
+  "t": "Centralize Menuboard display scheduling control at the Playlist level",
+  "s": "Moved to Roadmap",
+  "ty": "Feature request",
+  "p": "Highest",
+  "c": "2026-09-04",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Playlist Scheduling Control",
+  "ff": ""
+ },
+ {
+  "k": "4653",
+  "t": "Menu Board layout changes between editor, preview, and mapped output",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "Burning Fire",
+  "c": "2026-09-04",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Editor-to-Board Rendering Mismatch",
+  "ff": "Menu Boards::Editor-to-Board Rendering Mismatch#0"
+ },
+ {
+  "k": "4652",
+  "t": "Menu Boards app fails to auto-update to v6.0 at Ole Ole, remains on v1.0 despite auto-update",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-04",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "",
+  "pp": "Menu Boards",
+  "pc": "Auto-Update Failure",
+  "ff": "Menu Boards::Auto-Update Failure#0"
+ },
+ {
+  "k": "4651",
+  "t": "Ole Ole - Campaigns - Redundant delivery of a single email on approval",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-09-04",
+  "m": [
+   "Webdash"
+  ],
+  "rc": "",
+  "pp": "Marketing",
+  "pc": "Campaigns",
+  "ff": "Marketing::Campaigns#0"
+ },
+ {
+  "k": "4643",
+  "t": "LGCRC - Gift Card Purchase not reflecting in Merchant Report",
+  "s": "Resolved and Deployed on Production",
+  "ty": "Bug",
+  "p": "High",
+  "c": "2026-09-03",
+  "m": [
+   "Reports"
+  ],
+  "rc": "The $90 discrepancy was because payment entry for the giftcard has user_gift_card_id = NULL So, the restaurant id check below checks ticket or gift card restaurant id both of which are null A possible fix is: !",
+  "pp": "Reports",
+  "pc": "Merchant Report",
+  "ff": "Reports::Merchant Report#0"
+ },
+ {
+  "k": "4626",
+  "t": "NY Pizza - Menu board displays black background on both sides after system update.",
+  "s": "Config Issue/Non-issue",
+  "ty": "Bug",
+  "p": "Highest",
+  "c": "2026-09-02",
+  "m": [
+   "Menu Boards"
+  ],
+  "rc": "Restaurant ID: 1223 Tenant ID: 1289 TV ID: 1, 2 & 3 It looks like more of a UI rendering issue because the content is being provided successfully but somehow either it is not properly aligned with the TV dimesions or its a renderi",
+  "pp": "Menu Boards",
+  "pc": "Design",
+  "ff": "Menu Boards::Design#1"
+ }
+]

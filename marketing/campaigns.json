@@ -1,0 +1,2870 @@
+{
+  "key": "campaigns",
+  "name": "Campaigns",
+  "title": "Campaigns: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Enablement and sender setup",
+      "s": "Marketing email address, Twilio marketing number, monthly text limit and who may approve in MoM"
+    },
+    {
+      "id": "B",
+      "t": "Campaign list and entry",
+      "s": "Choose a creation mode, act on a suggestion or open a campaign to see its available actions."
+    },
+    {
+      "id": "C",
+      "t": "Build the campaign",
+      "s": "The dedicated email and SMS builders have four steps. The multichannel builder has six."
+    },
+    {
+      "id": "D",
+      "t": "Submit, reserve and approve",
+      "s": "Check eligibility and credit reservations, then follow the chosen launch or owner review path."
+    },
+    {
+      "id": "E",
+      "t": "Send pipeline",
+      "s": "Follow queued or scheduled work into dispatch, channel outcomes and status changes."
+    },
+    {
+      "id": "F",
+      "t": "Guest receives and acts",
+      "s": "What the guest gets by email or text and what they do with it"
+    },
+    {
+      "id": "G",
+      "t": "Manage a campaign after submission",
+      "s": "Edit a returned campaign, duplicate it, inspect its history or follow it to completion."
+    },
+    {
+      "id": "H",
+      "t": "Measuring results",
+      "s": "Compare delivery, engagement, returning guests, attributed orders and sales."
+    },
+    {
+      "id": "I",
+      "t": "Launch, cancel, end and attribute",
+      "s": "Check which actions the current status permits and how results count returning guests."
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Restaurant wants to reach guests",
+      "d": "A restaurant operator or AIO staff member can create a custom promotion or base it on a deal, spotlight, menu item or special day and choose the channels that will carry it.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "Operator does not know that email and text need a sender address and a registered number first",
+          "First campaign fails at submit",
+          "M",
+          "OB,CX",
+          []
+        ],
+        [
+          "Location chosen in the restaurant switcher is not the one the operator means to market for",
+          "Campaign built for the wrong location",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Select the campaign email sender",
+      "d": "At send time a verified, enabled restaurant domain can provide the From address. The feature and sending switches must allow it. The AIO address covers an ineligible domain, a failed lookup or a rejected custom sender.",
+      "sys": [
+        "Ops dashboard",
+        "Web Dash: Campaigns",
+        "Email service"
+      ],
+      "e": [
+        [
+          "A restaurant expects a branded sender while verification is pending",
+          "Guests see the AIO address",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "The sender changes between preview and the scheduled send",
+          "The restaurant cannot explain the address on the received email",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "The selected sender or reply address belongs to another restaurant",
+          "Guest replies reach the wrong restaurant",
+          "H",
+          "D",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "A3",
+      "b": "A",
+      "k": "int",
+      "rel": "TBC",
+      "t": "Twilio marketing number registered",
+      "d": "A business needs a marketing number with an accepted verification status to submit a campaign with SMS. Delivery also needs the configured sender and Twilio subaccount. Check a configuration change again at send time.",
+      "sys": [
+        "Ops dashboard",
+        "Twilio"
+      ],
+      "e": [
+        [
+          "Number not yet approved for A2P 10DLC or toll-free verification but marked verified in AIO",
+          "Texts filtered by carriers, sent count looks fine",
+          "C",
+          "L,OB",
+          []
+        ],
+        [
+          "Twilio configuration removed or changed after approval, relay skips the text pages without marking them failed",
+          "Campaign shows sent zero with no reason",
+          "H",
+          "T,R",
+          []
+        ],
+        [
+          "Verification changes after the operator selects SMS",
+          "A previously available campaign channel cannot launch",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Sub-account auth token rotated in Twilio but not in AIO",
+          "Every text fails",
+          "H",
+          "T,OB",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "A4",
+      "b": "A",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Monthly text limit applies",
+      "d": "The monthly marketing text allowance is shared with Journeys. A campaign reserves credits for eligible SMS guests, one per SMS or two per MMS recipient. Cancelling a scheduled send or rejecting a campaign releases its reservation.",
+      "sys": [
+        "Marketing Campaigns",
+        "Marketing Journeys",
+        "Email service"
+      ],
+      "e": [
+        [
+          "Reservation counts against the month of submission, not the month the campaign is scheduled to send",
+          "Next month's send blocks this month's quota",
+          "H",
+          "B,M",
+          []
+        ],
+        [
+          "Month boundary taken from server time, not the restaurant time zone",
+          "Late evening submissions land in the wrong month",
+          "M",
+          "B,T",
+          []
+        ],
+        [
+          "Reserved texts for guests with invalid numbers or later opt outs are never released",
+          "Limit used up by texts that were never sent",
+          "H",
+          "B,M",
+          []
+        ],
+        [
+          "Threshold alert goes nowhere when the location has no Marketing email",
+          "Restaurant hits the limit with no warning",
+          "M",
+          "CX,OB",
+          []
+        ],
+        [
+          "Limit is per location while the Twilio account and bill are per business",
+          "Multi-location tenants overspend on Twilio",
+          "M",
+          "B",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "A5",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Approver permission in MoM",
+      "d": "Only MoM users whose role grants the campaign approve permission for that location can approve, request edits or reject. A reminder job pushes a Review campaign notification to their online devices while campaigns wait in Sent for Review.",
+      "sys": [
+        "MoM",
+        "Ops dashboard"
+      ],
+      "e": [
+        [
+          "No user at the location holds the approve permission",
+          "Campaign waits until it expires",
+          "H",
+          "OB,S",
+          []
+        ],
+        [
+          "Approver has MoM installed but no online device registered, so the reminder never arrives",
+          "Campaign expires unseen",
+          "H",
+          "CX,T",
+          []
+        ],
+        [
+          "Staff member who left still holds the approve permission",
+          "Wrong person approves sends to the guest list",
+          "H",
+          "S,OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Open the Campaigns dashboard",
+      "d": "An empty restaurant sees the welcome view. The dashboard has campaign results, suggestions and a searchable list. Combine status, channel and type filters. Clearing filters preserves the search text.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "A previous restaurant or filter still limits the list",
+          "A campaign appears missing",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "Clearing filters leaves a search term unnoticed",
+          "The list still looks incomplete",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "dec",
+      "rel": "TBC",
+      "t": "Choose an entry or a row action",
+      "d": "Start an email, SMS or multichannel campaign, or use a contextual suggestion. The row and detail panel offer actions based on the stored status and selected channels.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "A status changes while the action menu is open",
+          "An action fails and the operator needs to reload",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "The operator starts multichannel when only one channel was intended",
+          "Extra steps or unintended placements are included",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Choose campaign type",
+      "d": "Custom is the default. The other choices use a deal, spotlight, menu item or special day. Custom uses the operator description. Legacy Events is hidden.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Marketing Deals",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Changing the campaign type clears a previously chosen offer",
+          "The operator launches with the wrong content",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Deal later edited or deactivated in Deals while the campaign still promotes it",
+          "Guests sent an offer that no longer works",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Menu item later deleted or hidden in Menu Manager",
+          "Campaign links to an item guests cannot order",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "Deal list offers expired or future deals",
+          "Campaign promotes an offer that is not live",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Custom special day created with a past date",
+          "Campaign about a day already gone",
+          "L",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Name and describe the campaign",
+      "d": "Enter the campaign title and check name availability. For Custom, add the description used to prepare content. Record-backed types supply their own context.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "Two operators pick the same name at the same moment, both pass the check",
+          "Duplicate names in the list",
+          "L",
+          "D",
+          []
+        ],
+        [
+          "Custom campaign copy is built from an outdated description",
+          "The draft advertises the wrong offer",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Choose channels",
+      "d": "The multichannel flow asks for channels. The dedicated email and SMS flows preset the channel and open content directly after campaign type. Kiosk and Mega kiosk can include a banner, screensaver or both.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "Text chosen for a location without a verified marketing number, no warning until final submit",
+          "Operator rebuilds the campaign",
+          "M",
+          "CX,OB",
+          []
+        ],
+        [
+          "Removing a channel on edit leaves its old content and results attached",
+          "Stale content in results",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Operator assumes Email reaches all guests, but only subscribed guests with valid emails count",
+          "Smaller reach than expected",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Define the audience",
+      "d": "Choose an audience using the available guest filters and inspect eligible recipients for each message channel. A message channel with no eligible audience needs attention before launch. SMS also checks verification and remaining credits.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "A delayed eligibility estimate belongs to the previous filter selection",
+          "The operator misjudges audience size and SMS cost",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Allergen filter includes guests with the allergen when the offer is meant to avoid them",
+          "Wrong guests targeted",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Segment or spend tier recalculated between approval and send, list is not refreshed",
+          "Guests who left the segment still receive it",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Guests shared across locations of the same business filtered per location only",
+          "Multi-location guest gets the same campaign from each location",
+          "M",
+          "CX,D",
+          []
+        ],
+        [
+          "Filters combine as all must match, operator expects any",
+          "Audience empty",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C5",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Build the email",
+      "d": "The email builder fills heading, text, image and call to action from the deal, spotlight or item, styled from the Brand Book. Custom HTML sections are sanitised on save. The finished email is uploaded as an HTML file, up to 30 MB, and must keep the unsubscribe placeholder.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Brand Book",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Media card colours lack brand swatches, the header uses a fixed colour, or text lacks heading and body styles",
+          "The operator must restyle each email by hand",
+          "M",
+          "CX",
+          [
+            "4680"
+          ]
+        ],
+        [
+          "Custom HTML removes the unsubscribe placeholder, email goes out with no working unsubscribe link",
+          "CAN-SPAM exposure",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "Sanitiser strips styles or links the operator pasted",
+          "Email looks different from the preview",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Brand Book colours or fonts changed after the email was built, saved HTML keeps the old style",
+          "Off-brand email",
+          "L",
+          "CN",
+          []
+        ],
+        [
+          "Image file names with spaces or very large images break or slow the email",
+          "Broken images in the inbox",
+          "M",
+          "CX,T",
+          []
+        ],
+        [
+          "Call to action points at a test or temporary online ordering link",
+          "Guests land on a dead page",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "HTML upload fails mid-wizard and the error is not shown",
+          "Operator submits an email with no template",
+          "H",
+          "T,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C6",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Generate copy with AI",
+      "d": "The operator can ask the AI assistant service to generate or regenerate campaign copy and images for the chosen type. The call times out after 30 seconds.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "AI assistant service"
+      ],
+      "e": [
+        [
+          "AI states a discount, price or date that differs from the actual deal",
+          "Guests promised an offer the restaurant does not honour",
+          "C",
+          "M,L",
+          []
+        ],
+        [
+          "Generation takes over 30 seconds and fails with a generic error",
+          "Operator gives up on AI",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Regenerate overwrites edits the operator made by hand",
+          "Work lost",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "AI copy includes claims such as health or allergen statements",
+          "Legal exposure for the restaurant",
+          "H",
+          "L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C7",
+      "b": "C",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Compose SMS or MMS",
+      "d": "The composer allows 130 characters for SMS. An image switches it to MMS, with up to 1,500 characters and a displayed cost of two texts. It validates links and excludes emojis. Inspect the final content and opt-out line.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Twilio"
+      ],
+      "e": [
+        [
+          "Opt-out line appended again each time the form is submitted, so an edited campaign shows it twice",
+          "Messy text, extra segments billed",
+          "M",
+          "B,CX",
+          []
+        ],
+        [
+          "Opt-out line added only by Web Dash, a campaign saved another way has none",
+          "TCPA exposure",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "An image changes the displayed cost from one text to two after audience selection",
+          "Projected usage and available credits disagree",
+          "H",
+          "B",
+          []
+        ],
+        [
+          "Restaurant name missing from the message body",
+          "Carrier filtering and guest confusion",
+          "M",
+          "L,CX",
+          []
+        ],
+        [
+          "MMS image too large or wrong type for carriers",
+          "Text delivered without the image or fails",
+          "M",
+          "T",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C8",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Preview and send a test email",
+      "d": "Email and SMS quick creation show an inline preview while content is written. Multichannel creation has a separate preview step. Email also supports a test send.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Email service"
+      ],
+      "e": [
+        [
+          "Test email subject is not the real subject",
+          "Subject line never checked",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "No test text message, the first real text is the first time anyone sees it",
+          "Broken links or formatting reach every guest",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Test endpoint sends any HTML to any address without a limit",
+          "Abuse of the restaurant sender address",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "Test reports success when queued even if delivery later fails",
+          "Operator thinks the email works",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Preview frame differs from real mail clients, for example dark mode or Outlook",
+          "Broken layout in the inbox",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C9",
+      "b": "C",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Choose send time and end date",
+      "d": "Choose immediate or scheduled launch. A placement shown for a period needs an end date. Email or SMS alone has no placement end date. A linked deal limits its campaign schedule.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "Schedule taken in the operator browser time zone, not the restaurant's",
+          "Send at the wrong local hour",
+          "H",
+          "T,CX",
+          []
+        ],
+        [
+          "Send at a scheduled time before approval arrives, campaign expires instead of sending late",
+          "Campaign never goes out",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Texts allowed at any hour, including night time",
+          "TCPA quiet hours breach",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "A screen end date is earlier than the operator intended",
+          "Guests stop seeing the placement before the promotion finishes",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Deal end changed later, campaign end is not moved with it",
+          "Campaign promotes a finished deal",
+          "M",
+          "CN",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C10",
+      "b": "C",
+      "k": "dec",
+      "rel": "TBC",
+      "t": "Save, request review or launch",
+      "d": "Save progress as a draft, send for owner review, or choose direct launch and confirm. Launch follows the selected schedule.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "Wizard data in browser storage restored into a different campaign or location",
+          "Wrong content submitted",
+          "M",
+          "D,CX",
+          []
+        ],
+        [
+          "Double click on submit creates two campaigns",
+          "Guests receive the same campaign twice",
+          "H",
+          "D",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C11",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Prepare a social post",
+      "d": "Select the social destinations, prepare their copy and media, and inspect the preview for each chosen platform. Connection and media requirements can differ by destination.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Social accounts"
+      ],
+      "e": [
+        [
+          "A disconnected account stays selected in the final preview",
+          "Approved content cannot be posted",
+          "H",
+          "OB,CN",
+          []
+        ],
+        [
+          "A crop or caption fits one platform but cuts off a condition on another",
+          "Guests see incomplete offer terms",
+          "H",
+          "CX,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C12",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Prepare a featured placement",
+      "d": "Configure the selected placement content and review the corresponding website, online, QR, kiosk or menu board preview. Check the destination size and location.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Website builder",
+        "Kiosk",
+        "Menu Boards"
+      ],
+      "e": [
+        [
+          "Kiosk banner art is reused at full screen and crops the offer price",
+          "Guest sees an incomplete promotion",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "A QR placement opens an incorrect restaurant destination",
+          "Guest cannot redeem the offer",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "soft",
+      "rel": "L",
+      "t": "Save the draft",
+      "d": "A Draft is stored with its content, tags and allergens but no audience snapshot, no text reservation and no end of campaign event.",
+      "sys": [
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "Draft saved with a schedule date that passes before it is resumed",
+          "Submitting later fails or expires at once",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Referenced deal or item deleted while the campaign is a draft",
+          "Draft cannot be reopened",
+          "M",
+          "D,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "soft",
+      "rel": "L",
+      "t": "Snapshot the audience",
+      "d": "Submission validates the content and resolves eligible contacts for the selected restaurant and channels. A guest can qualify for one channel while lacking consent or a deliverable address for the other.",
+      "sys": [
+        "Marketing Campaigns",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Snapshot taken at submit, guest who unsubscribes or opts out before a later send still receives it",
+          "CAN-SPAM or TCPA exposure",
+          "C",
+          "L,D",
+          []
+        ],
+        [
+          "Failure after the campaign row is saved removes only the campaign, content rows are left behind",
+          "Orphan records",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Guests with non-US phone numbers silently excluded",
+          "Smaller reach than expected",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Guests imported with consent assumed rather than recorded",
+          "TCPA exposure",
+          "C",
+          "L,OB",
+          []
+        ],
+        [
+          "Large guest lists resolved in one query at submit",
+          "Submit times out for big tenants",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "dec",
+      "rel": "L",
+      "t": "Within the text limit?",
+      "d": "Check the eligible SMS count against monthly credits and reserve the required balance on submission. An over-limit submission must be revised. A returned edit follows the review choice recorded by the owner. Email-only campaigns proceed without an SMS reservation.",
+      "sys": [
+        "Marketing Campaigns",
+        "Marketing Journeys"
+      ],
+      "e": [
+        [
+          "Limit exceeded message does not say how many texts remain or when it resets",
+          "Operator cannot fix the audience",
+          "M",
+          "CX,B",
+          []
+        ],
+        [
+          "Journeys use the same pool, an automated journey takes the room a planned campaign needed",
+          "Planned campaign blocked",
+          "M",
+          "B,CN",
+          []
+        ],
+        [
+          "A returned edit launches under the recorded review setting before the operator expects",
+          "The owner misses the intended final check",
+          "H",
+          "S,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "soft",
+      "rel": "L",
+      "t": "Sent for review",
+      "d": "The campaign is saved as Sent for Review. A reminder job looks for campaigns in review and pushes a Review campaign notification to approvers' online MoM devices, opening the To Review tab.",
+      "sys": [
+        "Marketing Campaigns",
+        "MoM"
+      ],
+      "e": [
+        [
+          "Reminder repeats for every pending campaign on every run",
+          "Approvers mute notifications",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Push fails for one device and stops the rest for that tenant",
+          "Approvers not told",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Operator in Web Dash gets no notice when the owner acts",
+          "Campaign sits unnoticed in Needs Edits",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D5",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Owner reviews in MoM",
+      "d": "An authorised owner can approve, request edits with a reason, or reject. When returning work, the owner can require another review or allow launch after the edits. Check the current status and the schedule before acting.",
+      "sys": [
+        "MoM",
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "MoM preview differs from the email and text the guest will get",
+          "Owner approves something else",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Two approvers act at once, both pass the status check",
+          "Two publish runs, duplicate sends",
+          "H",
+          "T,D",
+          []
+        ],
+        [
+          "The owner requests edits without selecting the intended review preference",
+          "The revised campaign follows the wrong approval path",
+          "M",
+          "S",
+          []
+        ],
+        [
+          "Status change uses the location from the approver's session, approver with access to several locations acts on the wrong one",
+          "Approval fails or crosses locations",
+          "M",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D6",
+      "b": "D",
+      "k": "dec",
+      "rel": "TBC",
+      "t": "Approve, return for edits or reject",
+      "d": "Approval starts immediate launch or schedules delivery. A returned edit follows the owner’s re-review choice. Rejection releases the SMS reservation. A missed review window can expire.",
+      "sys": [
+        "MoM",
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "Needs Edits releases nothing, the text reservation stays held while the campaign waits",
+          "Quota blocked",
+          "M",
+          "B",
+          []
+        ],
+        [
+          "Rejection reason not shown in Web Dash",
+          "Operator does not know what to fix",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "The operator misreads whether a returned edit needs another review",
+          "A corrected campaign launches before the owner expects",
+          "H",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Split audience into pages",
+      "d": "Prepare pages of eligible email and SMS recipients for the selected channels. Provider acceptance, delivery, suppression and failure can occur at different times.",
+      "sys": [
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "One page query fails, those 50 guests are skipped with only a log line",
+          "Part of the audience never receives it",
+          "H",
+          "T,R",
+          []
+        ],
+        [
+          "Guest list for a scheduled send is fixed at approval, days before the send",
+          "Opted-out guests receive it",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "Re-triggering publish on a re-approval queues every page again",
+          "Guests receive duplicates",
+          "H",
+          "T,D",
+          []
+        ],
+        [
+          "Guest email and phone travel inside queue messages",
+          "Personal data spread in queue logs",
+          "M",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "dec",
+      "rel": "L",
+      "t": "Send right away or scheduled?",
+      "d": "Right away pages go to the campaign queue at once. Scheduled pages become timed events, one per channel and page, named by environment, tenant, location, campaign, action and page.",
+      "sys": [
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "Queueing errors only logged, approval shows success even when nothing was queued",
+          "Campaign approved but never sent",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Edit after approval does not remove the old scheduled pages",
+          "Old and new versions both send",
+          "H",
+          "T,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Queue for immediate send",
+      "d": "Pages go to a first in first out queue grouped by the Twilio sub-account for text, or by tenant and location, so one restaurant's pages are sent in order.",
+      "sys": [
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "Large campaigns from one business block its other texts in the same group",
+          "Order ready texts or journeys delayed",
+          "M",
+          "T,CN",
+          []
+        ],
+        [
+          "Message redelivered after a timeout and processed twice",
+          "Duplicate emails",
+          "H",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E4",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Schedule the timed send",
+      "d": "The send date, time and offset are taken from the stored schedule and registered with the scheduler, which fires the page events at that moment.",
+      "sys": [
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "Offset taken from the server, not the restaurant, so the send fires hours off",
+          "Send at the wrong local time",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Daylight saving change between scheduling and sending shifts the send by an hour",
+          "Send at the wrong local time",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Scheduler event creation fails and only a log records it",
+          "Approved campaign never sends",
+          "H",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E5",
+      "b": "E",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Check that the send is still current",
+      "d": "The relay checks campaign status, the saved schedule and end events before dispatch. A cancelled or superseded timed event must leave the current draft or rescheduled campaign alone.",
+      "sys": [
+        "Marketing Campaigns",
+        "Marketing Deals"
+      ],
+      "e": [
+        [
+          "An old scheduled event survives a cancellation or reschedule",
+          "Guests receive a campaign outside the chosen window",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "A status changes while pages are being processed",
+          "The operator sees incomplete or delayed totals",
+          "H",
+          "R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "E6",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Send the emails",
+      "d": "The email relay fetches the template, resolves the sender, adds guest tracking and unsubscribe information, and records the provider outcome for each recipient.",
+      "sys": [
+        "Marketing Campaigns",
+        "Email service",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "The same campaign email is delivered repeatedly after approval",
+          "Guests receive repeated marketing messages",
+          "H",
+          "CX",
+          [
+            "4651"
+          ]
+        ],
+        [
+          "Template file missing or unreachable, every email in the page fails",
+          "Campaign does not go out",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Failed sends are counted but never retried",
+          "Part of the audience missed",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Sending faster than the email service rate limit causes throttling errors",
+          "Many sends fail",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Unsubscribe placeholder missing, link never inserted",
+          "CAN-SPAM exposure",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "No List-Unsubscribe header for one-click unsubscribe",
+          "Gmail and Yahoo bulk sender rules breached, spam placement",
+          "H",
+          "L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E7",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Send the texts via Twilio",
+      "d": "The relay sends the prepared text and optional media through the configured Twilio account. It suppresses repeated sends to the same number for that campaign content for up to 24 hours, and records provider outcomes.",
+      "sys": [
+        "Marketing Campaigns",
+        "Twilio"
+      ],
+      "e": [
+        [
+          "A late retry arrives after the 24 hour SMS duplicate protection expires",
+          "A guest may receive the same text twice",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Number opted out at Twilio fails with an error but AIO consent is not updated",
+          "Repeated failed attempts and wrong reach",
+          "M",
+          "D,L",
+          []
+        ],
+        [
+          "Whole page sent in parallel, carrier throughput limits exceeded",
+          "Texts queued or dropped",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Failed texts still counted against the monthly limit",
+          "Quota lost",
+          "M",
+          "B",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E8",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Delivery and bounce events",
+      "d": "The email service reports deliveries, bounces and complaints through its events configuration, and Twilio reports message status and link clicks. These are written against the send logs.",
+      "sys": [
+        "Email service",
+        "Twilio",
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "Hard bounces and spam complaints not turned into unsubscribes",
+          "Sender reputation falls, later campaigns land in spam",
+          "H",
+          "L,T",
+          []
+        ],
+        [
+          "Delivery events not reflected in campaign results, which only show accepted or failed at send",
+          "Delivered rate unknown",
+          "M",
+          "R",
+          []
+        ],
+        [
+          "Events configuration name missing in an environment",
+          "No events recorded at all",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E9",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Publish to social accounts",
+      "d": "The relay attempts a post for each selected social account and records success or failure separately. Inspect each destination after a partial failure.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Social accounts"
+      ],
+      "e": [
+        [
+          "One provider rejects the post while another succeeds",
+          "Only part of the intended audience sees the offer",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Retry reposts to an account that already succeeded",
+          "Duplicate promotion appears in the feed",
+          "H",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E10",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Make placements available",
+      "d": "Eligible active campaigns supply featured placements. Ending a campaign changes its status. Check when each guest screen stops showing the placement. The underlying deal retains its own availability rules.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Website builder",
+        "Menu Boards",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Expired campaign stays in a menu board playlist after a status change",
+          "TV advertises a retired offer",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "A selected website placement has no published campaign for the restaurant",
+          "Guests see no promotion",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E11",
+      "b": "E",
+      "k": "int",
+      "rel": "TBC",
+      "t": "Verify device placement",
+      "d": "Compare a configured placement with the physical screen at that location. On Android POS, the idle customer display loads media from its device settings. A campaign marked Active in Web Dash does not establish that the media was sent to that display.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "POS",
+        "CFD",
+        "Kiosk"
+      ],
+      "e": [
+        [
+          "Only one kiosk orientation displays the configured content",
+          "Some guests miss the promotion",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "The register loads a new image or video but the idle display has no button label",
+          "The customer sees the fallback screen instead of the promotion",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "The replacement image fails to download and the display still has the previous image saved",
+          "Guests may continue to see an earlier offer",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F1",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest receives the email",
+      "d": "The guest receives the email with the selected sender, campaign content, call to action and personal unsubscribe link.",
+      "sys": [
+        "Email service"
+      ],
+      "e": [
+        [
+          "Email lands in spam or promotions",
+          "Campaign unseen",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Images blocked or broken in the mail client",
+          "Offer not visible",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Guest receives the same campaign from two locations of the same business",
+          "Guest annoyed",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Email not readable with a screen reader, images without alternative text",
+          "Accessibility complaint",
+          "M",
+          "L,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F2",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest opens the email",
+      "d": "An open event can be recorded for a delivered email. The reported open rate filters recognised privacy prefetches and likely bots. Image blocking and unmeasured historical sends can still affect interpretation.",
+      "sys": [
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "An automatic image load is misclassified as a human open",
+          "The operator overestimates engagement",
+          "L",
+          "R",
+          []
+        ],
+        [
+          "Images blocked so real opens are not counted",
+          "Open rate understated",
+          "L",
+          "R",
+          []
+        ],
+        [
+          "Open recording fails silently",
+          "No open data",
+          "L",
+          "R,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F3",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest taps through to order",
+      "d": "The call to action or text link opens the restaurant website or online ordering. Online ordering and QR show published, live campaigns that match the guest's segment, spend, tags and allergens, excluding Deals type campaigns.",
+      "sys": [
+        "Online ordering",
+        "Website builder",
+        "Marketing Deals"
+      ],
+      "e": [
+        [
+          "Deal promoted in the email is not applied automatically on online ordering",
+          "Guest pays full price and complains",
+          "H",
+          "CN,M",
+          []
+        ],
+        [
+          "Link opens the wrong location of a multi-location restaurant",
+          "Guest orders from the wrong store",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "Email clicks are not tracked, only Twilio link clicks for texts",
+          "Click rate unknown for email",
+          "M",
+          "R",
+          []
+        ],
+        [
+          "Deal reached its usage limit or ended before the guest acts",
+          "Guest disappointed",
+          "M",
+          "CX,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F4",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest unsubscribes from email",
+      "d": "The unsubscribe link opens a page that posts the guest token; the guest is marked not subscribed and leaves future email audiences.",
+      "sys": [
+        "Guestbook / CRM",
+        "Website builder"
+      ],
+      "e": [
+        [
+          "Unsubscribe does not reach pages already queued from the approval snapshot",
+          "Guest emailed after unsubscribing",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "Unsubscribe token never expires and is guessable from the link pattern",
+          "Others can unsubscribe a guest",
+          "M",
+          "S",
+          []
+        ],
+        [
+          "Unsubscribe applies per tenant but guest expects per restaurant, or the reverse",
+          "Guest surprised by later emails",
+          "M",
+          "CX,L",
+          []
+        ],
+        [
+          "Unsubscribe page fails to load",
+          "Guest cannot opt out",
+          "C",
+          "L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F5",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest receives the text",
+      "d": "The guest gets the text from the restaurant marketing number, with the link and opt-out line, and an image if one was added.",
+      "sys": [
+        "Twilio"
+      ],
+      "e": [
+        [
+          "Text arrives late at night in the guest time zone",
+          "Complaint and TCPA exposure",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "Shortened link looks like spam",
+          "Guest ignores or reports it",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Guest never gave marketing consent but was imported as opted in",
+          "TCPA exposure",
+          "C",
+          "L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F6",
+      "b": "F",
+      "k": "cust",
+      "rel": "TBC",
+      "t": "Record a guest SMS opt out or restart",
+      "d": "On an inbound event, Twilio supplies its opt-out decision or AIO reads recognised reply text. STOP records opted out. START or UNSTOP records opted in. The handler matches the business, guest phone and restaurant before updating consent.",
+      "sys": [
+        "Twilio",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "STOP is recorded at Twilio but not in AIO consent",
+          "Guest still counted and reserved",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Opt out recorded after the approval snapshot, pages already queued still send",
+          "TCPA exposure",
+          "C",
+          "L",
+          []
+        ],
+        [
+          "An ordinary reply is mistaken for a change of consent",
+          "The guest marketing preference changes unexpectedly",
+          "H",
+          "D",
+          []
+        ],
+        [
+          "The latest send and guest relationship point to different restaurants",
+          "The wrong location retains the previous preference",
+          "H",
+          "D",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "F7",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest orders or visits",
+      "d": "The guest places an order after seeing a promotion. For sales attribution the order must belong to the same guest and restaurant as a qualifying email or text. Seeing a screen promotion alone does not establish that link.",
+      "sys": [
+        "Online ordering",
+        "POS",
+        "Kiosk"
+      ],
+      "e": [
+        [
+          "Order cannot be linked to the guest because they check out as a different guest record",
+          "Campaign gets no credit",
+          "M",
+          "R,D",
+          []
+        ],
+        [
+          "Promoted item out of stock at the POS",
+          "Guest disappointed",
+          "M",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F8",
+      "b": "F",
+      "k": "cust",
+      "rel": "L",
+      "t": "Open a featured promotion",
+      "d": "The guest sees a promotion at a participating website, online or QR placement. Online audience and eligibility restrictions can differ from website featured content.",
+      "sys": [
+        "Website builder",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Published campaign is visible on the website but excluded by the online guest filter",
+          "Destination does not show the promoted content",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Guest follows a placement after the underlying offer retires",
+          "Promotion cannot be claimed",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G1",
+      "b": "G",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Edit a draft or returned campaign",
+      "d": "Draft and Needs edits campaigns can be edited. A returned campaign can require review again or proceed to its selected schedule after changes. A Scheduled campaign can be returned to Draft by cancelling its send.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "The displayed schedule still shows a previously saved end date after an edit",
+          "The placement ends at an unexpected time",
+          "M",
+          "D,T",
+          []
+        ],
+        [
+          "Content rows rewritten as delete and insert, a failure in between leaves the campaign without content",
+          "Campaign broken",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "A user duplicates a scheduled campaign without cancelling its original send",
+          "Two independent campaigns may reach the same audience",
+          "H",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "G2",
+      "b": "G",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Duplicate a campaign",
+      "d": "Duplicate immediately creates a separately named draft with copied channel content and kiosk mappings. The source retains its state. Delivery results and status history belong to their own campaign.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "Copy keeps the old schedule and end date, which are in the past",
+          "Copy expires at once",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Copy keeps a deal or item that no longer exists",
+          "Submit fails",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Copied email keeps the original template file reference",
+          "Edits to the copy change the original",
+          "M",
+          "D",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "G3",
+      "b": "G",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Inspect status history",
+      "d": "Open the campaign details and inspect the recorded transitions, including when the campaign was sent for review, returned, launched or cancelled.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "A late status entry appears out of order",
+          "The operator cannot reconstruct when the campaign launched",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "The operator reads the history of a copy instead of its source",
+          "A past review appears missing",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "G4",
+      "b": "G",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Finish a send or reach placement end",
+      "d": "An email or SMS only campaign moves from Active to Sent when every selected message channel accounts for its recipients through sends, failures or skips. A campaign with a timed placement can stay Active until that placement ends.",
+      "sys": [
+        "Marketing Campaigns",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "End event lost, status only corrected by the nightly job",
+          "Campaign shows as running a day late",
+          "L",
+          "T,R",
+          []
+        ],
+        [
+          "Expired campaign keeps its text reservation if no event reaches it",
+          "Quota blocked",
+          "M",
+          "B",
+          []
+        ],
+        [
+          "Nightly job runs on server time, not restaurant time",
+          "End at the wrong local time",
+          "L",
+          "T",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "G5",
+      "b": "G",
+      "k": "term",
+      "rel": "L",
+      "t": "Rejected, quota released",
+      "d": "Rejection records the reason and releases SMS credits. The operator may duplicate or delete the rejected campaign.",
+      "sys": [
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "Rejected campaign cannot be fixed and resubmitted",
+          "Operator rebuilds from a copy",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G6",
+      "b": "G",
+      "k": "term",
+      "rel": "TBC",
+      "t": "Read the final status",
+      "d": "Sent records a completed send or ended placement. Expired records a missed campaign window. The detail panel and history explain which outcome occurred.",
+      "sys": [
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "Sent is mistaken for delivery to every guest",
+          "The operator overlooks failed or suppressed messages",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "H1",
+      "b": "H",
+      "k": "op",
+      "rel": "TBC",
+      "t": "View results by channel",
+      "d": "Inspect the delivery and engagement measures supported by each channel. Email reports delivered messages and human opens. Text reports delivery and tracked link clicks. Read tracking availability alongside failures and suppressions.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Email service",
+        "Twilio"
+      ],
+      "e": [
+        [
+          "Sent and failed counts wrong when pages finish at the same time",
+          "Operator distrusts results",
+          "M",
+          "R,T",
+          []
+        ],
+        [
+          "Historical sends without tracking look like zero opens or clicks",
+          "The operator compares measured and unmeasured sends",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "No export of recipients or results",
+          "Cannot reconcile with the email or Twilio bill",
+          "M",
+          "R,B",
+          []
+        ],
+        [
+          "Total counts guests at approval, not those actually sent to",
+          "Misleading reach",
+          "L",
+          "R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "H2",
+      "b": "H",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Reconcile attributed sales and guests",
+      "d": "Review orders, sales and distinct returning guests after qualifying delivery. One order can appear on multiple campaign detail pages. The restaurant total counts that order and guest once.",
+      "sys": [
+        "Marketing Campaigns",
+        "Online ordering",
+        "POS"
+      ],
+      "e": [
+        [
+          "A guest checks out under another customer record",
+          "A qualifying visit cannot be associated with the delivered message",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "The operator adds the sales on overlapping campaign detail pages",
+          "Combined sales exceed the distinct restaurant total",
+          "H",
+          "R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "H5",
+      "b": "H",
+      "k": "term",
+      "rel": "L",
+      "t": "Results reviewed",
+      "d": "The operator has read the outcome and decides whether to copy or adjust for the next campaign.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "No guidance on what a good result looks like",
+          "Operator cannot improve the next campaign",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I1",
+      "b": "I",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Launch directly",
+      "d": "Confirm direct launch, then send now or at the scheduled time. This path skips the owner review queue.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Marketing Campaigns"
+      ],
+      "e": [
+        [
+          "Staff launch a campaign the owner never saw",
+          "Owner disputes the offer",
+          "H",
+          "S,CX",
+          []
+        ],
+        [
+          "Old and new status names shown side by side during rollout",
+          "Confusion",
+          "M",
+          "CX,D",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "I2",
+      "b": "I",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Cancel a scheduled send",
+      "d": "Cancel send is available for Scheduled campaigns. Confirmation returns the record to Draft, clears its schedule and releases any SMS reservation. Dispatch checks for stale scheduled events.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "Cancel does not remove the scheduler events already created",
+          "Cancelled campaign still sends",
+          "C",
+          "T,L",
+          []
+        ],
+        [
+          "Cancel does not release the text reservation",
+          "Quota blocked",
+          "M",
+          "B",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "I3",
+      "b": "I",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Delete an eligible campaign",
+      "d": "Delete is available for Draft, Needs edits, Rejected and Expired campaigns. Confirm before removal.",
+      "sys": [
+        "Web Dash: Campaigns"
+      ],
+      "e": [
+        [
+          "Delete removes records that results or send logs still point at",
+          "Broken history",
+          "M",
+          "D,R",
+          []
+        ],
+        [
+          "Deletion is confirmed for a similarly named draft",
+          "The intended campaign stays in the list and the wrong draft is lost",
+          "H",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "I4",
+      "b": "I",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Attribute orders for 30 days",
+      "d": "For each qualifying campaign, the ticket must be created within 30 days of the first qualifying delivery to that guest. Fully paid, partially paid and partially refunded tickets can qualify. Sales use the ticket price after discounts and before tax and tips. Restaurant totals count each ticket and guest once.",
+      "sys": [
+        "Marketing Campaigns",
+        "Guestbook / CRM",
+        "Online ordering",
+        "POS"
+      ],
+      "e": [
+        [
+          "The operator compares all cash collected at the register with attributed sales before tax and tips",
+          "Sales totals differ even when the same tickets are present",
+          "H",
+          "M,R",
+          []
+        ],
+        [
+          "A ticket is opened before delivery or before the window closes, then paid on the other side of that boundary",
+          "Using payment time to reconcile the report produces a different order list",
+          "H",
+          "R,T",
+          []
+        ],
+        [
+          "A guest receives a partial refund and the operator expects the ticket to disappear from the campaign",
+          "The qualifying ticket can still contribute its discounted price. The figure can differ from net receipts",
+          "M",
+          "R,M",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "I5",
+      "b": "I",
+      "k": "op",
+      "rel": "TBC",
+      "t": "End an active placement",
+      "d": "An Active campaign with website, online, QR, POS, kiosk or menu board placement can be ended. Confirmation moves it to Sent. An associated deal continues according to its own dates and status.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Website",
+        "Online ordering",
+        "POS",
+        "Kiosk",
+        "Menu Boards"
+      ],
+      "e": [
+        [
+          "Campaign moves to Sent while a screen keeps showing the offer",
+          "Guest sees a retired promotion",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "Staff end the campaign and assume its linked deal has also ended",
+          "The deal can still be available to guests under its own schedule",
+          "H",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Start from a dashboard suggestion",
+      "d": "The dashboard requests due holiday, deal, segment or inactivity suggestions for the current restaurant. The action opens multichannel creation with the suggested details and takes the operator to channel or audience selection.",
+      "sys": [
+        "Web Dash: Campaigns",
+        "Guest Book"
+      ],
+      "e": [
+        [
+          "A recommended deal expires between opening the dashboard and preparing the send",
+          "The suggested offer needs replacing",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "A suggested segment changes before launch",
+          "Fewer eligible guests qualify than the operator expected",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      "First time"
+    ],
+    [
+      "A1",
+      "B1",
+      "Already set up"
+    ],
+    [
+      "A2",
+      "A3",
+      ""
+    ],
+    [
+      "A3",
+      "A4",
+      ""
+    ],
+    [
+      "A4",
+      "A5",
+      ""
+    ],
+    [
+      "A5",
+      "B1",
+      ""
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "C1",
+      "New campaign"
+    ],
+    [
+      "B2",
+      "G1",
+      "Resume draft or fix edits"
+    ],
+    [
+      "B2",
+      "G2",
+      "Duplicate"
+    ],
+    [
+      "B2",
+      "G3",
+      "View status history"
+    ],
+    [
+      "B2",
+      "H1",
+      "View results"
+    ],
+    [
+      "B2",
+      "I3",
+      "Delete",
+      1
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "C5",
+      "Email chosen"
+    ],
+    [
+      "C4",
+      "C7",
+      "Text only"
+    ],
+    [
+      "C5",
+      "C6",
+      "Use AI"
+    ],
+    [
+      "C6",
+      "C5",
+      "Back to builder"
+    ],
+    [
+      "C5",
+      "C7",
+      "Text also chosen"
+    ],
+    [
+      "C5",
+      "C8",
+      "Email only"
+    ],
+    [
+      "C7",
+      "C8",
+      ""
+    ],
+    [
+      "C8",
+      "C9",
+      ""
+    ],
+    [
+      "C9",
+      "C10",
+      ""
+    ],
+    [
+      "C10",
+      "D1",
+      "Save as draft"
+    ],
+    [
+      "C10",
+      "D2",
+      "Send for review"
+    ],
+    [
+      "C10",
+      "I1",
+      "Launch now",
+      1
+    ],
+    [
+      "D1",
+      "B1",
+      "Back to list"
+    ],
+    [
+      "D2",
+      "D3",
+      ""
+    ],
+    [
+      "D3",
+      "D4",
+      "Within limit"
+    ],
+    [
+      "D3",
+      "C3",
+      "Limit exceeded or text not verified"
+    ],
+    [
+      "D3",
+      "E1",
+      "Direct launch or edits cleared"
+    ],
+    [
+      "D4",
+      "D5",
+      ""
+    ],
+    [
+      "D5",
+      "D6",
+      ""
+    ],
+    [
+      "D6",
+      "E1",
+      "Approved"
+    ],
+    [
+      "D6",
+      "G1",
+      "Needs edits"
+    ],
+    [
+      "D6",
+      "G5",
+      "Rejected"
+    ],
+    [
+      "D6",
+      "G6",
+      "End date passed, expired"
+    ],
+    [
+      "E1",
+      "E2",
+      ""
+    ],
+    [
+      "E2",
+      "E3",
+      "Right away"
+    ],
+    [
+      "E2",
+      "E4",
+      "Scheduled"
+    ],
+    [
+      "E3",
+      "E5",
+      ""
+    ],
+    [
+      "E4",
+      "E5",
+      ""
+    ],
+    [
+      "E4",
+      "I2",
+      "Cancel before send",
+      1
+    ],
+    [
+      "E5",
+      "E6",
+      "Email page"
+    ],
+    [
+      "E5",
+      "E7",
+      "Text page"
+    ],
+    [
+      "E5",
+      "G6",
+      "No longer publishable"
+    ],
+    [
+      "E6",
+      "E8",
+      ""
+    ],
+    [
+      "E7",
+      "E8",
+      ""
+    ],
+    [
+      "E8",
+      "F1",
+      "Email delivered"
+    ],
+    [
+      "E8",
+      "F5",
+      "Text delivered"
+    ],
+    [
+      "F1",
+      "F2",
+      ""
+    ],
+    [
+      "F2",
+      "F3",
+      ""
+    ],
+    [
+      "F2",
+      "F4",
+      "Unsubscribes"
+    ],
+    [
+      "F3",
+      "F7",
+      ""
+    ],
+    [
+      "F4",
+      "G4",
+      ""
+    ],
+    [
+      "F5",
+      "F3",
+      "Taps link"
+    ],
+    [
+      "F5",
+      "F6",
+      "Replies STOP"
+    ],
+    [
+      "F6",
+      "G4",
+      ""
+    ],
+    [
+      "F7",
+      "H2",
+      ""
+    ],
+    [
+      "F7",
+      "I4",
+      "After qualifying delivery",
+      1
+    ],
+    [
+      "G1",
+      "C1",
+      "Reopen wizard"
+    ],
+    [
+      "G2",
+      "C1",
+      "Prefilled copy"
+    ],
+    [
+      "G3",
+      "B1",
+      ""
+    ],
+    [
+      "G4",
+      "G6",
+      ""
+    ],
+    [
+      "H2",
+      "H1",
+      ""
+    ],
+    [
+      "H1",
+      "H5",
+      ""
+    ],
+    [
+      "I2",
+      "B1",
+      "Back to Draft"
+    ],
+    [
+      "I3",
+      "B1",
+      ""
+    ],
+    [
+      "I4",
+      "H1",
+      ""
+    ],
+    [
+      "A2",
+      "A5",
+      "Email only"
+    ],
+    [
+      "A1",
+      "A3",
+      "Text"
+    ],
+    [
+      "E6",
+      "F1",
+      ""
+    ],
+    [
+      "F1",
+      "F7",
+      ""
+    ],
+    [
+      "I4",
+      "H5",
+      ""
+    ],
+    [
+      "C4",
+      "C8",
+      ""
+    ],
+    [
+      "D2",
+      "D4",
+      ""
+    ],
+    [
+      "D6",
+      "E9",
+      ""
+    ],
+    [
+      "E9",
+      "H1",
+      ""
+    ],
+    [
+      "D6",
+      "E10",
+      ""
+    ],
+    [
+      "E10",
+      "F8",
+      ""
+    ],
+    [
+      "F8",
+      "F7",
+      ""
+    ],
+    [
+      "F7",
+      "G4",
+      ""
+    ],
+    [
+      "E10",
+      "E11",
+      ""
+    ],
+    [
+      "E11",
+      "G4",
+      ""
+    ],
+    [
+      "E11",
+      "I5",
+      ""
+    ],
+    [
+      "I5",
+      "H5",
+      ""
+    ],
+    [
+      "C4",
+      "C11",
+      ""
+    ],
+    [
+      "C11",
+      "C8",
+      ""
+    ],
+    [
+      "C4",
+      "C12",
+      ""
+    ],
+    [
+      "C12",
+      "C8",
+      ""
+    ],
+    [
+      "C2",
+      "C5",
+      ""
+    ],
+    [
+      "C8",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "C9",
+      ""
+    ],
+    [
+      "C2",
+      "C7",
+      ""
+    ],
+    [
+      "I1",
+      "D2",
+      ""
+    ],
+    [
+      "B1",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "C3",
+      ""
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Core sends",
+    "Review and recovery",
+    "Guest exits",
+    "After sending",
+    "Campaign controls and attribution"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "Email sent right away after approval",
+      "n": "Baseline: first-time setup, email built and tested, owner approves in MoM, sent at once.",
+      "s": "A1 A2 A5 B1 B2 C1 C2 C5 C8 C4 C9 C10 D2 D3 D4 D5 D6 E1 E2 E3 E5 E6 E8 F1 F2 F3 F7 H2 H1 H5",
+      "side": "G4"
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Scheduled text campaign",
+      "n": "Text only, sent at a scheduled time through Twilio; guest taps the link.",
+      "s": "A1 A3 A4 A5 B1 B2 C1 C2 C7 C8 C4 C9 C10 D2 D3 D4 D5 D6 E1 E2 E4 E5 E7 E8 F5 F3 F7 H2 H1 H5",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 0,
+      "t": "Email and text with AI copy",
+      "n": "Both channels, copy generated with AI, one approval sends both.",
+      "s": "A1 B1 B2 C1 C2 C3 C4 C5 C6 C5 C7 C8 C9 C10 D2 D3 D4 D5 D6 E1 E2 E3 E5 E6 E8 F1 F2 F3 F7 H2 H1 H5",
+      "side": "E7 F5"
+    },
+    {
+      "id": "P04",
+      "g": 1,
+      "t": "Draft saved and resumed",
+      "n": "Operator saves a draft, comes back later and submits.",
+      "s": "A1 B1 B2 C1 C2 C3 C4 C5 C8 C9 C10 D1 B1 B2 G1 C1 C2 C3 C4 C5 C8 C9 C10 D2 D3 D4 D5",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Owner asks for edits",
+      "n": "Owner returns the campaign; the edit is saved and, without re-review, publishes at once.",
+      "s": "B1 B2 C1 C2 C3 C4 C5 C8 C9 C10 D2 D3 D4 D5 D6 G1 C1 C2 C3 C4 C5 C8 C9 C10 D2 D3 E1 E2 E3 E5 E6",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Text limit exceeded",
+      "n": "Submit fails on the monthly text limit; operator drops Text and resubmits as email.",
+      "s": "B1 B2 C1 C2 C3 C4 C7 C8 C9 C10 D2 D3 C3 C4 C5 C8 C9 C10 D2 D3 D4",
+      "side": "A4"
+    },
+    {
+      "id": "P07",
+      "g": 1,
+      "t": "Owner rejects",
+      "n": "Owner rejects in MoM; text reservation released.",
+      "s": "B1 B2 C1 C2 C3 C4 C7 C8 C9 C10 D2 D3 D4 D5 D6 G5",
+      "side": ""
+    },
+    {
+      "id": "P08",
+      "g": 1,
+      "t": "Expires waiting for approval",
+      "n": "A campaign with a placement misses its approval window and is marked Expired.",
+      "s": "B1 B2 C1 C2 C3 C4 C12 C8 C9 C10 D2 D4 D5 D6 G6",
+      "side": "A5"
+    },
+    {
+      "id": "P09",
+      "g": 2,
+      "t": "Guest unsubscribes from email",
+      "n": "Guest opens, unsubscribes; campaign runs to its end.",
+      "s": "E5 E6 E8 F1 F2 F4 G4 G6",
+      "side": ""
+    },
+    {
+      "id": "P10",
+      "g": 2,
+      "t": "Guest replies STOP",
+      "n": "Guest opts out of texts by reply.",
+      "s": "E5 E7 E8 F5 F6 G4 G6",
+      "side": ""
+    },
+    {
+      "id": "P11",
+      "g": 3,
+      "t": "Duplicate a past campaign",
+      "n": "Operator copies an earlier campaign and submits it as new.",
+      "s": "B1 B2 G2 C1 C2 C3 C4 C5 C8 C9 C10 D2 D3 D4",
+      "side": ""
+    },
+    {
+      "id": "P12",
+      "g": 3,
+      "t": "Inspect a campaign status change",
+      "n": "Open a campaign to establish when its status changed.",
+      "s": "B1 B2 G3 B1",
+      "side": ""
+    },
+    {
+      "id": "P13",
+      "g": 3,
+      "t": "Check results later",
+      "n": "Open a finished campaign and compare delivery with attributed orders and guests.",
+      "s": "B1 B2 H1 H5",
+      "side": "H2 G4"
+    },
+    {
+      "id": "P14",
+      "g": 3,
+      "t": "Send skipped at send time",
+      "n": "Scheduled pages fire after the campaign has ended or been rejected and are skipped.",
+      "s": "D6 E1 E2 E4 E5 G6",
+      "side": ""
+    },
+    {
+      "id": "P15",
+      "g": 4,
+      "t": "Launch now, then cancel",
+      "n": "Staff launch without review, then cancel the scheduled send back to Draft.",
+      "s": "C9 C10 I1 D2 D3 E1 E2 E4 I2 B1",
+      "side": ""
+    },
+    {
+      "id": "P16",
+      "g": 4,
+      "t": "Delete after confirmation",
+      "n": "Check that the chosen campaign is eligible for deletion and disappears from the list.",
+      "s": "B1 B2 I3 B1",
+      "side": ""
+    },
+    {
+      "id": "P17",
+      "g": 4,
+      "t": "Reconcile return sales",
+      "n": "Verify campaign credit and remove overlapping orders from the restaurant total.",
+      "s": "C9 C10 I1 D2 D3 E1 E2 E3 E5 E6 F1 F7 I4 H5",
+      "side": ""
+    },
+    {
+      "id": "P18",
+      "g": 0,
+      "t": "Publish a social campaign",
+      "n": "Trace a reviewed campaign into its separate provider results.",
+      "s": "B1 B2 C1 C2 C3 C4 C11 C8 C9 C10 D2 D4 D5 D6 E9 H1 H5",
+      "side": ""
+    },
+    {
+      "id": "P19",
+      "g": 0,
+      "t": "Display a featured campaign",
+      "n": "Follow approved placement content into a guest visit and campaign expiry.",
+      "s": "B1 B2 C1 C2 C3 C4 C12 C8 C9 C10 D2 D4 D5 D6 E10 F8 F7 G4 G6",
+      "side": ""
+    },
+    {
+      "id": "P20",
+      "g": 3,
+      "t": "Verify a restaurant screen",
+      "n": "Check device delivery and removal on the guest surface.",
+      "s": "D5 D6 E10 E11 G4 G6",
+      "side": ""
+    },
+    {
+      "id": "P21",
+      "g": 4,
+      "t": "End a screen promotion",
+      "n": "End a running screen campaign and check the resulting status.",
+      "s": "D5 D6 E10 E11 I5 H5",
+      "side": ""
+    },
+    {
+      "id": "P22",
+      "g": 0,
+      "t": "Build from a restaurant suggestion",
+      "n": "Review the suggested channel and audience before editing content and saving a draft.",
+      "s": "B1 B3 C3 C4 C5 C8 C9 C10 D1",
+      "side": ""
+    }
+  ],
+  "NOTES": [
+    "Who builds: the live wizard is in Web Dash; the PRD calls the builder the AIO buddy, so AIO staff often build on behalf of the restaurant. Who approves: MoM users whose role grants the campaign approve permission for that location.",
+    "Email is sent through the AWS email service (SES) with an events configuration set; the brief's SendGrid label does not apply to campaigns. Mapped as Email service.",
+    "PROD 4651 documents duplicate email following approval. Concurrent approvals and email retries are test scenarios. The incident root cause was not provided.",
+    "MoM preview rendering, carrier receipt, and whether email bounce or complaint events change the subscription record require separate checks. The internal Twilio worker handles inbound consent changes.",
+    "Unsubscribe page host not confirmed; the backend exposes a public unsubscribe endpoint that takes the token.",
+    "Android POS reads idle customer display media from device settings and caches downloads. The connection between a Web Dash campaign and that device setting, kiosk rendering and screen refresh timing require separate verification.",
+    "The reminder job schedule (how often approvers are pushed) and the nightly end job time were not confirmed.",
+    "Quick email and SMS creation use inline preview. Multichannel uses a separate preview step. Direct launch, cancel, end, deletion, status history and attribution are implemented on internal. Production rollout was not established.",
+    "Zeus internal, 02473c3bac9. See legacy/helpers/campaignFlows.ts, libs/shared/src/utils/campaignActions.utils.ts, marketing/campaign/attribution and andromedarelay/src/campaign."
+  ]
+}

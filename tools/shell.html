@@ -1,0 +1,407 @@
+<meta charset="utf-8">
+<title>Marketing Product Hardening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: a fixed header (sub-module switcher, tabs, path picker), a scrolling journey of lettered stages
+   holding numbered step cards, and a detail drawer on the right. Tokens and type are inherited from the
+   Online ordering and Catering hardening map so the two artifacts read as one family. */
+:root {
+  color-scheme: light;
+  --bg: #F3F5F8; --surface: #FFFFFF; --soft: #F7F8FA; --ink: #18212C; --muted: #5C6674; --faint: #8D96A3; --line: #DFE3E9;
+  --accent: #5640D2; --accent-soft: #EEEBFD;
+  --op: #12858F; --cust: #C94F83; --softw: #2E68AC; --int: #B08714; --dec: #6B7480; --term: #2F7D52;
+  --C: #C6342C; --H: #D9731F; --M: #C49B22; --L: #98A1AD; --C-soft: #FCECEB;
+  --font: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #13171D; --surface: #1B2129; --soft: #20262F; --ink: #E7EBF0; --muted: #A2ACB8; --faint: #77818E; --line: #2D3540;
+    --accent: #A391FF; --accent-soft: #29234A;
+    --op: #5FC7D0; --cust: #E482AD; --softw: #73A9E6; --int: #DDB650; --dec: #A2ACB8; --term: #6DC394;
+    --C: #F06A61; --H: #F09A50; --M: #E0C05C; --L: #7E8895; --C-soft: #3A2022;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #13171D; --surface: #1B2129; --soft: #20262F; --ink: #E7EBF0; --muted: #A2ACB8; --faint: #77818E; --line: #2D3540;
+  --accent: #A391FF; --accent-soft: #29234A;
+  --op: #5FC7D0; --cust: #E482AD; --softw: #73A9E6; --int: #DDB650; --dec: #A2ACB8; --term: #6DC394;
+  --C: #F06A61; --H: #F09A50; --M: #E0C05C; --L: #7E8895; --C-soft: #3A2022;
+}
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+[hidden] { display: none !important; }
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+body { height: 100%; margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--font); display: grid; grid-template-rows: auto 1fr; overflow: hidden; }
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.muted { color: var(--muted); }
+
+header { background: var(--surface); border-bottom: 1px solid var(--line); padding: 12px 28px 0; }
+.eyebrow { margin: 0 0 8px; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+.chan { display: flex; flex-wrap: wrap; gap: 3px; padding: 4px; margin-bottom: 12px; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; width: fit-content; max-width: 100%; }
+.chan button { flex: none; border: 0; background: none; padding: 6px 12px; border-radius: 9px; font-weight: 700; font-size: 0.9rem; color: var(--muted); white-space: nowrap; }
+.chan button:hover { color: var(--ink); }
+.chan button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+h1 { margin: 0; font-size: 1.4rem; line-height: 1.2; letter-spacing: -0.01em; text-wrap: balance; }
+#sum { margin: 4px 0 12px; color: var(--muted); font-size: 0.92rem; }
+#sum span { color: var(--faint); }
+.bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 24px; }
+.tabs { display: flex; gap: 22px; }
+.tabs button { border: 0; background: none; padding: 8px 0 10px; color: var(--muted); border-bottom: 2px solid transparent; font-weight: 700; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-color: var(--ink); }
+.pathpick { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; }
+.pathpick label { font-size: 0.86rem; color: var(--muted); white-space: nowrap; }
+select { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 6px 10px; }
+#path { min-width: 260px; max-width: 70vw; }
+#clear { border: 0; background: none; color: var(--accent); font-size: 0.88rem; padding: 4px 2px; }
+.key { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px 14px; padding-bottom: 12px; font-size: 0.8rem; color: var(--muted); }
+.key span { display: inline-flex; align-items: center; gap: 6px; }
+.kd { width: 10px; height: 10px; border-radius: 2px; display: inline-block; background: var(--dec); flex: none; }
+.k-op.kd { background: var(--op); } .k-cust.kd { background: var(--cust); } .k-soft.kd { background: var(--softw); } .k-int.kd { background: var(--int); } .k-term.kd { background: var(--term); }
+
+main { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 0; }
+body.open main { grid-template-columns: minmax(0, 1fr) 440px; }
+.scroll { overflow: auto; min-height: 0; padding: 20px 28px 60px; }
+
+.stage { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); transition: opacity .15s; }
+.stage:first-child { border-top: 0; padding-top: 4px; }
+.stage.faded { opacity: 0.4; }
+.stage-head h2 { margin: 0; font-size: 1rem; line-height: 1.3; }
+.sid { color: var(--accent); margin-right: 8px; }
+.stage-head p { margin: 4px 0 0; font-size: 0.84rem; color: var(--muted); }
+.stage-head .sstat { color: var(--faint); font-size: 0.8rem; }
+.cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 12px; }
+.card { position: relative; width: 100%; height: 100%; text-align: left; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 11px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: inset 3px 0 0 var(--dec); transition: border-color .12s, opacity .15s; }
+.card.k-op { box-shadow: inset 3px 0 0 var(--op); } .card.k-cust { box-shadow: inset 3px 0 0 var(--cust); } .card.k-soft { box-shadow: inset 3px 0 0 var(--softw); }
+.card.k-int { box-shadow: inset 3px 0 0 var(--int); } .card.k-term { box-shadow: inset 3px 0 0 var(--term); }
+.card:hover { border-color: var(--faint); }
+.card.dim { opacity: 0.35; }
+.card.on { border-color: var(--accent); }
+.card.sel { border-color: var(--ink); border-width: 2px; padding: 9px 11px 10px 13px; }
+.top { display: flex; justify-content: space-between; gap: 6px; font-size: 0.75rem; color: var(--faint); font-weight: 700; }
+.top .kn { font-weight: 400; }
+.rel { color: var(--accent); white-space: nowrap; }
+.ct { font-weight: 700; font-size: 0.93rem; line-height: 1.3; flex: 1; }
+.ce { font-size: 0.8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0 8px; }
+.ce b { color: var(--C); }
+.ce .tk { color: var(--accent); font-weight: 700; }
+.num { position: absolute; top: -9px; left: -7px; background: var(--accent); color: var(--surface); font-size: 0.72rem; font-weight: 700; border-radius: 999px; padding: 1px 7px; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notes { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 14px; max-width: 900px; }
+.notes ul { margin: 10px 0 0; padding-left: 20px; color: var(--muted); font-size: 0.88rem; }
+.notes li { margin: 5px 0; }
+
+#drawer { overflow: auto; min-height: 0; background: var(--surface); border-left: 1px solid var(--line); padding: 20px 22px 50px; position: relative; }
+.x { position: absolute; top: 12px; right: 12px; border: 0; background: none; color: var(--muted); width: 32px; height: 32px; border-radius: 8px; }
+.x:hover { background: var(--soft); }
+.back { border: 0; background: none; color: var(--accent); padding: 0; margin-bottom: 10px; font-size: 0.86rem; }
+.kicker { margin: 0 36px 4px 0; font-size: 0.82rem; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+#drawer h2 { margin: 0 36px 6px 0; font-size: 1.25rem; line-height: 1.25; }
+.desc { margin: 0; color: var(--muted); font-size: 0.92rem; }
+#drawer h3 { font-size: 0.95rem; margin: 22px 0 8px; }
+.errs { list-style: none; margin: 0; padding: 0; }
+.errs > li { padding: 8px 0 8px 12px; border-left: 3px solid var(--L); margin-bottom: 8px; }
+.errs > li.sev-C { border-color: var(--C); } .errs > li.sev-H { border-color: var(--H); } .errs > li.sev-M { border-color: var(--M); }
+.sv { font-size: 0.74rem; font-weight: 700; color: var(--muted); }
+.sev-C .sv { color: var(--C); } .sev-H .sv { color: var(--H); }
+.bk { font-size: 0.74rem; color: var(--faint); margin-left: 8px; }
+.et { margin: 1px 0 2px; font-weight: 700; font-size: 0.9rem; line-height: 1.35; }
+.ei { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.tix { list-style: none; margin: 7px 0 0; padding: 0; display: grid; gap: 4px; }
+.tix li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; padding: 6px 9px; background: var(--soft); border-radius: 8px; font-size: 0.8rem; }
+.tix a { font-weight: 700; text-decoration: none; font-variant-numeric: tabular-nums; }
+.tix a:hover { text-decoration: underline; }
+.tstat { font-weight: 700; color: var(--muted); }
+.tstat::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 5px; }
+.g-res { color: var(--term); } .g-closed { color: var(--dec); } .g-prog { color: var(--int); } .g-new { color: var(--softw); } .g-road { color: var(--accent); }
+.tmeta { color: var(--faint); }
+.ttl { flex-basis: 100%; color: var(--muted); overflow-wrap: anywhere; }
+.nav { list-style: none; margin: 0; padding: 0; }
+.nav button { width: 100%; text-align: left; border: 0; background: none; padding: 6px 8px; border-radius: 8px; font-size: 0.9rem; }
+.nav button:hover { background: var(--soft); }
+.nav button span { display: block; font-size: 0.8rem; color: var(--muted); }
+details { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 12px; }
+summary { cursor: pointer; font-weight: 700; font-size: 0.9rem; }
+.lbl { margin: 14px 0 4px; font-size: 0.8rem; font-weight: 700; color: var(--faint); }
+details .muted { margin: 0; font-size: 0.86rem; }
+.stats { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 12px 0 0; font-size: 0.86rem; color: var(--muted); }
+.stats b { color: var(--ink); font-size: 1.15rem; margin-right: 3px; font-variant-numeric: tabular-nums; }
+.steps { list-style: none; margin: 0; padding: 0; }
+.steps button { display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; width: 100%; text-align: left; border: 0; background: none; padding: 6px 6px; border-radius: 8px; font-size: 0.9rem; }
+.steps button:hover { background: var(--soft); }
+.steps .i { color: var(--faint); text-align: right; }
+.steps .n { color: var(--muted); font-size: 0.82rem; }
+
+.ebar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-bottom: 14px; }
+#q { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 7px 12px; width: min(300px, 100%); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px; font-size: 0.84rem; }
+.chip span { color: var(--muted); margin-left: 3px; }
+.chip[aria-pressed="false"] { opacity: 0.45; }
+.chip.tixchip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.chip.tixchip[aria-pressed="false"] { opacity: 1; }
+.ebar p { margin: 0; font-size: 0.88rem; }
+.twrap { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 0.9rem; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+thead th { font-size: 0.8rem; color: var(--muted); position: sticky; top: 0; background: var(--surface); }
+tr.grp th { background: var(--soft); font-size: 0.92rem; }
+tr[data-node] { cursor: pointer; } tr[data-node]:hover { background: var(--soft); }
+.tstep { font-weight: 700; width: 200px; }
+.tty { width: 150px; font-size: 0.82rem; color: var(--muted); }
+td .tix li { background: none; padding: 0; }
+td .ttl { display: none; }
+.pill { font-size: 0.78rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.pill.sev-C { color: var(--C); } .pill.sev-H { color: var(--H); }
+
+@media (max-width: 1100px) {
+  body.open main { grid-template-columns: minmax(0, 1fr); }
+  #drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 94vw); z-index: 10; box-shadow: -10px 0 40px rgba(0,0,0,.18); padding-top: calc(20px + env(safe-area-inset-top, 0px)); }
+  .stage { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+}
+@media (max-width: 640px) {
+  header { padding: 12px 16px 0; } .scroll { padding: 14px 16px 50px; }
+  h1 { font-size: 1.15rem; }
+  .chan { flex-wrap: nowrap; overflow-x: auto; width: auto; }
+  .key { display: none; }
+  #path { min-width: 0; width: 100%; }
+  .pathpick { width: 100%; }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  #drawer { top: auto; height: 72vh; width: 100%; border-left: 0; border-radius: 16px 16px 0 0; padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<header>
+  <p class="eyebrow">AIO Product Hardening &middot; Marketing module</p>
+  <div class="chan" role="tablist" aria-label="Marketing sub-module" id="chan"></div>
+  <h1 id="ttl"></h1>
+  <p id="sum"></p>
+  <div class="bar">
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="journey">Journey</button>
+      <button role="tab" data-tab="errors">All errors</button>
+    </div>
+    <div class="pathpick">
+      <label for="path">Trace a path</label>
+      <select id="path"></select>
+      <button id="clear" data-act="clear">Clear</button>
+    </div>
+    <div class="key" aria-label="Legend">
+      <span><i class="kd k-op"></i>Operator</span><span><i class="kd k-cust"></i>Guest</span><span><i class="kd k-soft"></i>Software</span><span><i class="kd k-int"></i>Integration</span><span><i class="kd"></i>&#9670; Decision</span><span><i class="kd k-term"></i>Start or end</span>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="scroll">
+    <div id="journey"></div>
+    <div id="errors" hidden></div>
+  </div>
+  <aside id="drawer" hidden aria-live="polite"></aside>
+</main>
+<script>
+/*DATA*/
+
+(function () {
+  // An error is [what goes wrong, impact, severity, type buckets, Jira ticket numbers].
+  const SEV = { C: "Critical", H: "High", M: "Medium", L: "Low" };
+  const SO = { C: 0, H: 1, M: 2, L: 3 };
+  const KIND = { op: "Operator action", cust: "Guest action", soft: "Software action", int: "Product integration", dec: "Decision", term: "Start or end" };
+  const KSHORT = { op: "Operator", cust: "Guest", soft: "Software", int: "Integration", dec: "Decision", term: "Start or end" };
+  const BUCKET = { M: "Math / Accounting", L: "Legal, Compliance", S: "Platform security", OB: "Onboarding, Offboarding", D: "Data storage", B: "Billing", R: "Reports", CN: "Consumptions", CX: "Customer experience", T: "Tech debt" };
+  const REL = { R8: "Release 8", R9: "Release 9", R10: "Release 10", NEXT: "Upcoming, not live yet", TBC: "Unconfirmed, check with engineering" };
+  const JIRA = "https://aioapp.atlassian.net/browse/PROD-";
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  // Jira status -> [short label, group]. Groups: res fixed, closed without a fix, prog being worked, new, road.
+  const STAT = {
+    "Resolved and Deployed on Production": ["Deployed", "res"], "Verified - UAT": ["Verified in UAT", "res"], "Resolved By Dev - PR Open": ["Resolved, PR open", "res"],
+    "Config Issue/Non-issue": ["Config or non-issue", "closed"], "Not Reproduced / Closed": ["Not reproduced, closed", "closed"],
+    "RCA DONE": ["RCA done", "prog"], "Info/Discussion Required": ["Needs discussion", "prog"], "Technical Debt": ["Technical debt", "prog"], "In Progress By Dev": ["In progress by dev", "prog"],
+    "QA Reproduction": ["QA reproduction", "prog"], "QA - UAT": ["QA on UAT", "prog"], "On Stage": ["On stage", "prog"], "Waiting on Third Party": ["Waiting on third party", "prog"], "Reopened": ["Reopened", "prog"],
+    "Newly Reported": ["Newly reported", "new"], "Moved to Roadmap": ["Moved to roadmap", "road"]
+  };
+
+  let BANDS, NODES, EDGES, PATH_GROUPS, PATHS, NOTES, N;
+  Object.values(CHANNELS).forEach(c => c.PATHS.forEach(p => {
+    p.seq = p.s.split(" ").filter(Boolean);
+    p.sideIds = (p.side || "").split(" ").filter(Boolean);
+    p.nodes = new Set(p.seq.concat(p.sideIds));
+  }));
+  const stepsOf = b => NODES.filter(n => n.b === b);
+
+  const st = { ch: CHANNEL_ORDER[0], tab: "journey", path: null, sel: null, sev: { C: 1, H: 1, M: 1, L: 1 }, q: "", bk: "", tix: 0 };
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const pl = (k, w) => `${k} ${w}${k === 1 ? "" : "s"}`;
+  const crit = n => n.e.filter(x => x[2] === "C").length;
+  const tixOf = list => [...new Set(list.flatMap(n => n.e.flatMap(x => x[4])))];
+  const tstat = s => STAT[s] || [s, "prog"];
+  const isOpen = id => ["prog", "new"].includes(tstat(TICKETS[id][1])[1]);
+  const fmtD = d => { const p = d.split("-"); return `${+p[2]} ${MON[+p[1] - 1]}`; };
+  const types = x => x[3].split(",").map(k => BUCKET[k] || k).join(", ");
+  const curPath = () => st.path ? PATHS.find(p => p.id === st.path) : null;
+
+  function tixHtml(ids) {
+    if (!ids.length) return "";
+    return `<ul class="tix">${ids.map(id => {
+      const t = TICKETS[id], s = tstat(t[1]);
+      return `<li><a href="${JIRA}${id}" target="_blank" rel="noopener">PROD-${id}</a><span class="tstat g-${s[1]}">${esc(s[0])}</span><span class="tmeta">${t[2] === "f" ? "Feature request, " : ""}${fmtD(t[4])}</span><span class="ttl">${esc(t[0])}</span></li>`;
+    }).join("")}</ul>`;
+  }
+
+  // ---------- journey ----------
+  function renderJourney() {
+    const P = curPath();
+    let h = "";
+    BANDS.forEach(b => {
+      const steps = stepsOf(b.id);
+      const errs = steps.reduce((a, n) => a + n.e.length, 0), tk = tixOf(steps).length;
+      const onPath = P && steps.some(n => P.nodes.has(n.id));
+      h += `<section class="stage ${P && !onPath ? "faded" : ""}">
+        <div class="stage-head"><h2><span class="sid">${b.id}</span>${esc(b.t)}</h2><p>${esc(b.s)}</p><p class="sstat">${pl(steps.length, "step")}, ${pl(errs, "error")}${tk ? `, ${pl(tk, "ticket")}` : ""}</p></div>
+        <ol class="cards">`;
+      steps.forEach(n => {
+        const c = crit(n), on = P && P.nodes.has(n.id), tk = tixOf([n]).length;
+        let num = "";
+        if (on) {
+          const idx = P.seq.map((x, i) => x === n.id ? i + 1 : 0).filter(Boolean);
+          num = `<span class="num" aria-label="Step ${idx.join(" and ") || "side effect"}">${idx.length ? idx.join(", ") : "+"}</span>`;
+        }
+        h += `<li><button class="card k-${n.k} ${P ? (on ? "on" : "dim") : ""} ${st.sel === n.id ? "sel" : ""}" data-node="${n.id}">
+          ${num}<span class="top"><span class="cid">${n.k === "dec" ? "&#9670; " : ""}${n.id} <span class="kn">${KSHORT[n.k]}</span></span>${n.rel !== "L" ? `<span class="rel">${n.internalOnly ? "Internal" : n.rel}</span>` : ""}</span>
+          <span class="ct">${esc(n.t)}</span>
+          <span class="ce"><span>${pl(n.e.length, "error")}</span>${c ? `<b>${c} critical</b>` : ""}${tk ? `<span class="tk">${pl(tk, "ticket")}</span>` : ""}</span></button></li>`;
+      });
+      h += `</ol></section>`;
+    });
+    if (NOTES.length) h += `<details class="notes"><summary>Assumptions and open questions in this map (${NOTES.length})</summary><ul>${NOTES.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
+    $("#journey").innerHTML = h;
+  }
+
+  // ---------- drawer ----------
+  function errItems(list) {
+    return `<ul class="errs">${list.slice().sort((a, b) => SO[a[2]] - SO[b[2]]).map(x => `<li class="sev-${x[2]}">
+      <span class="sv">${SEV[x[2]]}</span><span class="bk">${esc(types(x))}</span><p class="et">${esc(x[0])}</p><p class="ei">${esc(x[1])}</p>${tixHtml(x[4])}</li>`).join("")}</ul>`;
+  }
+  function renderDrawer() {
+    const d = $("#drawer"), P = curPath();
+    if (!st.sel && !P) { d.hidden = true; document.body.classList.remove("open"); return; }
+    d.hidden = false; document.body.classList.add("open");
+    let h = `<button class="x" data-act="close" aria-label="Close">&#10005;</button>`;
+    if (st.sel) {
+      const n = N[st.sel];
+      const out = EDGES.filter(e => e[0] === n.id), inn = EDGES.filter(e => e[1] === n.id), tk = tixOf([n]).length;
+      if (P) h += `<button class="back" data-act="back">Back to path ${esc(P.id)}</button>`;
+      h += `<p class="kicker"><span class="kd k-${n.k}"></span>${n.id}, ${KIND[n.k]}${n.rel !== "L" ? `, ${n.internalOnly ? "Verified on internal, production rollout unconfirmed" : REL[n.rel] || n.rel}` : ""}</p>`;
+      h += `<h2>${esc(n.t)}</h2><p class="desc">${esc(n.d)}</p>`;
+      h += `<h3>What can go wrong${tk ? `, and what already has (${pl(tk, "ticket")})` : ""}</h3>` + errItems(n.e);
+      h += `<h3>Next</h3><ul class="nav">${out.map(e => `<li><button data-node="${e[1]}">${esc(N[e[1]].t)}${e[2] ? `<span>${esc(e[2])}</span>` : ""}</button></li>`).join("") || `<li class="muted">End of the journey</li>`}</ul>`;
+      h += `<details><summary>More about this step</summary>
+        <p class="lbl">Comes from</p><ul class="nav">${inn.map(e => `<li><button data-node="${e[0]}">${esc(N[e[0]].t)}</button></li>`).join("") || `<li class="muted">Journey starts here</li>`}</ul>
+        ${n.sys.length ? `<p class="lbl">Systems involved</p><p class="muted">${n.sys.map(esc).join(", ")}</p>` : ""}
+        <p class="lbl">Error types</p><p class="muted">${[...new Set(n.e.flatMap(x => x[3].split(",")))].map(k => BUCKET[k] || k).join(", ")}</p>
+        <p class="lbl">On paths</p><p class="muted">${PATHS.filter(p => p.nodes.has(n.id)).map(p => esc(p.t)).join("; ") || "None"}</p></details>`;
+    } else {
+      const ns = [...P.nodes].map(id => N[id]), e = ns.reduce((a, n) => a + n.e.length, 0), c = ns.reduce((a, n) => a + crit(n), 0), tk = tixOf(ns).length;
+      h += `<p class="kicker">${esc(PATH_GROUPS[P.g])}</p><h2>${esc(P.t)}</h2><p class="desc">${esc(P.n)}</p>
+        <p class="stats"><span><b>${P.seq.length}</b> steps</span><span><b>${e}</b> errors</span><span><b>${c}</b> critical</span><span><b>${tk}</b> tickets</span></p>
+        <h3>Steps in order</h3><ol class="steps">${P.seq.map((id, i) => `<li><button data-node="${id}"><span class="i">${i + 1}</span><span>${esc(N[id].t)}</span><span class="n">${N[id].e.length}</span></button></li>`).join("")}</ol>`;
+      if (P.sideIds.length) h += `<p class="lbl">Also triggered</p><ul class="nav">${P.sideIds.map(id => `<li><button data-node="${id}">${esc(N[id].t)}</button></li>`).join("")}</ul>`;
+    }
+    d.innerHTML = h; d.scrollTop = 0;
+  }
+
+  // ---------- errors tab ----------
+  function renderErrors() {
+    const P = curPath(), q = st.q.trim().toLowerCase();
+    const scope = NODES.filter(n => !P || P.nodes.has(n.id));
+    const pass = x => (!st.bk || x[3].split(",").includes(st.bk)) && (!st.tix || x[4].length);
+    let rows = "", total = 0;
+    BANDS.forEach(b => {
+      let body = "";
+      scope.filter(n => n.b === b.id).forEach(n => {
+        n.e.filter(x => st.sev[x[2]] && pass(x)).sort((a, c) => SO[a[2]] - SO[c[2]]).forEach(x => {
+          if (q && !(n.t + " " + x[0] + " " + x[1] + " " + x[4].map(id => "PROD-" + id + " " + TICKETS[id][0]).join(" ")).toLowerCase().includes(q)) return;
+          total++;
+          body += `<tr data-node="${n.id}" tabindex="0"><td class="tstep">${n.id} ${esc(n.t)}</td><td><p class="et">${esc(x[0])}</p><p class="ei">${esc(x[1])}</p>${tixHtml(x[4])}</td><td class="tty">${esc(types(x))}</td><td><span class="pill sev-${x[2]}">${SEV[x[2]]}</span></td></tr>`;
+        });
+      });
+      if (body) rows += `<tr class="grp"><th colspan="4"><span class="sid">${b.id}</span>${esc(b.t)}</th></tr>` + body;
+    });
+    const all = scope.flatMap(n => n.e);
+    const cnt = k => all.filter(x => x[2] === k && pass(x)).length;
+    const used = Object.keys(BUCKET).filter(k => all.some(x => x[3].split(",").includes(k)));
+    $("#errors").innerHTML = `<div class="ebar">
+      <input type="search" id="q" placeholder="Search errors or PROD number" aria-label="Search errors" value="${esc(st.q)}">
+      <div class="chips">${["C", "H", "M", "L"].map(k => `<button class="chip sev-${k}" data-sev="${k}" aria-pressed="${!!st.sev[k]}">${SEV[k]} <span>${cnt(k)}</span></button>`).join("")}
+        <button class="chip tixchip" data-tix="1" aria-pressed="${!!st.tix}">Seen in Jira <span>${all.filter(x => x[4].length).length}</span></button></div>
+      <select id="bk" aria-label="Type of problem"><option value="">All types of problem</option>${used.map(k => `<option value="${k}"${st.bk === k ? " selected" : ""}>${BUCKET[k]}</option>`).join("")}</select>
+      <p class="muted">${pl(total, "error")}${P ? ` on ${esc(P.t)}` : ""}</p></div>
+      <div class="twrap"><table><thead><tr><th>Step</th><th>What goes wrong</th><th>Type</th><th>Severity</th></tr></thead><tbody>${rows || `<tr><td colspan="4" class="muted">Nothing matches. Clear the search or turn a filter back on.</td></tr>`}</tbody></table></div>`;
+    $("#q").addEventListener("input", ev => { st.q = ev.target.value; const p = ev.target.selectionStart; renderErrors(); const i = $("#q"); i.focus(); i.setSelectionRange(p, p); });
+    $("#bk").addEventListener("change", ev => { st.bk = ev.target.value; renderErrors(); });
+  }
+
+  function renderBar() {
+    document.querySelectorAll("[data-ch]").forEach(b => b.setAttribute("aria-selected", b.dataset.ch === st.ch));
+    document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === st.tab));
+    $("#journey").hidden = st.tab !== "journey"; $("#errors").hidden = st.tab !== "errors";
+    $("#path").value = st.path || ""; $("#clear").hidden = !st.path;
+  }
+  function render() { renderBar(); renderDrawer(); if (st.tab === "journey") renderJourney(); else renderErrors(); }
+
+  // sub-module switch: load that map's data, path list and summary
+  const sumOf = list => { const tk = tixOf(list); return { steps: list.length, errs: list.reduce((a, n) => a + n.e.length, 0), crit: list.reduce((a, n) => a + crit(n), 0), tix: tk.length, open: tk.filter(isOpen).length }; };
+  const ALL = sumOf(Object.values(CHANNELS).flatMap(c => c.NODES));
+  function loadChannel(ch) {
+    const C = CHANNELS[ch];
+    st.ch = ch; st.path = null; st.sel = null; st.q = ""; st.bk = ""; st.tix = 0;
+    ({ BANDS, NODES, EDGES, PATH_GROUPS, PATHS } = C);
+    NOTES = C.NOTES || [];
+    N = {}; NODES.forEach(n => { N[n.id] = n; });
+    $("#ttl").textContent = C.title;
+    $("#path").innerHTML = `<option value="">All steps, no path</option>` + PATH_GROUPS.map((g, gi) =>
+      `<optgroup label="${esc(g)}">${PATHS.filter(p => p.g === gi).map(p => `<option value="${p.id}">${esc(p.t)}</option>`).join("")}</optgroup>`).join("");
+    const s = sumOf(NODES);
+    $("#sum").innerHTML = `${s.steps} steps in ${BANDS.length} stages, ${pl(PATHS.length, "path")}, ${s.errs} possible errors (${s.crit} critical), ${pl(s.tix, "Jira ticket")} attached${s.open ? ` (${s.open} open in the snapshot)` : ""}. <span>Whole marketing module: ${ALL.steps} steps, ${ALL.errs} errors, ${ALL.tix} tickets. Tickets are PROD issues created ${esc(META.range)}, from the ${esc(META.asOf)} snapshot and two November gift card additions. Source checked on Zeus internal, 02473c3bac9. Internal badges identify branch changes whose production rollout needs confirmation. Risks without a Jira link are QA scenarios.</span>`;
+    try { localStorage.setItem("aio-mkt-hardening-ch", ch); } catch (e) {}
+  }
+  $("#chan").innerHTML = CHANNEL_ORDER.map(k => `<button role="tab" data-ch="${k}">${esc(CHANNELS[k].name)}</button>`).join("");
+  $("#path").addEventListener("change", ev => { st.path = ev.target.value || null; st.sel = null; render(); });
+  const fromHash = () => { const h = location.hash.slice(1); return CHANNELS[h] ? h : null; };
+  let startCh = fromHash();
+  if (!startCh) { try { const s = localStorage.getItem("aio-mkt-hardening-ch"); if (CHANNELS[s]) startCh = s; } catch (e) {} }
+  loadChannel(startCh || CHANNEL_ORDER[0]);
+  const go = ch => { if (ch === st.ch) return; loadChannel(ch); render(); $(".scroll").scrollTop = 0; };
+  window.addEventListener("hashchange", () => { const h = fromHash(); if (h) go(h); });
+
+  document.addEventListener("click", ev => {
+    if (ev.target.closest("a")) return;
+    const t = ev.target.closest("[data-node],[data-act],[data-tab],[data-sev],[data-tix],[data-ch]");
+    if (!t) return;
+    if (t.dataset.ch) { go(t.dataset.ch); try { location.hash = t.dataset.ch; } catch (e) {} }
+    else if (t.dataset.node) {
+      st.sel = t.dataset.node;
+      if (st.tab !== "journey") { st.tab = "journey"; render(); } else { renderDrawer(); renderJourney(); }
+      const el = document.querySelector(`.card[data-node="${st.sel}"]`);
+      if (el && !ev.target.closest(".card")) el.scrollIntoView({ block: "center", behavior: "smooth" });
+    } else if (t.dataset.act === "close") { st.sel = null; st.path = null; render(); }
+    else if (t.dataset.act === "back") { st.sel = null; render(); }
+    else if (t.dataset.act === "clear") { st.path = null; st.sel = null; render(); }
+    else if (t.dataset.tab) { st.tab = t.dataset.tab; render(); }
+    else if (t.dataset.sev) { st.sev[t.dataset.sev] = st.sev[t.dataset.sev] ? 0 : 1; renderErrors(); }
+    else if (t.dataset.tix) { st.tix = st.tix ? 0 : 1; renderErrors(); }
+  });
+  document.addEventListener("keydown", ev => {
+    if (ev.key === "Escape") { if (st.sel) st.sel = null; else st.path = null; render(); }
+    const r = ev.target.closest && ev.target.closest("tr[data-node]");
+    if (r && ev.key === "Enter") r.click();
+  });
+  render();
+})();
+</script>

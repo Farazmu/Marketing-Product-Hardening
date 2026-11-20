@@ -1,0 +1,2087 @@
+{
+  "key": "menuboards",
+  "name": "Menu Boards",
+  "title": "Menu Boards: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Enablement and hardware",
+      "s": "Module and permissions switched on, dongle or TV bought, powered and booted"
+    },
+    {
+      "id": "B",
+      "t": "Install app and map the device",
+      "s": "Menu board app installed and kept updated, device registered as a TV for one restaurant"
+    },
+    {
+      "id": "C",
+      "t": "Build a playlist",
+      "s": "Playlists page: name, orientation, images, videos, legacy templates and canvas boards in order with durations"
+    },
+    {
+      "id": "D",
+      "t": "Design a board in the canvas editor",
+      "s": "Canvas editor: size, background, text, media, shapes, menu blocks, modifiers, fonts and brand book"
+    },
+    {
+      "id": "E",
+      "t": "Save and preview",
+      "s": "Autosave and manual save of the board JSON, then preview in the editor and on the Playlists page"
+    },
+    {
+      "id": "F",
+      "t": "Assign playlists to a TV",
+      "s": "Screens page: pick playlists for each TV, order them and set day and time schedules"
+    },
+    {
+      "id": "G",
+      "t": "Publish and TV pick-up",
+      "s": "Cache invalidation, the TV app fetching its screen data and caching it"
+    },
+    {
+      "id": "H",
+      "t": "Guest sees the board",
+      "s": "The TV renders the board, cycles the playlist, applies schedules and stock and survives a full day"
+    },
+    {
+      "id": "I",
+      "t": "Live menu changes",
+      "s": "Prices, items, stock, menu timings and business hours changed in other products and reaching the board"
+    },
+    {
+      "id": "J",
+      "t": "Edit, unmap and offboard",
+      "s": "Changing or deleting playlists and items, removing a TV, moving or churning a restaurant"
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Restaurant buys menu boards",
+      "d": "The restaurant signs up for digital menu boards. AIO ships an Android dongle per TV or uses an Android TV, and the onboarding team plans how many screens, which orientation and which content.",
+      "sys": [
+        "Ops dashboard"
+      ],
+      "e": [
+        [
+          "Number of TVs, orientation and resolution not captured at sale, boards designed for the wrong shape",
+          "Rework at go-live",
+          "M",
+          "OB,CX",
+          []
+        ],
+        [
+          "Restaurant TVs are not Android capable and no dongle is shipped",
+          "Go-live delayed",
+          "M",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Enable module and permissions",
+      "d": "Menu Board is a tenant module with its own permissions (playlists create and view, screens). Owner and Manager default roles include them. The Web Dash sidebar shows the Menu Boards group with Screens and Playlists only when the module and permission are on.",
+      "sys": [
+        "Super Admin",
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "Module not enabled for the tenant, sidebar group missing and the operator cannot find the feature",
+          "Feature unusable until Ops acts",
+          "H",
+          "OB,CX",
+          []
+        ],
+        [
+          "Custom roles created before the module lack the menu board permissions, staff see an empty or blocked page",
+          "Support tickets",
+          "M",
+          "S,OB",
+          []
+        ],
+        [
+          "Only one permission gates the canvas editor route, any user who can create playlists can also overwrite every board",
+          "No separation of design and approval",
+          "M",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A3",
+      "b": "A",
+      "k": "int",
+      "rel": "L",
+      "t": "Power and boot the dongle",
+      "d": "The dongle is plugged into the TV HDMI port and a USB or mains power supply, boots Android and the launcher, then joins the restaurant Wi-Fi.",
+      "sys": [
+        "Menu board TV app"
+      ],
+      "e": [
+        [
+          "The menu board dongle does not power on",
+          "Screen dark, no menu for guests",
+          "H",
+          "OB,T",
+          [
+            "5067"
+          ]
+        ],
+        [
+          "The dongle boots into Android recovery instead of showing the menu",
+          "Board down until the dongle is replaced or reflashed",
+          "H",
+          "T,OB",
+          [
+            "4964"
+          ]
+        ],
+        [
+          "TV input not set to the dongle HDMI port or TV sleep timer turns the panel off",
+          "Black screen blamed on AIO",
+          "M",
+          "CX,OB",
+          []
+        ],
+        [
+          "Launcher does not auto-start the menu board app after a reboot",
+          "Staff must open the app every morning",
+          "M",
+          "CX,T",
+          []
+        ],
+        [
+          "No spare dongle or remote replacement process, a failed unit takes days to replace",
+          "Long outage on a paid feature",
+          "M",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A4",
+      "b": "A",
+      "k": "int",
+      "rel": "L",
+      "t": "Connect to restaurant Wi-Fi",
+      "d": "The dongle needs internet to fetch its screen data and media. There is no wired option on most dongles.",
+      "sys": [
+        "Menu board TV app"
+      ],
+      "e": [
+        [
+          "Dongle behind the TV gets weak Wi-Fi signal, media downloads time out",
+          "Blank or partial board",
+          "H",
+          "T,CX",
+          []
+        ],
+        [
+          "Guest or captive portal network used, the app cannot reach the API",
+          "Board stuck on offline message",
+          "H",
+          "OB,CX",
+          []
+        ],
+        [
+          "Wi-Fi password changed by the restaurant, every dongle drops offline with no alert to anyone",
+          "Boards silently stale",
+          "M",
+          "OB,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "int",
+      "rel": "L",
+      "t": "Install the menu board app",
+      "d": "The React Native menu board app is sideloaded onto the dongle, outside the Play Store, and later updates itself.",
+      "sys": [
+        "Menu board TV app"
+      ],
+      "e": [
+        [
+          "An old build is installed from an unknown source at setup, the device starts on v1.0 instead of the current version",
+          "Known fixed bugs come back",
+          "H",
+          "OB,T",
+          []
+        ],
+        [
+          "No record of which app version each dongle runs, support cannot tell old from new devices",
+          "Slow diagnosis",
+          "M",
+          "R,OB",
+          []
+        ],
+        [
+          "Unknown sources or install permission blocked on the device",
+          "App cannot be installed",
+          "M",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "App auto-updates itself",
+      "d": "The app checks for a newer build and installs it without the Play Store. Mechanism not in this repo.",
+      "sys": [
+        "Menu board TV app"
+      ],
+      "e": [
+        [
+          "Auto-update does not run, device stays on v1.0 while the fleet is on v6.0",
+          "Old behaviour such as wrong closed state",
+          "H",
+          "T,OB",
+          [
+            "4652"
+          ]
+        ],
+        [
+          "Update downloaded on weak Wi-Fi is corrupted or half installed, app will not open",
+          "Board down",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Update restarts the app during service with no schedule control",
+          "Board blanks mid rush",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "No forced minimum version on the server, outdated apps keep calling the API",
+          "Bugs fixed in the app never reach the field",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Register the TV device",
+      "d": "Ops adds a device of type TV to the restaurant with its serial number (device ID), name and orientation (0, 90, 180 or 270). This creates a restaurant device record and a TV record that the Screens page lists.",
+      "sys": [
+        "Ops dashboard",
+        "Super Admin"
+      ],
+      "e": [
+        [
+          "Serial number typed wrong, the app reports Device is not mapped",
+          "Board will not open",
+          "H",
+          "OB,CX",
+          []
+        ],
+        [
+          "Same serial number still active under an old tenant or restaurant, the device keeps showing the old restaurant",
+          "Wrong restaurant menu on the TV",
+          "C",
+          "OB,S,D",
+          []
+        ],
+        [
+          "Orientation set differently from how the TV is mounted or from the playlist orientation",
+          "Sideways or letterboxed board",
+          "M",
+          "OB,CX",
+          []
+        ],
+        [
+          "TV name left generic, operator cannot tell which physical screen is which",
+          "Content assigned to the wrong TV",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B4",
+      "b": "B",
+      "k": "dec",
+      "rel": "L",
+      "t": "Is the device mapped?",
+      "d": "The app authenticates as a device and calls the screen endpoint with its device ID, business and restaurant. The server looks for an active TV with that serial in that restaurant and returns not found otherwise, which the app shows as Device is not mapped.",
+      "sys": [
+        "Menu board TV app"
+      ],
+      "e": [
+        [
+          "The TV remains on Device is not mapped and cannot open the assigned board",
+          "Board will not open",
+          "H",
+          "OB,CN",
+          [
+            "4958"
+          ]
+        ],
+        [
+          "Mapping message gives no device ID on screen to read out to support",
+          "Long support calls",
+          "M",
+          "CX,OB",
+          []
+        ],
+        [
+          "Mapping only works after force stopping the app and clearing storage",
+          "Staff cannot recover alone",
+          "H",
+          "T,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Open the Playlists page",
+      "d": "Menu Boards > Playlists lists active playlists with total duration, thumbnails, the TVs each is live on, and Active or Inactive. Empty first-run state invites creating one.",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "Playlist with no active items is dropped from the listing because the query requires active items",
+          "Playlist looks deleted",
+          "M",
+          "D,CX",
+          []
+        ],
+        [
+          "Two playlists with the same name merge into one row in the listing",
+          "Wrong TVs shown as live",
+          "L",
+          "D",
+          []
+        ],
+        [
+          "Listing does not paginate, large tenants load slowly",
+          "Slow page",
+          "L",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Name playlist and pick orientation",
+      "d": "Create playlist: name (unique per restaurant, case insensitive) and orientation Landscape or Portrait. Orientation decides the board size later (1920 by 1080 or 1080 by 1920).",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "Orientation chosen does not match how the TV is mounted, boards render letterboxed with black bars",
+          "Unprofessional board",
+          "M",
+          "CX,CN",
+          []
+        ],
+        [
+          "Duplicate name rejected only on save with Playlist name already exist",
+          "Lost form work",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Orientation can be changed after boards are built, existing canvas boards keep their old size",
+          "Board stretched or barred",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Add images and videos",
+      "d": "Media items come from the content library with a duration each (HH:MM:SS). Type is taken from the file type (image or video).",
+      "sys": [
+        "Web Dash: Menu Boards",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "Large video uploaded without compression, dongle stutters or runs out of memory",
+          "Frozen or crashing board",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Codec the dongle cannot decode accepted in the playlist form",
+          "Black slide on TV",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Duration of zero or a typo such as 10 minutes instead of 10 seconds accepted",
+          "One slide hogs the screen",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Media file later deleted from the content library, TV shows a broken slide",
+          "Blank slide",
+          "M",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "dec",
+      "rel": "L",
+      "t": "Canvas board or legacy template?",
+      "d": "A playlist can hold canvas boards (current editor) or older fixed menu templates (choose layout and items). Canvas items get a default 10 second duration.",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "Two content models live side by side, legacy templates and canvas boards render differently on the TV",
+          "Inconsistent boards",
+          "M",
+          "T,CX",
+          []
+        ],
+        [
+          "Legacy template item rows are rebuilt by delete then insert outside a transaction, a failure leaves the template empty",
+          "Menu disappears from board",
+          "H",
+          "D,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C5",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Set legacy template items",
+      "d": "Pick a fixed layout and the menus, categories and items to show. Item links are stored in the database and the TV re-reads names and prices live.",
+      "sys": [
+        "Web Dash: Menu Boards",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Menu block items not visible on the board though they are selected",
+          "Empty menu section",
+          "C",
+          "D,CN",
+          []
+        ],
+        [
+          "Template insert swallows its error, the playlist saves with no template content and no message",
+          "Silent empty board",
+          "H",
+          "T,D",
+          []
+        ],
+        [
+          "Fixed templates cannot fit long menus, items cut off at the bottom",
+          "Items missing for guests",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C6",
+      "b": "C",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Order items and save playlist",
+      "d": "Drag to reorder. Nonvideo items allow 10 seconds through 23 hours, 59 minutes and 59 seconds. Videos use their own runtime. Duplicate inserts a separately named copy next to its source and assigns a distinct canvas identity. Save the playlist to publish changes.",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "New playlist with canvas boards only exists as a browser draft until the playlist form is saved, closing the tab loses the boards",
+          "Lost design work",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "Playlist update rolls back the name but item writes already happened outside the transaction",
+          "Half-saved playlist",
+          "M",
+          "D,T",
+          []
+        ],
+        [
+          "Sort order collisions after deletes make items play in an unexpected order",
+          "Wrong slide order",
+          "L",
+          "D",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Open the canvas editor",
+      "d": "Full-page editor reached from the playlist form, with playlist, item, orientation and duration passed in page state. It loads the playlist, brand book, menus, modifiers and the image index.",
+      "sys": [
+        "Web Dash: Canvas editor",
+        "Brand Book",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "A failed load is mistaken for a new blank canvas and the operator saves edits",
+          "The intended design may be replaced",
+          "H",
+          "D",
+          []
+        ],
+        [
+          "Refreshing or deep-linking the editor loses page state and falls back to a hardcoded restaurant",
+          "Edits saved against the wrong restaurant",
+          "H",
+          "S,D",
+          []
+        ],
+        [
+          "Board with background but no elements treated as not found",
+          "Background lost",
+          "L",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Set size and background",
+      "d": "Board is 1920 by 1080 landscape or 1080 by 1920 portrait, set from the playlist orientation, with no later resize. Background is a colour, image, GIF or video (one video per board, background included).",
+      "sys": [
+        "Web Dash: Canvas editor"
+      ],
+      "e": [
+        [
+          "Board aspect ratio differs from the TV panel, TV shows black bars on both sides",
+          "Board looks broken",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Background video plus foreground media exceed what the dongle can decode",
+          "Stutter or crash",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "No way to resize an existing board for a new TV, operator rebuilds it",
+          "Extra work",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Add text, media and shapes",
+      "d": "Text with font role, weight, shadow, stroke and pill background; images with crop, mask and filters; video forced to autoplay, loop and mute; shapes, lines and freehand. Video must be MP4 under 100 MB.",
+      "sys": [
+        "Web Dash: Canvas editor",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "H.264 codec check is disabled, a video the dongle cannot decode passes validation",
+          "Black or frozen slide",
+          "H",
+          "T,CN",
+          []
+        ],
+        [
+          "Images up to 100 MB with no type check accepted, TV runs out of memory",
+          "App crash",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Only one video allowed per board, paste or duplicate silently blocked",
+          "Operator confusion",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Text box grows past the board edge with no warning",
+          "Text cut off on TV",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Rotate, align and layer",
+      "d": "Rotation snaps to right angles within 8 degrees, align and distribute, grouping, masks, layers panel with lock and hide, snapping to grid and edges.",
+      "sys": [
+        "Web Dash: Canvas editor"
+      ],
+      "e": [
+        [
+          "Rotated element shifts position instead of rotating in place, and alignment is off between editor and TV",
+          "Layout broken on the TV",
+          "H",
+          "CX,T",
+          [
+            "4692"
+          ]
+        ],
+        [
+          "Flipped elements jump about 180 degrees while rotate-dragging",
+          "Fiddly editing",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Circles are centre anchored while other shapes are not, aligning mixed shapes is off",
+          "Misaligned design",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Group moves together only when every member is selected",
+          "Accidental layout damage",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D5",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Add a menu block",
+      "d": "Pick one category's items from Menu Manager. Names, descriptions, prices, pictures, menu, category and item schedules and modifiers are copied into the board, then refreshed from live data at preview and on the TV.",
+      "sys": [
+        "Web Dash: Canvas editor",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "A price looks correct in the editor and preview but shows zero on the mapped TV",
+          "Wrong price shown to guests",
+          "C",
+          "M,CN",
+          [
+            "4751"
+          ]
+        ],
+        [
+          "Menu block items not visible on the TV though they show in the editor",
+          "Empty menu section",
+          "C",
+          "CN,D",
+          [
+            "4835"
+          ]
+        ],
+        [
+          "Editing surface shows the stored copy, not live Menu Manager data, so price edits are invisible until preview",
+          "Operator trusts stale numbers",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Item picker sometimes opens on the first tab with no items because of a loading race",
+          "Confusion",
+          "L",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D6",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Lay out prices and modifiers",
+      "d": "Columns 1 to 10, price column width, price format and prefix, leader dots, show or hide names, prices, descriptions, pictures, column modifiers (sizes as columns) and row modifiers as inline text or pills with dividers. The standalone modifier block loads eligible top-level groups. Nested modifier names can appear disabled.",
+      "sys": [
+        "Web Dash: Canvas editor",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Narrowing a menu block that uses column modifiers wraps item names letter by letter and breaks the whole block",
+          "Unreadable board",
+          "H",
+          "CX,T",
+          [
+            "4783"
+          ]
+        ],
+        [
+          "Prices are truncated with dots on the live board",
+          "Guests cannot read prices",
+          "H",
+          "CX,CN",
+          [
+            "4682",
+            "4843"
+          ]
+        ],
+        [
+          "Modifiers cannot be shown as menu items with descriptions, pill and pipe layouts break the design",
+          "Restaurants cannot list add-ons",
+          "M",
+          "CX",
+          [
+            "4782"
+          ]
+        ],
+        [
+          "Nested modifiers (modifier of a modifier) not supported in the menu block",
+          "Combo and build-your-own menus cannot be shown",
+          "M",
+          "CX",
+          [
+            "4851"
+          ]
+        ],
+        [
+          "Block grows to fit content and never shrinks, long descriptions push items off the board",
+          "Items missing on TV",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D7",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Apply fonts and brand book",
+      "d": "Heading, Sub Heading and Paragraph roles from the Brand Book, Google or custom fonts. The brand book is copied into the board once; later changes need a manual sync.",
+      "sys": [
+        "Web Dash: Canvas editor",
+        "Brand Book"
+      ],
+      "e": [
+        [
+          "Font fails to load silently, layout is measured with a fallback font and saved that way",
+          "Spacing differs on TV",
+          "M",
+          "CN,T",
+          []
+        ],
+        [
+          "Brand Book changes do not reach existing boards until each one is synced by hand",
+          "Off-brand boards",
+          "L",
+          "CN",
+          []
+        ],
+        [
+          "Custom font not available on the dongle, TV falls back to another font with different widths",
+          "Text overflow on TV",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D8",
+      "b": "D",
+      "k": "soft",
+      "rel": "L",
+      "t": "Content size warning",
+      "d": "The editor counts content nodes (elements plus every menu item part). At 500 or more it shows an advisory banner but saving is not blocked. No limit on JSON size.",
+      "sys": [
+        "Web Dash: Canvas editor"
+      ],
+      "e": [
+        [
+          "Very large board saved with no hard limit, TV renders slowly or runs out of memory",
+          "Frozen or crashing board",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Hidden elements still counted, warning appears on boards that are fine",
+          "Noise",
+          "L",
+          "CX",
+          []
+        ],
+        [
+          "Board JSON too large to save, the save fails and part of the screen stays blank",
+          "Half-blank board",
+          "C",
+          "T,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Autosave and manual save",
+      "d": "Autosave checks for changes every 30 seconds after initial loading. It skips an unchanged board and avoids an overlapping save. Canvas Save persists the design. Playlist Save is the publication step that notifies mapped devices. The editor also exposes Sync for TV for layouts that need updating.",
+      "sys": [
+        "Web Dash: Canvas editor"
+      ],
+      "e": [
+        [
+          "Save fails and the raw error such as Request failed with status code 401 is shown, no retry except the next autosave",
+          "Changes lost on session expiry",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "Two operators editing the same board, last save wins with no version check",
+          "Silent overwrite",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Lost response then retry once created a duplicate board row (now matched by board ID)",
+          "Duplicate slides",
+          "M",
+          "D,T",
+          []
+        ],
+        [
+          "Saving a canvas board does not invalidate the TV cache, the TV keeps the old board until another change or the cache expires",
+          "Edits not on TV for hours",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Layout snapshot saved for the TV is measured in the operator browser, so browser and font differences travel to the TV",
+          "Editor and TV differ",
+          "M",
+          "CN",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Preview in the editor",
+      "d": "Preview (P key) renders the board full screen with the HTML renderer from the shared library and live menu data. It skips menu timing checks, which the TV applies.",
+      "sys": [
+        "Web Dash: Canvas editor",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Editing surface (canvas renderer) and preview (HTML renderer) lay text out differently",
+          "Layout differs between editor, preview and TV",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Preview ignores menu timings, board looks full in preview but is empty on the TV outside the menu hours",
+          "Operator surprised by empty TV",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Live data call fails and preview silently shows the stored copy",
+          "False confidence",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Preview the playlist",
+      "d": "The Playlists page preview plays items in order with durations from the playlist preview data (up to 20 playlists at once).",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "Preview runs in a desktop browser, not at the TV resolution and fonts",
+          "Mismatch found only on site",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Preview data built from the database differs from what the TV endpoint builds (different enrichment path)",
+          "Prices or items differ",
+          "M",
+          "CN,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F1",
+      "b": "F",
+      "k": "op",
+      "rel": "L",
+      "t": "Open the Screens page",
+      "d": "Menu Boards > Screens lists the restaurant's active TVs by name with orientation, the playlists live now and status Live or Connected. Connected only means the TV exists, not that it is online.",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "Status shows Connected or Live without any heartbeat, an offline or dead dongle looks fine",
+          "Outages unnoticed",
+          "H",
+          "R,T",
+          []
+        ],
+        [
+          "App version and last seen time not shown",
+          "Cannot spot outdated devices",
+          "M",
+          "R,OB",
+          []
+        ],
+        [
+          "Empty state when Ops has not registered the TV yet, operator cannot add one themselves",
+          "Waiting on support",
+          "L",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F2",
+      "b": "F",
+      "k": "op",
+      "rel": "L",
+      "t": "Assign and order playlists",
+      "d": "Set playlist on a TV: pick playlists, order them; saving writes the TV playlist links and sort order and invalidates that TV's cache.",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "Playlist orientation not checked against the TV orientation",
+          "Barred or sideways board",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Adding playlists through the insert call does not invalidate the TV cache",
+          "New content late on the TV",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Same playlist on many TVs, removing it from one changes nothing on the others as expected but operators expect global edits",
+          "Confusion",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F3",
+      "b": "F",
+      "k": "op",
+      "rel": "L",
+      "t": "Schedule playlists by day and time",
+      "d": "Each TV and playlist pair has a default flag or a list of day schedules, all day or a start and end time. Schedules live on the TV link, not on the playlist.",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "Scheduling must be repeated on every TV, there is no schedule on the playlist itself",
+          "Multi-TV set-ups drift apart",
+          "M",
+          "CX,OB",
+          [
+            "4654"
+          ]
+        ],
+        [
+          "No playlist scheduled for the current time and no default, TV shows nothing",
+          "Blank board",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Overnight ranges past midnight and the restaurant time zone versus the dongle clock not handled clearly",
+          "Breakfast board at night",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Overlapping schedules have no stated priority",
+          "Unpredictable board",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G1",
+      "b": "G",
+      "k": "soft",
+      "rel": "L",
+      "t": "Invalidate the TV cache",
+      "d": "Playlist save or delete, TV playlist changes, device edits, business hours saves and Menu Manager publish clear the TV's cached screen data. The cached data otherwise lives 10 hours.",
+      "sys": [
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Canvas save, playlist link insert and some menu edits do not clear the cache, the TV serves stale data up to 10 hours",
+          "Old prices or boards on TV",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Invalidation is fire and forget, a Redis failure is only logged",
+          "Stale board with no alert",
+          "M",
+          "T",
+          []
+        ],
+        [
+          "Menu Manager edits reach the TV only after the operator presses publish",
+          "Price change not on board",
+          "M",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G2",
+      "b": "G",
+      "k": "int",
+      "rel": "TBC",
+      "t": "TV app polls for screen data",
+      "d": "The TV requests screen data, including playlists, board content, schedules and orientation. A fresh request can bypass the normal cached response. Poll timing, local cache and offline display depend on the deployed player.",
+      "sys": [
+        "Menu board TV app"
+      ],
+      "e": [
+        [
+          "Published change appears only after about 5 minutes, screensaver or board looks unchanged and staff clear the cache by hand",
+          "Staff think publishing failed",
+          "M",
+          "CX,T",
+          []
+        ],
+        [
+          "Any server error returns no data and the app shows a blank screen instead of the last good board",
+          "Blank board",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Playlists whose items fail to resolve are skipped silently",
+          "Missing slides",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "No push or MQTT channel for TVs, a TV cannot be told to refresh now",
+          "Slow fixes",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G3",
+      "b": "G",
+      "k": "dec",
+      "rel": "L",
+      "t": "Is the TV online?",
+      "d": "If the fetch fails the app shows its cached board or an offline message.",
+      "sys": [
+        "Menu board TV app"
+      ],
+      "e": [
+        [
+          "Board shows a blank screen with the offline message while Wi-Fi works",
+          "No menu for guests",
+          "C",
+          "T,CX",
+          [
+            "4858"
+          ]
+        ],
+        [
+          "App does not fall back to the last cached board when offline",
+          "Blank instead of stale",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "App stops opening until force stopped and storage cleared, also seen with other apps on the same dongle",
+          "Board down until a visit",
+          "H",
+          "T,OB",
+          [
+            "4661"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "H1",
+      "b": "H",
+      "k": "dec",
+      "rel": "L",
+      "t": "Is the restaurant open?",
+      "d": "The app uses business hours and the restaurant time zone to decide whether to show the board or a Restaurant Closed screen. Business hours saves clear the TV cache.",
+      "sys": [
+        "Menu board TV app",
+        "Web Dash: Business hours"
+      ],
+      "e": [
+        [
+          "Boards show Restaurant Closed during open hours (old app version)",
+          "Menu missing during service",
+          "C",
+          "CN,T",
+          [
+            "4676"
+          ]
+        ],
+        [
+          "Split shifts or overnight hours misread at the boundary",
+          "Closed screen at the wrong time",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "Holiday closures and special hours not reflected",
+          "Wrong state shown",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H2",
+      "b": "H",
+      "k": "soft",
+      "rel": "L",
+      "t": "Render board at TV resolution",
+      "d": "The app scales the 1920 by 1080 or 1080 by 1920 board to the panel and applies the TV orientation, using the saved layout snapshot for menu blocks.",
+      "sys": [
+        "Menu board TV app"
+      ],
+      "e": [
+        [
+          "Layout, spacing and font sizes differ from editor and preview",
+          "Board does not match design",
+          "C",
+          "CN,T",
+          [
+            "4653",
+            "4844"
+          ]
+        ],
+        [
+          "Black background on both sides after a system update, content not fitted to the TV size",
+          "Unprofessional board",
+          "M",
+          "CN,T",
+          [
+            "4626"
+          ]
+        ],
+        [
+          "Half of the screen blank because the board could not be saved fully",
+          "Half the menu missing",
+          "C",
+          "D,T",
+          [
+            "4807"
+          ]
+        ],
+        [
+          "Prices truncated with dots on the TV",
+          "Guests cannot see prices",
+          "H",
+          "CX,CN",
+          [
+            "4843",
+            "4682"
+          ]
+        ],
+        [
+          "Rotated elements in a different position than in the editor",
+          "Broken layout",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H3",
+      "b": "H",
+      "k": "soft",
+      "rel": "L",
+      "t": "Apply menu and item timings",
+      "d": "The TV hides menus, categories and items outside their Menu Manager visibility times, which were copied into the board. Preview does not do this.",
+      "sys": [
+        "Menu board TV app",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Menu content disappears daily because menu timings are not set in Menu Manager",
+          "Empty board for part of the day",
+          "H",
+          "CN,OB",
+          [
+            "4784"
+          ]
+        ],
+        [
+          "Every item must be set to all-day by hand for the board to show it",
+          "Heavy setup work",
+          "H",
+          "CN,OB",
+          [
+            "4659"
+          ]
+        ],
+        [
+          "The mapped screen opens without displaying the menu",
+          "No menu on TV",
+          "H",
+          "CN,OB",
+          [
+            "4711"
+          ]
+        ],
+        [
+          "Timings changed in Menu Manager are not re-read, the board keeps the times copied at design",
+          "Wrong items at wrong times",
+          "M",
+          "CN,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H4",
+      "b": "H",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest reads the board",
+      "d": "Compare the item, size, price and availability the guest sees on the TV with the same selection at the register. The screen service supplies stock information for linked items. The physical display determines what the guest actually sees.",
+      "sys": [
+        "Menu board TV app",
+        "POS"
+      ],
+      "e": [
+        [
+          "Price on the board differs from POS price",
+          "Guest disputes the charge",
+          "C",
+          "M,CN,L",
+          []
+        ],
+        [
+          "Out of stock item still looks orderable",
+          "Guest orders an unavailable item",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Text too small or low contrast from the queue",
+          "Accessibility complaints",
+          "L",
+          "CX,L",
+          []
+        ],
+        [
+          "A board omits or obscures dietary information the restaurant intended to display",
+          "Guests need to ask staff for the missing information",
+          "M",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H5",
+      "b": "H",
+      "k": "soft",
+      "rel": "L",
+      "t": "Cycle the playlist all day",
+      "d": "The app loops items by duration, switches playlists by schedule and plays video, running unattended for many hours.",
+      "sys": [
+        "Menu board TV app"
+      ],
+      "e": [
+        [
+          "The menu board app closes abruptly during display",
+          "Board down until restart",
+          "H",
+          "T",
+          [
+            "4866"
+          ]
+        ],
+        [
+          "Memory grows over long runs with video and large images",
+          "Daily crash",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Screensaver content does not refresh after a published update until the cache is cleared",
+          "Old promotion shown",
+          "M",
+          "T,CN",
+          [
+            "4913"
+          ]
+        ],
+        [
+          "No crash reporting or remote restart",
+          "Outages found by guests",
+          "M",
+          "T,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I1",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "Change prices or items",
+      "d": "Operator edits names, prices, descriptions, pictures or modifiers in Menu Manager and publishes. The TV re-reads them by ID on its next fetch; deleted items keep their stored copy.",
+      "sys": [
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Item deleted in Menu Manager keeps showing on the board from the stored copy",
+          "Guest asks for a removed item",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "Item with no price shows $0",
+          "Wrong price shown",
+          "H",
+          "M,CN",
+          []
+        ],
+        [
+          "New items are not added to a block automatically",
+          "New dishes missing",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Modifier lookup fails and stored modifier prices are kept",
+          "Old size prices shown",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I2",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "86 an item",
+      "d": "Staff mark an item out of stock at the register or in Menu Manager. Confirm the saved status, then check the same linked item on the TV after its screen data refreshes.",
+      "sys": [
+        "POS",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "The register shows the item as sold out while the TV still shows the previous availability",
+          "Guests ask for an item the restaurant can no longer sell",
+          "M",
+          "CN,T",
+          []
+        ],
+        [
+          "The item is shown in an uploaded image on the playlist",
+          "The image can keep advertising the item after staff mark the menu item out of stock",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I3",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "Change menu timings or hours",
+      "d": "Menu, category or item visibility times and business hours set in Menu Manager or Web Dash.",
+      "sys": [
+        "Menu Manager",
+        "Web Dash: Business hours"
+      ],
+      "e": [
+        [
+          "Menu timings left unset make the board empty outside the default window",
+          "Board empties daily",
+          "H",
+          "CN,OB",
+          []
+        ],
+        [
+          "Timings are copied into canvas boards at design, later changes need the board re-saved",
+          "Stale visibility",
+          "M",
+          "CN,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J1",
+      "b": "J",
+      "k": "op",
+      "rel": "L",
+      "t": "Edit or remove playlist items",
+      "d": "Deleting an item soft deletes it; deleting the last item deactivates the playlist and unlinks it from every TV.",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "Deleting the last item silently deletes the playlist and blanks every TV using it",
+          "Blank boards",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "No undo or version history for boards",
+          "Accidental loss is permanent",
+          "M",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J2",
+      "b": "J",
+      "k": "op",
+      "rel": "L",
+      "t": "Delete a playlist",
+      "d": "Soft deletes the playlist and its items, removes TV links and clears the caches of those TVs.",
+      "sys": [
+        "Web Dash: Menu Boards"
+      ],
+      "e": [
+        [
+          "No warning which TVs will go blank",
+          "Blank boards in service",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Schedules and settings of removed links left behind",
+          "Orphan data",
+          "L",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J3",
+      "b": "J",
+      "k": "op",
+      "rel": "L",
+      "t": "Unmap or move a TV",
+      "d": "Ops edits or deletes the TV device; the TV record is hard deleted and its cache cleared. Moving a dongle means deleting and re-registering it.",
+      "sys": [
+        "Ops dashboard"
+      ],
+      "e": [
+        [
+          "Device left mapped to an old tenant after a move, shows the old restaurant's menu",
+          "Wrong menu, data exposure",
+          "C",
+          "S,OB,D",
+          []
+        ],
+        [
+          "Deleting a TV leaves its schedules and links behind",
+          "Orphan data",
+          "L",
+          "D",
+          []
+        ],
+        [
+          "Dongle reused at another site keeps cached content offline",
+          "Old menu shown",
+          "M",
+          "OB,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J4",
+      "b": "J",
+      "k": "term",
+      "rel": "L",
+      "t": "Restaurant offboarded",
+      "d": "Module switched off or tenant churns; devices should be unmapped and recovered.",
+      "sys": [
+        "Super Admin"
+      ],
+      "e": [
+        [
+          "Dongles keep showing the last cached board after churn",
+          "Unpaid use of the service",
+          "M",
+          "OB,B",
+          []
+        ],
+        [
+          "No process to recover hardware",
+          "Cost to AIO",
+          "L",
+          "OB,B",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "A3",
+      ""
+    ],
+    [
+      "A3",
+      "A4",
+      ""
+    ],
+    [
+      "A4",
+      "B1",
+      ""
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "B4",
+      ""
+    ],
+    [
+      "B4",
+      "B3",
+      "Not mapped, fix registration"
+    ],
+    [
+      "B4",
+      "C1",
+      "Mapped"
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "C5",
+      "Legacy template"
+    ],
+    [
+      "C4",
+      "D1",
+      "Canvas board"
+    ],
+    [
+      "C5",
+      "C6",
+      ""
+    ],
+    [
+      "D1",
+      "D2",
+      ""
+    ],
+    [
+      "D2",
+      "D3",
+      ""
+    ],
+    [
+      "D3",
+      "D4",
+      ""
+    ],
+    [
+      "D4",
+      "D5",
+      ""
+    ],
+    [
+      "D5",
+      "D6",
+      ""
+    ],
+    [
+      "D6",
+      "D7",
+      ""
+    ],
+    [
+      "D7",
+      "D8",
+      ""
+    ],
+    [
+      "D8",
+      "E1",
+      ""
+    ],
+    [
+      "E1",
+      "E2",
+      ""
+    ],
+    [
+      "E2",
+      "D3",
+      "Fix the design"
+    ],
+    [
+      "E2",
+      "C6",
+      "Back to playlist"
+    ],
+    [
+      "C6",
+      "E3",
+      ""
+    ],
+    [
+      "E3",
+      "F1",
+      ""
+    ],
+    [
+      "F1",
+      "F2",
+      ""
+    ],
+    [
+      "F2",
+      "F3",
+      ""
+    ],
+    [
+      "F3",
+      "G1",
+      ""
+    ],
+    [
+      "G1",
+      "G2",
+      ""
+    ],
+    [
+      "G2",
+      "G3",
+      ""
+    ],
+    [
+      "G3",
+      "H1",
+      "Online or cached"
+    ],
+    [
+      "G3",
+      "A4",
+      "Offline, check Wi-Fi"
+    ],
+    [
+      "H1",
+      "H2",
+      "Open"
+    ],
+    [
+      "H1",
+      "H5",
+      "Closed screen"
+    ],
+    [
+      "H2",
+      "H3",
+      ""
+    ],
+    [
+      "H3",
+      "H4",
+      ""
+    ],
+    [
+      "H4",
+      "H5",
+      ""
+    ],
+    [
+      "H5",
+      "G2",
+      "Next poll"
+    ],
+    [
+      "H5",
+      "I1",
+      "Menu changes",
+      1
+    ],
+    [
+      "H5",
+      "I2",
+      "Item sells out",
+      1
+    ],
+    [
+      "H5",
+      "I3",
+      "Timings change",
+      1
+    ],
+    [
+      "I1",
+      "G1",
+      "Publish"
+    ],
+    [
+      "I2",
+      "G1",
+      ""
+    ],
+    [
+      "I3",
+      "G1",
+      ""
+    ],
+    [
+      "H5",
+      "J1",
+      "Edit content",
+      1
+    ],
+    [
+      "J1",
+      "C6",
+      ""
+    ],
+    [
+      "H5",
+      "J2",
+      "Retire playlist",
+      1
+    ],
+    [
+      "J2",
+      "G1",
+      ""
+    ],
+    [
+      "H5",
+      "J3",
+      "Move or remove TV",
+      1
+    ],
+    [
+      "J3",
+      "B3",
+      "Re-register"
+    ],
+    [
+      "J3",
+      "J4",
+      "Offboard"
+    ],
+    [
+      "H5",
+      "A3",
+      "Crash, reboot dongle"
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Setup and go-live",
+    "Design and publish",
+    "On the TV",
+    "Live changes and after"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "First board live, happy path",
+      "n": "New restaurant from hardware to a canvas board on the TV.",
+      "s": "A1 A2 A3 A4 B1 B2 B3 B4 C1 C2 C3 C4 D1 D2 D3 D4 D5 D6 D7 D8 E1 E2 C6 E3 F1 F2 F3 G1 G2 G3 H1 H2 H3 H4 H5",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Device is not mapped recovery",
+      "n": "Serial or restaurant wrong, Ops fixes registration and the app opens.",
+      "s": "A3 A4 B1 B2 B3 B4 B3 B4 C1",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 0,
+      "t": "Hardware failure and reboot",
+      "n": "Dongle crashes or enters recovery, rebooted and reconnected.",
+      "s": "H5 A3 A4 B1 B2 B3 B4 C1",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 1,
+      "t": "Legacy template playlist",
+      "n": "Fixed template with linked items instead of the canvas.",
+      "s": "C1 C2 C3 C4 C5 C6 E3 F1 F2 F3 G1 G2 G3 H1 H2",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Design loop after preview mismatch",
+      "n": "Preview shows truncated prices or shifted elements, operator fixes and re-saves.",
+      "s": "D1 D2 D3 D4 D5 D6 D7 D8 E1 E2 D3 D4 D5 D6 D7 D8 E1 E2 C6",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Multi-TV scheduling",
+      "n": "Same playlists assigned and scheduled on each TV separately.",
+      "s": "C6 E3 F1 F2 F3 G1 G2 G3 H1 H2 H3 H4 H5",
+      "side": ""
+    },
+    {
+      "id": "P07",
+      "g": 2,
+      "t": "Offline board",
+      "n": "Fetch fails, board shows cached content or the offline message.",
+      "s": "G2 G3 A4 B1 B2 B3 B4 C1",
+      "side": ""
+    },
+    {
+      "id": "P08",
+      "g": 2,
+      "t": "Restaurant closed screen",
+      "n": "Outside business hours the TV shows closed and keeps polling.",
+      "s": "G2 G3 H1 H5 G2",
+      "side": ""
+    },
+    {
+      "id": "P09",
+      "g": 2,
+      "t": "Daily empty board from menu timings",
+      "n": "Board renders but timings hide the menu.",
+      "s": "G3 H1 H2 H3 H4 H5 I3 G1 G2",
+      "side": ""
+    },
+    {
+      "id": "P10",
+      "g": 3,
+      "t": "Price change reaches the TV",
+      "n": "Menu Manager edit, publish, cache clear and next poll.",
+      "s": "H5 I1 G1 G2 G3 H1 H2 H3 H4",
+      "side": ""
+    },
+    {
+      "id": "P11",
+      "g": 3,
+      "t": "Item 86ed",
+      "n": "Stock change marks the item on the board after the next fetch.",
+      "s": "H5 I2 G1 G2 G3 H1 H2",
+      "side": ""
+    },
+    {
+      "id": "P12",
+      "g": 3,
+      "t": "Edit board after go-live",
+      "n": "Remove or change items and re-save the playlist.",
+      "s": "H5 J1 C6 E3 F1 F2 F3 G1 G2",
+      "side": ""
+    },
+    {
+      "id": "P13",
+      "g": 3,
+      "t": "Retire a playlist",
+      "n": "Delete playlist, TVs fall back to remaining playlists.",
+      "s": "H5 J2 G1 G2 G3 H1",
+      "side": ""
+    },
+    {
+      "id": "P14",
+      "g": 3,
+      "t": "Move or offboard a TV",
+      "n": "Unmap the dongle, re-register elsewhere or offboard.",
+      "s": "H5 J3 J4",
+      "side": "B3"
+    }
+  ],
+  "NOTES": [
+    "The Android POS app submits stock changes. Refresh timing, offline fallback, closed screen behaviour and how the TV renders stock require verification on the separate TV player.",
+    "Canvas Save persists a draft. Playlist Save notifies mapped devices and invalidates their screen data. The normal screen cache lasts up to ten hours, and a fresh request can bypass it. The player refresh interval requires device verification.",
+    "Canvas boards copy menu, category and item schedules at design time; the TV applies them, the Web Dash preview does not. This matches PROD-4784 and 4659.",
+    "Device registration is assumed to happen in the Ops dashboard device screens (TV device type with serial and orientation); there is no self-serve pairing code in Web Dash.",
+    "No heartbeat, last-seen or app version reporting for TVs was found; Screens status Live or Connected is derived from playlist links only.",
+    "PROD 4807 records a partly blank board and a save failure. The ticket does not establish a maximum supported document size.",
+    "The Node.js CVE tickets that list Menu Boards (4997, 5002) are infrastructure and not attached.",
+    "Zeus internal, 02473c3bac9. See CanvasEditor/index.tsx, playlistItemDuration.ts, menuModifierAdapter.ts and menu-board/playlist and screen services."
+  ]
+}

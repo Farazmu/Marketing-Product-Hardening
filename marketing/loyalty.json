@@ -1,0 +1,1996 @@
+{
+  "key": "loyalty",
+  "name": "Loyalty",
+  "title": "Loyalty: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Enablement and setup",
+      "s": "Loyalty switched on for the restaurant, access to the Loyalty pages in Web Dash"
+    },
+    {
+      "id": "B",
+      "t": "Configure reward tiers",
+      "s": "Operator builds tiers: a points threshold, a name and the free menu items it unlocks"
+    },
+    {
+      "id": "C",
+      "t": "General settings",
+      "s": "Which channels may check out with a reward and the per-order redemption limits"
+    },
+    {
+      "id": "D",
+      "t": "Sync to devices",
+      "s": "The cached loyalty menu that POS, mPOS, Kiosk, CFD and Online ordering read"
+    },
+    {
+      "id": "E",
+      "t": "Guest enrolment and identity",
+      "s": "How a guest becomes a loyalty member on each channel and how profiles are matched"
+    },
+    {
+      "id": "F",
+      "t": "Earning points",
+      "s": "Points worked out on the ticket and credited when it is fully paid, plus late assignment"
+    },
+    {
+      "id": "G",
+      "t": "Redeeming rewards",
+      "s": "Balance shown, reward picked, limits checked and points deducted on each channel"
+    },
+    {
+      "id": "H",
+      "t": "Reversals",
+      "s": "Void, full refund, partial refund, cancellation and repayment of a loyalty ticket"
+    },
+    {
+      "id": "I",
+      "t": "Measuring",
+      "s": "Loyalty Overview KPIs, activity list and the guest profile in the Guest Book"
+    },
+    {
+      "id": "J",
+      "t": "Changes and exit",
+      "s": "Tier changes after launch and turning the programme off"
+    },
+    {
+      "id": "K",
+      "t": "Upcoming changes",
+      "s": "Loyalty 2.0 and release 9.0 changes described in PRDs, not live yet"
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Restaurant wants a loyalty programme",
+      "d": "A restaurant can reward identified guests with points from eligible paid tickets. The earn rate is 100 points per eligible dollar. Guests can spend points on configured reward items.",
+      "sys": [],
+      "e": [
+        [
+          "Restaurant expects a configurable earn rate, points expiry or sign-up bonus that the product does not offer",
+          "Wrong expectations at sale",
+          "M",
+          "OB,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Loyalty enabled for the restaurant",
+      "d": "The restaurant level loyalty switch is turned on (by AIO onboarding or Ops). Every earn path, the online and Kiosk reward menus and post payment redemption check this switch; with it off, tickets earn 0 points.",
+      "sys": [
+        "Super Admin",
+        "Ops dashboard",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Switch left off after onboarding, tickets earn 0 points and nothing is credited later",
+          "Guests lose points for every order",
+          "C",
+          "OB,M",
+          []
+        ],
+        [
+          "Switch turned on but no tier created, guests earn points with nothing to spend them on",
+          "Guest confusion, silent liability",
+          "M",
+          "OB,CX",
+          []
+        ],
+        [
+          "Switch state cached by devices and backend, a change is not picked up until the cache refreshes",
+          "Channels disagree for a period",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Multi-location brand enables loyalty on one location only, a guest earns in one store and sees 0 in another",
+          "Guest disputes balance",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A3",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Open Marketing Loyalty",
+      "d": "The operator opens Marketing, Loyalty, with an Overview tab and a Configure tab, scoped to the selected location. One permission covers all of Loyalty; any role with access can change tiers and settings.",
+      "sys": [
+        "Web Dash: Loyalty"
+      ],
+      "e": [
+        [
+          "Any role with Loyalty access can create, change or delete tiers and limits, no finer permission",
+          "Unauthorised changes to rewards",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "Backend loyalty endpoints take the restaurant ID from the request, a user of one location could read or change another location of the tenant",
+          "Cross location changes",
+          "H",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Add a tier",
+      "d": "On Configure the operator adds a tier with a name and a points value. The points value is a whole number of at least 500 and must be unique among active tiers of the location; the backend rejects a duplicate with Tier already exist.",
+      "sys": [
+        "Web Dash: Loyalty"
+      ],
+      "e": [
+        [
+          "Tier names are free text and not unique, two tiers with the same name confuse staff and reports",
+          "Wrong reward chosen",
+          "M",
+          "CX,R",
+          []
+        ],
+        [
+          "Two managers create a tier with the same points at the same time, uniqueness is checked before the write with no database constraint",
+          "Duplicate tiers",
+          "M",
+          "D,T",
+          []
+        ],
+        [
+          "Points threshold set very low or very high by a typo, no confirmation of the dollar equivalent",
+          "Rewards given away or unreachable",
+          "H",
+          "M,CX",
+          []
+        ],
+        [
+          "Duplicate points error shown as a generic toast",
+          "Operator does not know what to fix",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Pick reward items",
+      "d": "The operator searches menu items and adds 1 to 25 items to the tier. An item can belong to only one active tier; the backend checks the items exist for this location and are not used by another tier.",
+      "sys": [
+        "Web Dash: Loyalty",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Item already used by another tier is rejected only at save, without naming the tier",
+          "Rework",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Inactive, hidden or out of stock item can be picked, reward later invisible on Online ordering and Kiosk",
+          "Guest cannot redeem",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Reward line stores no menu ID or category ID, redeemed items drop out of the menu report",
+          "Menu sales under-reported",
+          "H",
+          "R,D",
+          []
+        ],
+        [
+          "High priced item put in a low tier by mistake, nothing shows its price against the points",
+          "Value given away",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "Item search lists the same item once with no menu context, wrong variant picked",
+          "Wrong reward configured",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose size and free modifiers",
+      "d": "For each item the operator may pin one size option and pick modifier options that are free with the reward. Other priced modifiers the guest adds are charged. Each modifier needs at least one option selected.",
+      "sys": [
+        "Web Dash: Loyalty",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Item with a required size saved without a size, devices pick a size or block the reward differently",
+          "Inconsistent reward value across channels",
+          "H",
+          "CN,M",
+          []
+        ],
+        [
+          "Free modifier options charged on one channel and free on another (old single size column and new modifier tables both read)",
+          "Guest overcharged or undercharged",
+          "H",
+          "CN,M",
+          []
+        ],
+        [
+          "Nested modifier options configured as free are matched by ID on POS against a stale local menu",
+          "Free option charged",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Modifier option later deleted in Menu Manager, reward still points at it",
+          "Redemption fails or charges",
+          "M",
+          "D,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B4",
+      "b": "B",
+      "k": "soft",
+      "rel": "L",
+      "t": "Save tier",
+      "d": "The tier, its items and their modifiers are written in one transaction. If the new top tier is above the per-order points limit, the limit is raised to match; it is never lowered here. The cached loyalty menu is cleared.",
+      "sys": [
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Points limit raised automatically without telling the operator, guests can now redeem more per order",
+          "More value given away than intended",
+          "H",
+          "M,CX",
+          []
+        ],
+        [
+          "A register misses the menu refresh after a tier is saved",
+          "The cashier still sees the previous rewards until the menu refreshes",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Save fails part way, transaction rolls back but the form shows success from an earlier response",
+          "Operator thinks reward is live",
+          "M",
+          "T,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Set checkout with reward per channel",
+      "d": "General settings hold one switch per channel (POS, Online, Kiosk, mPOS, QR) allowing an order made only of reward items to be checked out. Defaults are on when the restaurant has no settings row yet.",
+      "sys": [
+        "Web Dash: Loyalty",
+        "POS",
+        "mPOS",
+        "Kiosk",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Kiosk reads a missing settings row as off while every other channel reads it as on",
+          "Kiosk blocks reward only orders others allow",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "Switch label unclear, operator thinks it turns redemption off for the channel",
+          "Wrong configuration",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "An open register has not refreshed after the restaurant changes reward-only checkout settings",
+          "Staff may see a different checkout option from the one the restaurant just saved",
+          "M",
+          "CN,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Set redemption limits",
+      "d": "Per order limits: points (default 500) and reward items (default 1), each with an Unlimited option. Both limits apply together; a reward is blocked if either would be exceeded. Saved only when the operator presses Save. The settings form validates a finite points limit against the most expensive active tier.",
+      "sys": [
+        "Web Dash: Loyalty"
+      ],
+      "e": [
+        [
+          "A cached settings screen uses a tier cost that another manager just raised",
+          "A reward can exceed the saved checkout limit",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Limit 0 accepted by the server",
+          "Redemption blocked everywhere",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "Two managers edit settings at once, last save wins with no warning",
+          "Lost change",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "Deleting the last tier resets both limits to defaults without notice",
+          "Operator settings lost",
+          "M",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "soft",
+      "rel": "L",
+      "t": "Build cached loyalty menu",
+      "d": "The backend caches reward tiers and item details by location. Successful writes on covered loyalty and menu screens invalidate that cache. The register also keeps a local copy until it receives a refresh or reloads the menu.",
+      "sys": [
+        "Marketing Loyalty",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "A menu change reaches the backend but the register still has the previous version open",
+          "Staff can offer a reward whose modifiers or availability have changed",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Heavily configured location exceeds the query timeout, menu returns an error and rewards disappear",
+          "No redemption on any channel",
+          "H",
+          "T",
+          []
+        ],
+        [
+          "Waiting requests give up after the lock wait and get an error during peak",
+          "Reward screen fails to load",
+          "M",
+          "T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "int",
+      "rel": "L",
+      "t": "Devices fetch reward menu",
+      "d": "Android POS fetches the restaurant reward menu, limits and customer-display timeout. It combines those settings with the attached guest balance and rewards already on the ticket. Kiosk has a dedicated loyalty menu. Online ordering filters its reward list by menu visibility and hours.",
+      "sys": [
+        "POS",
+        "mPOS",
+        "Kiosk",
+        "CFD",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Kiosk shows only the loyalty menu and not the main menu",
+          "Kiosk cannot take normal orders",
+          "C",
+          "CN,OB",
+          [
+            "4919"
+          ]
+        ],
+        [
+          "Online list hides rewards whose menu is outside its hours while POS still offers them",
+          "Channels disagree",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "A reward appears selectable on one register after the guest or the ticket was updated on another",
+          "Staff may promise a reward before the updated balance or limits appear",
+          "H",
+          "CN,M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest gives phone at POS",
+      "d": "Staff look up or add a guest by phone and attach the profile to the POS ticket. The loyalty menu uses the attached guest balance. A guest can also be identified on the customer-facing display.",
+      "sys": [
+        "POS",
+        "mPOS",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Wrong number typed, points credited to a stranger",
+          "Points to the wrong guest",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "The cashier completes payment before confirming which profile is attached",
+          "The intended guest may need help claiming the points",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Same guest exists twice (phone and online account), balance split across profiles",
+          "Guest sees lower balance",
+          "H",
+          "D",
+          []
+        ],
+        [
+          "The name shown for a phone lookup does not match the guest at the register",
+          "Staff need to verify the profile before applying a reward",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Match guest by card",
+      "d": "After a card payment the backend matches the card fingerprint (Adyen) to an existing profile. A signed-up guest on the ticket always wins; a guest profile found on the card is merged into them and both balances are added. Otherwise the card owner or a new guest is used.",
+      "sys": [
+        "Adyen",
+        "Guestbook / CRM",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Shared family or company card merges two people into one profile",
+          "Points and history merged wrongly",
+          "H",
+          "D,S",
+          []
+        ],
+        [
+          "A delayed card match finishes after staff have already attached a guest",
+          "Check that the ticket has one owner and its points appear once",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "An unidentified guest pays in cash and staff do not attach a profile",
+          "Card matching cannot identify the intended loyalty account",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "The payment succeeds but card matching fails",
+          "The guest may need support to locate the points",
+          "H",
+          "D,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest signs in online",
+      "d": "On Online ordering the guest signs in with phone and code. Rewards and points are shown only to signed-in guests; points are kept per location.",
+      "sys": [
+        "Online ordering",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Online account and POS phone profile not linked, guest sees 0 points online",
+          "Guest disputes balance",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "Guest orders as a guest checkout and earns nothing, no prompt to join",
+          "Lost enrolment",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Brand with several locations shows a different balance per location without saying so",
+          "Confusion",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E4",
+      "b": "E",
+      "k": "cust",
+      "rel": "L",
+      "t": "Guest joins at the Kiosk",
+      "d": "On the Kiosk the guest enters a phone number to look up or create a profile, before or after ordering. A new profile is created with 0 points and source Kiosk.",
+      "sys": [
+        "Kiosk",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Anyone can type another guest's phone and see their balance and rewards",
+          "Privacy exposure",
+          "H",
+          "S,L",
+          []
+        ],
+        [
+          "Typo creates a new empty profile instead of finding the real one",
+          "Points split",
+          "M",
+          "D",
+          []
+        ],
+        [
+          "The kiosk verification code step adds friction for a guest who wants to continue ordering",
+          "The restaurant requests a simpler ordering experience",
+          "M",
+          "CX",
+          [
+            "4848"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "E5",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Import guests with points",
+      "d": "When moving from another loyalty system, the operator imports a guest file with points. Imported points are added to any existing balance for that guest at this location and set lifetime points.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Same file imported twice adds the points twice",
+          "Doubled liability",
+          "C",
+          "M,D,OB",
+          []
+        ],
+        [
+          "Old system points at a different rate imported as is, value changes",
+          "Rewards cheap or unreachable",
+          "H",
+          "M,OB",
+          []
+        ],
+        [
+          "Phone format differs, imported guest not matched to existing profile",
+          "Duplicate profiles",
+          "M",
+          "D,OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F1",
+      "b": "F",
+      "k": "soft",
+      "rel": "L",
+      "t": "Work out points on the ticket",
+      "d": "Each ticket stores points earned: the discounted subtotal before tax, rounded to the cent, times 100. Tips, tax and reward items (priced at 0) do not earn. For tax inclusive restaurants the base is the tax inclusive original price.",
+      "sys": [
+        "Marketing Loyalty",
+        "POS",
+        "Kiosk",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "A discounted tax-inclusive ticket uses its original tax-inclusive price as the earn base",
+          "The points can exceed what the guest expects from the discounted subtotal",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "A fractional-cent discount is rounded differently across channels",
+          "The guest can see a one-point difference for an otherwise equivalent order",
+          "L",
+          "M,CN",
+          []
+        ],
+        [
+          "A ticket includes gift card value or a service charge and the displayed earn amount is unclear",
+          "Staff cannot explain which part of the bill earned points",
+          "M",
+          "M,CN",
+          []
+        ],
+        [
+          "Earn rate fixed at 100 per dollar, cannot be set per restaurant or item",
+          "No control over cost",
+          "M",
+          "OB",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F2",
+      "b": "F",
+      "k": "int",
+      "rel": "L",
+      "t": "Ticket fully paid",
+      "d": "The payment completes on POS, mPOS, Kiosk or Online ordering and the ticket becomes fully paid. Payment webhooks trigger guest matching and the points update.",
+      "sys": [
+        "Adyen",
+        "POS",
+        "Kiosk",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "A completed payment reaches loyalty processing late or fails there",
+          "The guest can pay successfully before the points appear",
+          "H",
+          "T,D",
+          []
+        ],
+        [
+          "A gift card covers part of the bill and the final tender is collected, but the ticket still shows partially paid",
+          "Points remain pending after the guest has paid in full",
+          "H",
+          "M,CN",
+          []
+        ],
+        [
+          "Split payments settle separately and the final settlement does not reach loyalty processing",
+          "The completed ticket can still show pending points",
+          "M",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F3",
+      "b": "F",
+      "k": "soft",
+      "rel": "L",
+      "t": "Credit points to the guest",
+      "d": "For each fully paid ticket the backend applies any redemption and earnings to the guest balance. It can record activity earlier with a partially paid status. A fully paid update changes that activity to settled. A repeat of an already processed status skips that side of the transaction.",
+      "sys": [
+        "Marketing Loyalty",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "The guest had enough points when a reward was selected, but fewer remain when the paid ticket settles",
+          "The backend can record the full reward cost while deducting only the points still available",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "A report counts partially paid activity as settled before the guest pays the rest",
+          "Points history can appear to disagree with the available balance",
+          "M",
+          "D,R",
+          []
+        ],
+        [
+          "After a Kiosk redemption has settled, an older partial-payment update is processed before another fully paid update",
+          "The recorded status could move backwards and allow the same reward to be deducted again. Check out-of-order delivery",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "Posting points creates a missing restaurant guest record without supplying a registration source",
+          "Guest Book may be unable to show how this guest joined at the location",
+          "L",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F4",
+      "b": "F",
+      "k": "dec",
+      "rel": "L",
+      "t": "Guest attached after the order?",
+      "d": "A guest who was unidentified at checkout may be able to claim points after payment. The Kiosk post-order sign-in and the Android POS customer-display flow can identify a guest using the paid ticket. Availability depends on the checkout flow.",
+      "sys": [
+        "POS",
+        "Kiosk",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "No way to give points to a guest after the order on some channels",
+          "Guest complaint",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "A post-payment identification request refers to a different ticket than the guest just paid",
+          "Points may be assigned to the wrong guest",
+          "M",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F5",
+      "b": "F",
+      "k": "op",
+      "rel": "L",
+      "t": "Transfer points after the order",
+      "d": "On Kiosk, post-order sign-in reassigns the ticket and checks the stored credit flag. Where points already went to a prior profile, the transfer flow reconciles the relevant balances and activity. On Android POS, customer-display sign-in sends the paid ticket ID to the backend.",
+      "sys": [
+        "Kiosk",
+        "POS",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "After a Kiosk guest claims an order, the points do not move to the intended account",
+          "The guest misses points from a paid order",
+          "H",
+          "CN,M",
+          [
+            "4888"
+          ]
+        ],
+        [
+          "A transfer updates the ticket owner but fails before the guest balances and activity finish updating",
+          "Guest Book and the receipt identify different owners for the points",
+          "H",
+          "M,D",
+          []
+        ],
+        [
+          "Two post-order updates overlap while the paid ticket is being reassigned",
+          "Verify that the destination of the transfer receives one credit",
+          "C",
+          "M,T",
+          []
+        ],
+        [
+          "By the time the order is reassigned, the previous profile has already spent some of the points",
+          "Crediting the new profile in full can leave the combined balances too high",
+          "M",
+          "S",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F6",
+      "b": "F",
+      "k": "int",
+      "rel": "L",
+      "t": "CFD loyalty screen after payment",
+      "d": "On a supported POS card payment the customer display can offer sign-up, show an existing guest prompt, or show a member their points. The member screen has three reward slots in total. Skip and the countdown end the flow. A redemption error is shown on the display.",
+      "sys": [
+        "CFD",
+        "POS",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "CFD stuck or frozen on the loyalty points screen",
+          "Till blocked",
+          "H",
+          "CN,T",
+          [
+            "4976"
+          ]
+        ],
+        [
+          "Shared card shows another person's name and balance on the screen",
+          "Privacy exposure",
+          "H",
+          "S,L",
+          []
+        ],
+        [
+          "All available rewards require modifier choices, so none qualify for the customer display",
+          "A guest who could redeem at the register has no reward to select on this screen",
+          "L",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G1",
+      "b": "G",
+      "k": "dec",
+      "rel": "L",
+      "t": "Can this guest redeem now?",
+      "d": "Android POS checks the attached guest balance, rewards already selected, stock, and the per-ticket points and item limits. A selected reward can be removed. Each channel also has a setting for a ticket made entirely of rewards.",
+      "sys": [
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Balance shown is stale because pending tickets are not reflected",
+          "Guest told they qualify then refused",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "The guest has enough points but the ticket has reached its item or points limit. Android POS can show the same insufficient-points message",
+          "The cashier cannot tell whether to remove another reward or check the guest balance",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G2",
+      "b": "G",
+      "k": "cust",
+      "rel": "L",
+      "t": "Select a reward at the register",
+      "d": "On Android POS, staff select an eligible reward for the attached guest. The register adds it to the open ticket or opens modifier selection. The traced cashier flow does not prompt for a text code. The server also exposes text-code endpoints, but their presence does not establish an mPOS checkout step.",
+      "sys": [
+        "POS",
+        "mPOS",
+        "Twilio",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "The cashier applies the reward while the wrong phone profile is attached",
+          "The intended guest keeps their points and another guest may be charged",
+          "H",
+          "S",
+          []
+        ],
+        [
+          "An eligible reward needs a modifier choice and the cashier leaves that selection before finishing",
+          "The cashier can think the guest selected a reward that never reached the ticket",
+          "M",
+          "S",
+          []
+        ],
+        [
+          "Two open tickets show the same guest balance before either settles",
+          "Each can appear eligible. Recheck the final points spent across both tickets",
+          "H",
+          "M,T",
+          []
+        ],
+        [
+          "The register still shows a reward that has been disabled or removed since the menu loaded",
+          "Staff may need to refresh the menu and choose another item",
+          "M",
+          "B,CX",
+          []
+        ],
+        [
+          "Reward line on a split check moves to a guest who did not redeem",
+          "Wrong attribution",
+          "M",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G3",
+      "b": "G",
+      "k": "cust",
+      "rel": "L",
+      "t": "Redeem on the CFD after paying",
+      "d": "The guest confirms one of the displayed rewards. Android POS blocks repeat taps while the request is pending. The server rechecks the programme, active reward, ticket limits and guest balance. On success it adds a reward line to the paid ticket and sends it to the kitchen.",
+      "sys": [
+        "CFD",
+        "KDS",
+        "POS",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Two different paid tickets submit rewards against the same guest balance at nearly the same time",
+          "Both may pass the balance check before either updates the balance",
+          "C",
+          "M,T",
+          []
+        ],
+        [
+          "Reward printed on KDS but the item is out of stock",
+          "Kitchen cannot make it",
+          "M",
+          "CN",
+          []
+        ],
+        [
+          "Points deducted but the KDS ticket not fired",
+          "Guest pays points, gets nothing",
+          "H",
+          "CN,M",
+          []
+        ],
+        [
+          "Line added with no menu or category ID",
+          "Menu report gap",
+          "M",
+          "R",
+          []
+        ],
+        [
+          "The confirmation says the reward was added and previews the remaining points before the server approves it",
+          "If the server declines, the guest can see an error after reading what looked like a success message",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G4",
+      "b": "G",
+      "k": "cust",
+      "rel": "L",
+      "t": "Redeem on the Kiosk",
+      "d": "The signed-in guest picks rewards from the loyalty menu. At cart preparation the reward identity, active tier, location, size match and limits are checked; points are deducted with a row lock when the order completes. Size is part of the configured reward match. Ordinary modifiers do not create a separate reward identity.",
+      "sys": [
+        "Kiosk",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Reward changed or deleted while in the cart, order rejected at checkout",
+          "Abandoned order",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Size mismatch rejected with a generic message",
+          "Guest stuck",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Cash Kiosk orders lose menu and category IDs on the reward line",
+          "Menu report gap",
+          "L",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G5",
+      "b": "G",
+      "k": "cust",
+      "rel": "L",
+      "t": "Redeem on Online ordering",
+      "d": "The signed-in guest opens Rewards, picks an unlocked reward and adds it to the cart. The server stamps the real tier points, checks quantity 1, each reward once, and both limits before payment, and again on a $0 checkout.",
+      "sys": [
+        "Online ordering",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Reward kept in an abandoned cart, balance not reserved, spent elsewhere first",
+          "Order fails at payment",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Points deducted but the reward line dropped from the order",
+          "Guest loses value",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "Reward stacked with a deal or promo, discount applied to the free item",
+          "Value given twice",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "Priced modifiers on the reward charged with tax on the full item",
+          "Overcharge",
+          "M",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G6",
+      "b": "G",
+      "k": "soft",
+      "rel": "L",
+      "t": "Deduct points and record",
+      "d": "The system records the points spent and the value of reward items on the ticket. The ordinary paid-ticket flow posts redemption and earnings at settlement. Kiosk completion records its own redemption and the fully paid handler recognises that entry. Customer-display redemption updates an already paid ticket.",
+      "sys": [
+        "Marketing Loyalty",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Free item value not recorded consistently, reports cannot value redemptions",
+          "Wrong discount reports",
+          "M",
+          "R,M",
+          []
+        ],
+        [
+          "Redeem row and balance written in separate steps on the CFD path",
+          "Ledger out of step",
+          "M",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "G7",
+      "b": "G",
+      "k": "int",
+      "rel": "L",
+      "t": "Kitchen and receipt",
+      "d": "The kitchen receives the reward item. Android POS receipts can show loyalty savings, points earned or redeemed, and current balance for an identified loyalty guest. A paid modifier can still add a charge to the reward item.",
+      "sys": [
+        "KDS",
+        "POS"
+      ],
+      "e": [
+        [
+          "A receipt for an unidentified guest prints a placeholder customer name",
+          "The guest sees an unexpected name on the receipt",
+          "M",
+          "CX",
+          [
+            "4966"
+          ]
+        ],
+        [
+          "An enrolled guest has loyalty activity but the ticket receipt lacks the guest or points data needed to print it",
+          "The guest cannot reconcile the printed balance with the order",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H1",
+      "b": "H",
+      "k": "dec",
+      "rel": "L",
+      "t": "Refund, void or cancel?",
+      "d": "Staff can remove a reward from an open ticket. Android POS blocks removal on a partially paid ticket in the traced reward-menu flow. After payment, a refund or payment cancellation follows a different points-reversal flow.",
+      "sys": [
+        "POS",
+        "Adyen"
+      ],
+      "e": [
+        [
+          "After staff remove an unpaid reward, the menu still counts it toward the ticket limit",
+          "The guest cannot select a replacement even though the reward was removed",
+          "L",
+          "CN",
+          []
+        ],
+        [
+          "Item voided after the reward was applied leaves points spent on a voided line",
+          "Guest loses value",
+          "H",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H2",
+      "b": "H",
+      "k": "soft",
+      "rel": "L",
+      "t": "Full refund or cancellation",
+      "d": "On a full refund or cancellation, the backend locks the guest balance and reverses the earnings and redemptions still applied to this ticket. For a split payment, the final refund is recognised after all payments are fully refunded.",
+      "sys": [
+        "Marketing Loyalty",
+        "Adyen"
+      ],
+      "e": [
+        [
+          "The guest has spent the points earned on the refunded ticket and the reversal would take the balance below zero",
+          "The refund history can show a negative ending balance while the account displays zero",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "A split-ticket refund stops after only some of its payment refunds settle",
+          "The redeemed points stay spent until the full refund settles",
+          "H",
+          "M,T",
+          []
+        ],
+        [
+          "Errors are logged and swallowed, no retry",
+          "Points never reversed",
+          "H",
+          "T,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H3",
+      "b": "H",
+      "k": "soft",
+      "rel": "L",
+      "t": "Partial refund",
+      "d": "A partial refund reverses the earned share for the refund, capped at the points still applied to the ticket. Redeemed points are returned on a terminal reversal, such as a full-ticket refund.",
+      "sys": [
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Several partial refunds or different tenders produce a rounded points amount that is hard to reconcile against individual items",
+          "Support may need to compare refundable earnings with the points already reversed",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "A guest expects points back for a reward on a ticket that is only partly refunded",
+          "The guest can see the cash refund while the redemption remains on the account",
+          "M",
+          "M,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "H4",
+      "b": "H",
+      "k": "soft",
+      "rel": "L",
+      "t": "Repay a cancelled ticket",
+      "d": "If a cancelled ticket is paid again, the old Earned and Redeem rows are treated as reversed and the repayment is a new earn and redeem.",
+      "sys": [
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Same second timestamps make the reversal look older than the original, repayment skipped",
+          "Points missing",
+          "M",
+          "T,M",
+          []
+        ],
+        [
+          "A repaid ticket is settled after the guest balance or reward selection changed",
+          "Verify that only the new ticket amounts affect the guest balance",
+          "M",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I1",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "Read Loyalty Overview",
+      "d": "KPI cards for new sign-ups, returning guests, loyalty orders and loyalty sales with comparison to the previous period, a guest activity trend by day, week or month, top 5 rewards with total redemptions, and redemptions by platform. Dates follow the closeout time.",
+      "sys": [
+        "Web Dash: Loyalty"
+      ],
+      "e": [
+        [
+          "Returning guests are interpreted as guests who redeemed",
+          "The restaurant overstates reward use",
+          "M",
+          "R",
+          []
+        ],
+        [
+          "No outstanding points liability report",
+          "Finance cannot book liability",
+          "H",
+          "R,M",
+          []
+        ],
+        [
+          "A report excludes inactive reward items when reading historical redemptions",
+          "Past reward activity is understated",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "Refunded tickets drop out of KPIs after the fact",
+          "Numbers change",
+          "L",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "I2",
+      "b": "I",
+      "k": "op",
+      "rel": "L",
+      "t": "Check guest activity",
+      "d": "A paged list of guests who earned or redeemed in the period, searchable by name, email or phone and sortable by visits, spend, points available, earned and redeemed. The Guest Book profile shows points and tier name.",
+      "sys": [
+        "Web Dash: Loyalty",
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Earned column uses ticket totals, not the ledger, and disagrees with the balance",
+          "Support cannot explain balance",
+          "M",
+          "R,D",
+          []
+        ],
+        [
+          "No manual adjustment of points from Web Dash",
+          "Support cannot fix errors",
+          "H",
+          "OB,CX",
+          []
+        ],
+        [
+          "Tier shown is the highest tier the balance reaches, it drops after a redemption",
+          "Guest confused",
+          "L",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J1",
+      "b": "J",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Edit or delete a tier",
+      "d": "Editing a tier preserves existing reward identities. Removed items are soft deleted. Re-adding the same item and size can restore its original row and preserve historical references. Confirm historic totals separately after deleting a tier.",
+      "sys": [
+        "Web Dash: Loyalty"
+      ],
+      "e": [
+        [
+          "Tier points raised while a reward is in a guest's cart",
+          "Different price at payment",
+          "M",
+          "CN,M",
+          []
+        ],
+        [
+          "Guests saving for a deleted tier are not told",
+          "Guest complaint",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Delete has no impact warning",
+          "Accidental loss",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "J2",
+      "b": "J",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Turn the programme off",
+      "d": "Turning loyalty off stops earning and hides reward menus. Balances stay and come back if it is turned on again.",
+      "sys": [
+        "Super Admin",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Guests are not told and balances stay without expiry",
+          "Complaints, liability kept",
+          "M",
+          "CX,L",
+          []
+        ],
+        [
+          "A guest opens the customer-display reward menu before the programme is switched off and confirms afterward",
+          "The guest can still see the earlier offer, but the backend declines redemption once it sees the disabled programme",
+          "L",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "J3",
+      "b": "J",
+      "k": "term",
+      "rel": "L",
+      "t": "Programme running or closed",
+      "d": "Guests earn and redeem; the operator reviews the Overview.",
+      "sys": [],
+      "e": [
+        [
+          "Points never expire, liability grows",
+          "Growing cost",
+          "M",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "K1",
+      "b": "K",
+      "k": "op",
+      "rel": "NEXT",
+      "t": "Discount rewards",
+      "d": "Loyalty 2.0: tiers can hold $ off or % off rewards on the whole check or one item, sharing the 25 reward cap; the items limit becomes a rewards limit.",
+      "sys": [
+        "Web Dash: Loyalty",
+        "POS",
+        "Kiosk",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Order with other discounts not defined, minimum spend checked before or after",
+          "Wrong discount",
+          "H",
+          "M",
+          []
+        ],
+        [
+          "Refunds and voids of discount rewards not covered by the PRD",
+          "Points lost or given",
+          "H",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "K2",
+      "b": "K",
+      "k": "soft",
+      "rel": "NEXT",
+      "t": "Sign-up reward and alerts",
+      "d": "The Loyalty 2.0 plan adds a sign-up reward and milestone alerts. The transactional welcome for enrollment or eligible imported points is a separate existing flow.",
+      "sys": [
+        "Marketing Loyalty",
+        "Twilio",
+        "Email service"
+      ],
+      "e": [
+        [
+          "Sign-up reward granted twice on double submission",
+          "Value given away",
+          "H",
+          "M,S",
+          []
+        ],
+        [
+          "Text sent without valid consent or in quiet hours",
+          "TCPA exposure",
+          "C",
+          "L",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "K3",
+      "b": "K",
+      "k": "soft",
+      "rel": "R9",
+      "t": "Menu and category IDs",
+      "d": "Release 9.0: every reward line carries the menu and category it was picked through and a backfill fills past lines.",
+      "sys": [
+        "Marketing Loyalty",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Backfill picks the wrong menu for items on several menus",
+          "Wrong menu report",
+          "M",
+          "R,D",
+          []
+        ],
+        [
+          "Items added through POS search still lose their IDs after the release",
+          "Menu report gap remains",
+          "L",
+          "R",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "A3",
+      ""
+    ],
+    [
+      "A3",
+      "B1",
+      ""
+    ],
+    [
+      "A3",
+      "I1",
+      "Overview tab",
+      1
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "B4",
+      ""
+    ],
+    [
+      "B4",
+      "C1",
+      ""
+    ],
+    [
+      "B4",
+      "B1",
+      "Add another tier"
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "D1",
+      ""
+    ],
+    [
+      "D1",
+      "D2",
+      ""
+    ],
+    [
+      "D2",
+      "E1",
+      "POS or mPOS"
+    ],
+    [
+      "D2",
+      "E3",
+      "Online"
+    ],
+    [
+      "D2",
+      "E4",
+      "Kiosk"
+    ],
+    [
+      "A3",
+      "E5",
+      "Migrating guests",
+      1
+    ],
+    [
+      "E5",
+      "E1",
+      ""
+    ],
+    [
+      "E1",
+      "F1",
+      ""
+    ],
+    [
+      "E3",
+      "F1",
+      ""
+    ],
+    [
+      "E4",
+      "F1",
+      ""
+    ],
+    [
+      "E1",
+      "G1",
+      "Wants a reward"
+    ],
+    [
+      "E3",
+      "G1",
+      "Wants a reward"
+    ],
+    [
+      "E4",
+      "G1",
+      "Wants a reward"
+    ],
+    [
+      "G1",
+      "G2",
+      "POS or mPOS"
+    ],
+    [
+      "G1",
+      "G4",
+      "Kiosk"
+    ],
+    [
+      "G1",
+      "G5",
+      "Online"
+    ],
+    [
+      "G1",
+      "F1",
+      "Not enough points"
+    ],
+    [
+      "F1",
+      "F2",
+      ""
+    ],
+    [
+      "F2",
+      "E2",
+      "Card payment"
+    ],
+    [
+      "E2",
+      "F3",
+      ""
+    ],
+    [
+      "F2",
+      "F3",
+      "Other payment"
+    ],
+    [
+      "F3",
+      "G7",
+      ""
+    ],
+    [
+      "F2",
+      "F6",
+      "Card on POS",
+      1
+    ],
+    [
+      "F6",
+      "G3",
+      "Guest taps a reward"
+    ],
+    [
+      "G3",
+      "G7",
+      ""
+    ],
+    [
+      "F6",
+      "G7",
+      "Timeout or no reward"
+    ],
+    [
+      "G7",
+      "F4",
+      ""
+    ],
+    [
+      "F4",
+      "F5",
+      "Yes"
+    ],
+    [
+      "F4",
+      "J3",
+      "No"
+    ],
+    [
+      "F5",
+      "J3",
+      ""
+    ],
+    [
+      "G7",
+      "H1",
+      "Refund later",
+      1
+    ],
+    [
+      "H1",
+      "H2",
+      "Full refund or cancel"
+    ],
+    [
+      "H1",
+      "H3",
+      "Partial refund"
+    ],
+    [
+      "H2",
+      "H4",
+      "Repaid"
+    ],
+    [
+      "H2",
+      "I1",
+      ""
+    ],
+    [
+      "H3",
+      "I1",
+      ""
+    ],
+    [
+      "H4",
+      "F3",
+      ""
+    ],
+    [
+      "I1",
+      "I2",
+      ""
+    ],
+    [
+      "I2",
+      "J1",
+      ""
+    ],
+    [
+      "I2",
+      "J3",
+      ""
+    ],
+    [
+      "J1",
+      "D1",
+      ""
+    ],
+    [
+      "J1",
+      "J2",
+      ""
+    ],
+    [
+      "J2",
+      "J3",
+      ""
+    ],
+    [
+      "B4",
+      "K1",
+      "After Loyalty 2.0",
+      1
+    ],
+    [
+      "K1",
+      "K2",
+      ""
+    ],
+    [
+      "K2",
+      "J3",
+      ""
+    ],
+    [
+      "G6",
+      "K3",
+      "After 9.0",
+      1
+    ],
+    [
+      "K3",
+      "I1",
+      ""
+    ],
+    [
+      "G2",
+      "F1",
+      "Reward selected"
+    ],
+    [
+      "G4",
+      "F1",
+      "Reward selected"
+    ],
+    [
+      "G5",
+      "F1",
+      "Reward selected"
+    ],
+    [
+      "F3",
+      "G6",
+      "Ticket includes a reward"
+    ],
+    [
+      "G6",
+      "G7",
+      ""
+    ],
+    [
+      "F3",
+      "F6",
+      "Supported POS card payment"
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Setup",
+    "Earn and redeem by channel",
+    "After the order",
+    "Measure and change",
+    "Upcoming"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "Set up a programme",
+      "n": "Enable, build tiers, set limits and push to devices.",
+      "s": "A1 A2 A3 B1 B2 B3 B4 C1 C2 D1 D2",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Migrate guests with points",
+      "n": "Imported balances before launch.",
+      "s": "A1 A2 A3 E5 E1 F1 F2 F3 G7 F4 J3",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 1,
+      "t": "Earn at POS with a card",
+      "n": "Phone at the till, card matched, points credited, CFD screen.",
+      "s": "D2 E1 F1 F2 E2 F3 F6 G7 F4 J3",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 1,
+      "t": "Redeem at POS",
+      "n": "Cashier attaches the guest, selects an eligible reward and settles the ticket.",
+      "s": "D2 E1 G1 G2 F1 F2 F3 G6 G7 F4 J3",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Redeem on the CFD after paying",
+      "n": "Reward added to the paid ticket from the customer display.",
+      "s": "E1 F1 F2 F6 G3 G7 F4 J3",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Redeem on the Kiosk",
+      "n": "Kiosk validates the reward at checkout and records the points spent on completion.",
+      "s": "D2 E4 G1 G4 F1 F2 F3 G6 G7 F4 J3",
+      "side": ""
+    },
+    {
+      "id": "P07",
+      "g": 1,
+      "t": "Redeem online",
+      "n": "Signed-in guest adds a reward to the cart.",
+      "s": "D2 E3 G1 G5 F1 F2 F3 G6 G7 F4 J3",
+      "side": ""
+    },
+    {
+      "id": "P08",
+      "g": 1,
+      "t": "Not enough points",
+      "n": "Guest earns instead.",
+      "s": "E3 G1 F1 F2 F3 G7 F4 J3",
+      "side": ""
+    },
+    {
+      "id": "P09",
+      "g": 2,
+      "t": "Points transferred after the order",
+      "n": "Guest attached after payment.",
+      "s": "E4 F1 F2 F3 G7 F4 F5 J3",
+      "side": ""
+    },
+    {
+      "id": "P10",
+      "g": 2,
+      "t": "Full refund",
+      "n": "Earned points reversed and redeemed points returned.",
+      "s": "F3 G7 H1 H2 I1 I2 J3",
+      "side": ""
+    },
+    {
+      "id": "P11",
+      "g": 2,
+      "t": "Partial refund",
+      "n": "Only earned points reversed.",
+      "s": "F3 G7 H1 H3 I1 I2 J3",
+      "side": ""
+    },
+    {
+      "id": "P12",
+      "g": 2,
+      "t": "Cancel and repay",
+      "n": "Payment cancelled then paid again.",
+      "s": "G7 H1 H2 H4 F3 G7 F4 J3",
+      "side": ""
+    },
+    {
+      "id": "P13",
+      "g": 3,
+      "t": "Change a tier",
+      "n": "Edit or delete and resync devices.",
+      "s": "A3 I1 I2 J1 D1 D2",
+      "side": ""
+    },
+    {
+      "id": "P14",
+      "g": 3,
+      "t": "Turn the programme off",
+      "n": "Exit path.",
+      "s": "I1 I2 J1 J2 J3",
+      "side": ""
+    },
+    {
+      "id": "P15",
+      "g": 4,
+      "t": "Loyalty 2.0",
+      "n": "Discount rewards, sign-up reward and alerts.",
+      "s": "B4 K1 K2 J3",
+      "side": "K3"
+    }
+  ],
+  "NOTES": [
+    "Where the restaurant loyalty switch is turned on and off (Super Admin or Ops) was not traced, so A2 and J2 are TBC",
+    "Android POS cashier and customer-display flows were read in android-pos internal at d2b5329. Kiosk and mPOS coverage here relies on backend contracts or linked field tickets. Their device interfaces were not tested.",
+    "Android POS selects a reward directly in the traced cashier flow. Text-code endpoints exist in Zeus, but a required or optional text-code step was not found in that Android POS path.",
+    "The earn rule is fixed in code: 100 points per dollar on the discounted pre-tax subtotal; tax inclusive restaurants use the tax inclusive original price",
+    "No points expiry, sign-up bonus, manual adjustment or liability report was found in the live code",
+    "Online ordering checks were read in the shared redemption helpers only; the online UI was not traced in detail",
+    "The full PROD 4848 description requests an optional verification code during kiosk ordering. It does not identify a reward redemption code or request removal of the loyalty menu.",
+    "Stage K is from the Loyalty 2.0 PRD (release not named) and the Menu and Category IDs PRD (release 9.0)",
+    "Zeus internal, 02473c3bac9. See features/loyalty/components/configure, marketing/loyalty/loyalty.service.ts and kiosk-loyalty-redemption.utils.ts.",
+    "Device check: open the reward menu, disconnect the POS and remove a tier from Web Dash. Check what staff can see or select while offline, then reconnect and verify the menu and guest points. Offline POS redemption has not been established. The backend post-payment redemption flow checks that the reward item is active and that the guest has enough points.",
+    "Evidence for F2 to H4: Zeus guest.service.ts (handleTicketLoyalty and handleRefundLoyaltyPoints), kiosk-loyalty-redemption.utils.ts, loyalty.service.ts (applyPostPaymentRedemption) and ticket.service.ts (handlePostOrderAuthKiosk). Android evidence: LoyaltyMenuUiModels.kt, LoyaltyMenuFragment.kt, LoyaltyMenuRepositoryImpl.kt, LoyaltyPointsSummarySecondaryScreen.kt, CFDPaymentLoyaltyRepoImpl.kt and TicketReceiptMapper.kt. Scenarios without a linked field ticket are QA checks, not observed incidents.",
+    "Customer-display insufficient points is a server rejection (HTTP 400) and a changed ticket limit is a conflict (HTTP 409). The Android success branch does not check a failure flag inside a successful HTTP response. A false success would require that different response contract. No such response was found for these current rejections."
+  ]
+}

@@ -1,0 +1,546 @@
+{
+  "key": "spotlights",
+  "name": "Spotlights",
+  "title": "Spotlights: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Select a promotion",
+      "s": "Choose the location and a spotlight type."
+    },
+    {
+      "id": "B",
+      "t": "Prepare the content",
+      "s": "Write the offer and choose its destination and images."
+    },
+    {
+      "id": "C",
+      "t": "Review and release",
+      "s": "Save a draft or make the spotlight available to other surfaces."
+    },
+    {
+      "id": "D",
+      "t": "Follow and retire the offer",
+      "s": "Check what guests see and what happens to linked content."
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Open Spotlights",
+      "d": "The operator opens the restaurant list and searches or filters by status.",
+      "sys": [
+        "Web Dash: Spotlights"
+      ],
+      "e": [
+        [
+          "A status filter hides a saved draft",
+          "Operator creates a second promotion",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Spotlights from the previous restaurant remain visible",
+          "Wrong location selected for editing",
+          "H",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose a type",
+      "d": "Choose Happy Hour, Online Ordering, Catering, Reservations, Gift Cards, Loyalty or Custom. Loyalty depends on restaurant enablement.",
+      "sys": [
+        "Web Dash: Spotlights"
+      ],
+      "e": [
+        [
+          "Loyalty appears for a restaurant without a programme",
+          "Guest reaches an unavailable offer",
+          "H",
+          "CN,OB",
+          []
+        ],
+        [
+          "Wrong preset is kept after changing the promotion",
+          "Guest sees a misleading category",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Describe the offer",
+      "d": "Enter a title of up to 50 characters and a description of up to 400. Titles must be unique within the restaurant.",
+      "sys": [
+        "Web Dash: Spotlights"
+      ],
+      "e": [
+        [
+          "A reused title blocks a seasonal relaunch",
+          "Operator cannot save the promotion",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Copy omits a condition such as the closing time",
+          "Guests expect an unavailable offer",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Enter the destination",
+      "d": "Supply a valid web address for the ordering, reservation or other destination.",
+      "sys": [
+        "Web Dash: Spotlights"
+      ],
+      "e": [
+        [
+          "A valid address opens another branch",
+          "Guest books or orders at the wrong restaurant",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "A destination is retired after the spotlight is saved",
+          "Guest cannot act on the offer",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Select optional images",
+      "d": "The media picker accepts up to five images. The service requires unique image entries.",
+      "sys": [
+        "Web Dash: Spotlights",
+        "S3 / CDN"
+      ],
+      "e": [
+        [
+          "A sixth selection is dropped without a clear indication",
+          "Expected image is missing",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "An image is later removed from storage",
+          "Guest sees an empty image area",
+          "H",
+          "D,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Review the preview",
+      "d": "Review the Type and Content selections. Return to an earlier step to correct text or images.",
+      "sys": [
+        "Web Dash: Spotlights"
+      ],
+      "e": [
+        [
+          "Preview keeps an earlier image order after a correction",
+          "Wrong hero image is approved",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Long copy hides the call to action on a narrow layout",
+          "Guests miss the link",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "dec",
+      "rel": "L",
+      "t": "Ready to activate?",
+      "d": "Create saves the reviewed spotlight as active. Leaving offers a draft when the form has eligible changes.",
+      "sys": [
+        "Web Dash: Spotlights"
+      ],
+      "e": [
+        [
+          "Leaving an incomplete form discards copy the operator expects to keep",
+          "Promotion must be rebuilt",
+          "M",
+          "D,CX",
+          []
+        ],
+        [
+          "Operator selects Create while intending to save privately",
+          "Unfinished copy becomes selectable",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Save and reopen draft",
+      "d": "Save as Draft from the exit prompt and find the entry again in the list.",
+      "sys": [
+        "Web Dash: Spotlights"
+      ],
+      "e": [
+        [
+          "Draft is missing from a filtered list",
+          "Operator repeats the work",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Resuming and saving creates another record",
+          "Changes split across two spotlights",
+          "H",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Activate the spotlight",
+      "d": "The restaurant has an active record that eligible placements can select. Activation alone does not configure a placement.",
+      "sys": [
+        "Web Dash: Spotlights"
+      ],
+      "e": [
+        [
+          "List shows Active while the chosen surface has no placement",
+          "Promotion never reaches guests",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "A double submission leaves the operator uncertain which version won",
+          "Wrong promotion reused",
+          "M",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose a placement",
+      "d": "Select an eligible spotlight in a website section, campaign or journey. Image-only selections can omit records with no images. Start campaign on an active spotlight opens campaign creation with that spotlight selected. Confirm the selected source before preparing content.",
+      "sys": [
+        "Web Dash: Spotlights",
+        "Website builder",
+        "Marketing Campaigns",
+        "Marketing Journeys"
+      ],
+      "e": [
+        [
+          "An active text-only offer is missing from an image picker",
+          "Operator cannot find the offer",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Placement still references a previous seasonal offer",
+          "Guests see stale copy",
+          "H",
+          "D,CN",
+          []
+        ],
+        [
+          "A spotlight changes after it is selected for a campaign",
+          "The preview and eventual placement describe different offers",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "cust",
+      "rel": "L",
+      "t": "Open the spotlight",
+      "d": "The guest follows the displayed link from the published surface. Its availability also depends on the receiving surface.",
+      "sys": [
+        "Web Dash: Spotlights",
+        "Website builder",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Website copy still advertises an offer after its destination changes",
+          "Guest sees inconsistent terms",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "A valid destination requires a different restaurant selection",
+          "Guest abandons the action",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Deactivate the spotlight",
+      "d": "The operator changes Active to Inactive. The service updates linked journeys when the spotlight moves to inactive or draft.",
+      "sys": [
+        "Web Dash: Spotlights",
+        "Marketing Journeys"
+      ],
+      "e": [
+        [
+          "One linked journey changes while the status update fails",
+          "Journey and spotlight disagree",
+          "H",
+          "D,CN",
+          []
+        ],
+        [
+          "An already issued message continues advertising a retired offer",
+          "Guest follows an expired promotion",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "term",
+      "rel": "L",
+      "t": "Check the published placement",
+      "d": "Inspect the affected guest surface or journey after a change. Use its own publishing or scheduling workflow where applicable.",
+      "sys": [
+        "Web Dash: Spotlights"
+      ],
+      "e": [
+        [
+          "Reactivation is assumed to restore a removed journey reference",
+          "Future messages omit the offer",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "An old message still contains a broken destination",
+          "Guest support contacts continue",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "B1",
+      ""
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "C1",
+      ""
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C4",
+      "Activate the spotlight"
+    ],
+    [
+      "C4",
+      "D1",
+      ""
+    ],
+    [
+      "D1",
+      "D2",
+      ""
+    ],
+    [
+      "D2",
+      "D4",
+      ""
+    ],
+    [
+      "B2",
+      "C1",
+      ""
+    ],
+    [
+      "C2",
+      "C3",
+      "Save and reopen draft"
+    ],
+    [
+      "C3",
+      "B1",
+      ""
+    ],
+    [
+      "D1",
+      "D4",
+      ""
+    ],
+    [
+      "C1",
+      "B2",
+      ""
+    ],
+    [
+      "A1",
+      "D3",
+      ""
+    ],
+    [
+      "D3",
+      "D4",
+      ""
+    ],
+    [
+      "A1",
+      "C4",
+      ""
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Create",
+    "Place and maintain"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "Publish a new promotion",
+      "n": "Create the active spotlight and check a guest placement.",
+      "s": "A1 A2 B1 B2 B3 C1 C2 C4 D1 D2 D4",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Finish a saved draft",
+      "n": "Leave the form as a draft and complete it later.",
+      "s": "A1 A2 B1 B2 C1 C2 C3 B1 B2 B3 C1 C2 C4 D1 D4",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 0,
+      "t": "Correct the destination",
+      "n": "Return from Review to repair a link before activation.",
+      "s": "A1 A2 B1 B2 B3 C1 B2 C1 C2 C4 D1 D2 D4",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 1,
+      "t": "Use a text-only offer",
+      "n": "Skip optional images and select a compatible placement.",
+      "s": "A1 A2 B1 B2 C1 C2 C4 D1 D2 D4",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Retire a promotion",
+      "n": "Deactivate a listed promotion and check its dependent placements.",
+      "s": "A1 D3 D4",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Reactivate and check references",
+      "n": "Make a retired spotlight available again and review guest access.",
+      "s": "A1 C4 D1 D2 D4",
+      "side": ""
+    }
+  ],
+  "NOTES": [
+    "The spotlight form contains Type, Content and Review. The placement owns its schedule. No standalone timed expiry was found in this form.",
+    "Image selection, active records and journey detachment were verified in Zeus. Whether a particular previously published placement refreshes immediately requires a check on that surface.",
+    "No supplied PROD ticket specifically evidences a spotlight incident.",
+    "Zeus internal, 02473c3bac9. See legacy/components/Marketing/Spotlights and the marketing/spotlight and journey services."
+  ]
+}

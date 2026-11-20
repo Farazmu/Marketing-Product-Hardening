@@ -1,0 +1,1190 @@
+{
+  "key": "deals",
+  "name": "Deals",
+  "title": "Deals: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Choose the offer",
+      "s": "Start a restaurant offer and decide what the guest must do to qualify."
+    },
+    {
+      "id": "B",
+      "t": "Define price and scope",
+      "s": "Choose the buy items, discounted items and calculation."
+    },
+    {
+      "id": "C",
+      "t": "Set availability",
+      "s": "Choose dates, service hours, order sources and code restrictions."
+    },
+    {
+      "id": "D",
+      "t": "Review and release",
+      "s": "Save a draft or activate the completed deal."
+    },
+    {
+      "id": "E",
+      "t": "Claim at checkout",
+      "s": "Follow the offer through online and device checkout."
+    },
+    {
+      "id": "F",
+      "t": "Maintain and reconcile",
+      "s": "End or archive an offer and check discounted sales."
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Open the deals list",
+      "d": "Open Deals for the intended restaurant and inspect existing offers before creating another.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "An archived offer with the same promotion is overlooked",
+          "Manager duplicates a previous configuration",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Select the deal type",
+      "d": "Choose discount, buy this get this, gift with purchase, or gift without purchase in the classic flow.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Changing type retains items from the previous type",
+          "An unintended product becomes free",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "A gift without purchase is configured when a purchase is required",
+          "Stock is given away",
+          "C",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Define a discount",
+      "d": "Set dollars or percentage off and choose the entire order or selected products. Check the effective price on a low value basket.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "A percentage is interpreted as dollars",
+          "Guest is charged the wrong amount",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "A fixed discount exceeds the eligible line value",
+          "Order total is understated",
+          "C",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose qualifying purchases",
+      "d": "For a buy and get offer, choose which purchases and quantities count. A gift with purchase also needs its qualifying conditions.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Quantity from an excluded item contributes to the threshold",
+          "Free item granted incorrectly",
+          "C",
+          "M,CN",
+          []
+        ],
+        [
+          "Two qualifying units on separate lines fail to combine",
+          "Guest cannot claim the offer",
+          "H",
+          "M,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose the reward items",
+      "d": "Choose which products receive the saving or gift. A gift without purchase can be configured without a buy group.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Buy items are saved as reward items",
+          "Wrong item discounted",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "The only reward is later removed from the menu",
+          "Offer is advertised but cannot be completed",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B4",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Select menu scope",
+      "d": "The service stores menu, category or individual item selections for buy and get groups. Check partial category selections separately.",
+      "sys": [
+        "Web Dash: Deals",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Limit on individually selected items prevents choosing only part of a large category",
+          "Operator must narrow or broaden the offer",
+          "H",
+          "CN,CX",
+          [
+            "4673"
+          ]
+        ],
+        [
+          "Selecting a full category accidentally includes a newly added premium item",
+          "Unintended discounts",
+          "C",
+          "M,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B5",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Check qualifying spend",
+      "d": "When enabled, configure the minimum spend or item quantity and test the basket immediately below, at and above the threshold.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "A basket one cent below minimum qualifies",
+          "Restaurant funds an unearned discount",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "Price changes leave a previously eligible basket below the threshold without an explanation",
+          "Guest abandons checkout",
+          "H",
+          "M,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B6",
+      "b": "B",
+      "k": "int",
+      "rel": "TBC",
+      "t": "Check priced modifiers",
+      "d": "Check the paid add-ons on a reward item. The Android POS receipt calculates the item deal on the reward line using its base price and quantity. Compare the add-on charges and final amount with the ticket. Verify the online calculation separately.",
+      "sys": [
+        "Web Dash: Deals",
+        "Menu Manager",
+        "Online ordering",
+        "POS"
+      ],
+      "e": [
+        [
+          "Discount on a free base item also removes paid extras unexpectedly",
+          "Restaurant loses modifier revenue",
+          "C",
+          "M,CN",
+          []
+        ],
+        [
+          "Checkout and receipt assign different prices to the same modified reward",
+          "Guest disputes the charge",
+          "C",
+          "M,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B7",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Set the reward quantity",
+      "d": "Buy this get this separates Minimum Item Count from the number of items that receive a discount. Check both with mixed eligible items and repeated quantities.",
+      "sys": [
+        "Web Dash: Deals",
+        "Menu Manager"
+      ],
+      "e": [
+        [
+          "Two qualifying purchases produce two discounted units where the offer promises one",
+          "Restaurant gives an extra reward",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "The last eligible unit is ignored when the qualifying quantity sits on separate order lines",
+          "Guest misses an earned discount",
+          "H",
+          "M,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Set the offer dates",
+      "d": "Select the start and end dates. The classic form can constrain the selectable weekdays for a single day or date range.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "A one day deal is inactive for its intended day",
+          "Promotion cannot be redeemed",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "Restaurant midnight is calculated using the operator's time zone",
+          "Offer starts or ends on the wrong date",
+          "H",
+          "CX,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Select days and hours",
+      "d": "Set the applicable weekdays and the hour window. Check eligibility at opening, closing and across a service day boundary.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "An order exactly at the end time receives the expired price",
+          "Incorrect discount",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "Offer stays visible outside its chosen weekdays",
+          "Guests cannot complete an advertised offer",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose order sources",
+      "d": "The classic choices include POS with mPOS, Kiosk, QR and Website. Availability is calculated for the requesting order source.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "A kiosk-only offer also appears online",
+          "Wrong channel gives a discount",
+          "C",
+          "M,CN",
+          []
+        ],
+        [
+          "mPOS does not receive an offer selected under the shared POS label",
+          "Staff quote inconsistent prices",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Name and describe the deal",
+      "d": "Set a recognisable name, description, guest terms and optional images. The classic image field allows up to five images.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Duplicate name blocks saving after the operator completes the form",
+          "Rework before launch",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Guest description promises a different quantity from the configured reward",
+          "Offer disputes at checkout",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C5",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Configure a promo code",
+      "d": "When a code is enabled, check its availability and configure its permitted use. Verify typed and generated codes against the intended restaurant.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "An existing code resolves to a different offer",
+          "Incorrect discount is applied",
+          "C",
+          "M,D",
+          []
+        ],
+        [
+          "A limited-use code is accepted on two simultaneous checkouts after the last use",
+          "Restaurant gives excess discounts",
+          "C",
+          "M,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "dec",
+      "rel": "L",
+      "t": "Ready to release?",
+      "d": "Review the terms, eligibility and placement. Save an unfinished offer as Draft or submit at the final step.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Preview price excludes a qualification shown only in configuration",
+          "Operator approves incorrect terms",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "Incomplete settings survive submission as an active deal",
+          "Offer is unusable at checkout",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Resume a draft",
+      "d": "Locate the saved draft, restore the selected products and recheck availability before submission.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "A selected menu item is deleted between draft and release",
+          "Guest has no eligible selection",
+          "H",
+          "D,CN",
+          []
+        ],
+        [
+          "Draft reopens with wider scope than the saved subset",
+          "Discount is applied to too many items",
+          "C",
+          "M,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "soft",
+      "rel": "L",
+      "t": "Activate now or schedule",
+      "d": "The service chooses Active or Scheduled based on the dates and schedules status transitions. Drafts do not schedule activation.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Scheduled start is missed while the deal remains Scheduled",
+          "Opening promotion is unavailable",
+          "H",
+          "T,CN",
+          []
+        ],
+        [
+          "An earlier end event survives a schedule edit",
+          "Live deal stops early",
+          "H",
+          "T,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "int",
+      "rel": "L",
+      "t": "Refresh available offers",
+      "d": "Deal availability depends on the offer dates, channel and linked campaign status. Android POS refreshes active, unarchived offers using the device date and time. A failed refresh puts the list into a failed state. For campaign-linked deals, all linked campaigns must meet the Active or Sent rule.",
+      "sys": [
+        "Web Dash: Deals",
+        "POS",
+        "mPOS",
+        "Kiosk",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "The register clock falls outside the offer window during a refresh",
+          "Staff may miss a valid deal or see it at the wrong time",
+          "H",
+          "M,CN",
+          []
+        ],
+        [
+          "An active deal is missing from one ordering channel",
+          "Lost promotional orders",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "One linked campaign is still in review when the restaurant expects its deal to appear",
+          "An otherwise active offer is missing",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "cust",
+      "rel": "L",
+      "t": "Open an online or QR offer",
+      "d": "Open the deal from a restaurant listing or link. The online details page can show an unavailable state when the offer cannot be claimed. Campaign audience groups are combined across groups, with alternatives allowed inside a group. The online ordering check omits spend.",
+      "sys": [
+        "Web Dash: Deals",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Deep link opens a different restaurant or unavailable deal",
+          "Guest cannot claim the promotion",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Listing advertises an offer whose only eligible item is unavailable",
+          "Guest discovers the issue late",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "cust",
+      "rel": "L",
+      "t": "Build a qualifying basket",
+      "d": "Select the qualifying items and rewards, or enter the promo code where required. Compare eligible value with the displayed minimum spend.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Removing a qualifying item leaves the free item discounted",
+          "Guest pays less than the configured price",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "Qualifying spend includes an ineligible line or fee",
+          "Offer triggers too early",
+          "C",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Apply at a restaurant device",
+      "d": "On Android POS the cashier selects an offer in Deals and Discounts. The register checks offer terms and qualifying spend, then applies a ticket discount or opens item selection as appropriate. Check mPOS and Kiosk separately.",
+      "sys": [
+        "Web Dash: Deals",
+        "POS",
+        "mPOS",
+        "Kiosk"
+      ],
+      "e": [
+        [
+          "POS applies a deal the guest cannot see on the receipt",
+          "Staff cannot explain the bill",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "The register blocks the selected offer without making clear which existing discount conflicts with it",
+          "The cashier cannot tell which discount to remove",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E4",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Calculate the discounted order",
+      "d": "On Android POS, compare the discount against the paid receipt. Item deals appear on the reward line and entire-ticket deals appear in the totals. For online orders, compare the buy, get and loyalty lines against the displayed total, tax and fees.",
+      "sys": [
+        "Web Dash: Deals",
+        "Online ordering",
+        "POS"
+      ],
+      "e": [
+        [
+          "Rebuilding an order summary subtracts an entire-order discount twice",
+          "Amount displayed differs from amount charged",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "Rounding across two discounted quantities changes tax or final cents",
+          "Receipt and payment disagree",
+          "C",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E5",
+      "b": "E",
+      "k": "int",
+      "rel": "TBC",
+      "t": "Combine with other benefits",
+      "d": "On Android POS, check the offer terms when applying a deal to a ticket with an existing deal or discount. If the guest also uses a loyalty reward or pays by gift card, reconcile the reward line, the discount and the tender separately.",
+      "sys": [
+        "Web Dash: Deals",
+        "Marketing Gift cards",
+        "Marketing Loyalty",
+        "POS"
+      ],
+      "e": [
+        [
+          "A loyalty line receives a second unintended reduction",
+          "Restaurant pays twice for one reward",
+          "C",
+          "M,CN",
+          []
+        ],
+        [
+          "Gift card tender is treated as another price discount",
+          "Balance due or tax is wrong",
+          "C",
+          "M,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E6",
+      "b": "E",
+      "k": "cust",
+      "rel": "L",
+      "t": "Complete or change the order",
+      "d": "If the cashier voids a qualifying item, Android POS rechecks the required items and minimum spend and can remove the deal. Compare the revised ticket and paid receipt. For a channel that accepts promo codes, check the remaining uses after a failed payment.",
+      "sys": [
+        "Web Dash: Deals",
+        "POS"
+      ],
+      "e": [
+        [
+          "Declined payment consumes the last permitted code use",
+          "Guest cannot retry a valid offer",
+          "H",
+          "M,D",
+          []
+        ],
+        [
+          "Paid receipt shows the undiscounted total",
+          "Guest disputes the transaction",
+          "C",
+          "M,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F1",
+      "b": "F",
+      "k": "op",
+      "rel": "L",
+      "t": "Edit the offer",
+      "d": "Reopen the supported edit flow. Verify saved scope, dates and guest-facing copy after changing a deal.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "New dates save while old availability remains on devices",
+          "Different prices for the same offer",
+          "C",
+          "M,CN",
+          []
+        ],
+        [
+          "Editing one offer changes the terms on a historic receipt",
+          "Audit trail no longer matches payment",
+          "H",
+          "D,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F2",
+      "b": "F",
+      "k": "op",
+      "rel": "L",
+      "t": "End a deal early",
+      "d": "End marks the deal complete and records the current end time. Check saved links, devices and attached marketing messages. Ending a campaign placement leaves its underlying deal subject to the deal status and dates.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Old campaign link still implies the promotion is redeemable",
+          "Guest sees an expired promise",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "A cart opened before ending retains the expired saving at payment",
+          "Restaurant funds a retired offer",
+          "C",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F3",
+      "b": "F",
+      "k": "op",
+      "rel": "L",
+      "t": "Archive or restore the record",
+      "d": "Archive controls list visibility and eligibility. On restore, verify the underlying status and dates before promotion.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Restoring visibility is mistaken for reopening an expired deal",
+          "Guests receive no available offer",
+          "M",
+          "CN,CX",
+          []
+        ],
+        [
+          "Historical results disappear from an operator's filtered view",
+          "Reported promotion sales change",
+          "H",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F4",
+      "b": "F",
+      "k": "int",
+      "rel": "TBC",
+      "t": "Reconcile a refund",
+      "d": "Compare the amount actually charged for discounted items with the refund and receipt. For a limited-use promo code, check the remaining uses in the service after the refund.",
+      "sys": [
+        "Web Dash: Deals",
+        "POS",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "Refund uses full menu price on a discounted item",
+          "Restaurant refunds too much",
+          "C",
+          "M",
+          []
+        ],
+        [
+          "Code is reinstated after a partial refund that retained the reward",
+          "Guest can claim the offer again",
+          "C",
+          "M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F5",
+      "b": "F",
+      "k": "op",
+      "rel": "L",
+      "t": "Reconcile deal results",
+      "d": "Compare Deals sold and Revenue in Marketing Overview to the paid tickets for the same period and location.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "A buy item and free item both count as separate redemptions",
+          "Promotion performance overstated",
+          "H",
+          "R,M",
+          []
+        ],
+        [
+          "Refunded value remains in an otherwise net revenue comparison",
+          "Offer appears more profitable",
+          "H",
+          "R,M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F6",
+      "b": "F",
+      "k": "term",
+      "rel": "L",
+      "t": "Confirm the outcome",
+      "d": "Confirm the final guest price, offer status or report against the original offer terms.",
+      "sys": [
+        "Web Dash: Deals"
+      ],
+      "e": [
+        [
+          "Verification uses the displayed discount but omits the paid receipt",
+          "A wrong charge remains undetected",
+          "C",
+          "M,R",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "B1",
+      ""
+    ],
+    [
+      "B1",
+      "B4",
+      ""
+    ],
+    [
+      "B4",
+      "B5",
+      ""
+    ],
+    [
+      "B5",
+      "C1",
+      ""
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "C5",
+      ""
+    ],
+    [
+      "C5",
+      "D1",
+      ""
+    ],
+    [
+      "D1",
+      "D3",
+      "Activate now or schedule"
+    ],
+    [
+      "D3",
+      "D4",
+      ""
+    ],
+    [
+      "D4",
+      "E1",
+      ""
+    ],
+    [
+      "E1",
+      "E2",
+      ""
+    ],
+    [
+      "E2",
+      "E4",
+      ""
+    ],
+    [
+      "E4",
+      "E6",
+      ""
+    ],
+    [
+      "E6",
+      "F6",
+      ""
+    ],
+    [
+      "A2",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "B4",
+      ""
+    ],
+    [
+      "B5",
+      "B6",
+      ""
+    ],
+    [
+      "B6",
+      "C1",
+      ""
+    ],
+    [
+      "C4",
+      "D1",
+      ""
+    ],
+    [
+      "A2",
+      "B3",
+      ""
+    ],
+    [
+      "B4",
+      "C1",
+      ""
+    ],
+    [
+      "B1",
+      "C1",
+      ""
+    ],
+    [
+      "D1",
+      "D2",
+      "Resume a draft"
+    ],
+    [
+      "D2",
+      "B4",
+      ""
+    ],
+    [
+      "D4",
+      "F6",
+      ""
+    ],
+    [
+      "A1",
+      "D4",
+      ""
+    ],
+    [
+      "D4",
+      "E3",
+      ""
+    ],
+    [
+      "E3",
+      "E4",
+      ""
+    ],
+    [
+      "E4",
+      "E5",
+      ""
+    ],
+    [
+      "E5",
+      "E6",
+      ""
+    ],
+    [
+      "E4",
+      "E2",
+      ""
+    ],
+    [
+      "A1",
+      "F1",
+      ""
+    ],
+    [
+      "F1",
+      "D3",
+      ""
+    ],
+    [
+      "D4",
+      "F2",
+      ""
+    ],
+    [
+      "F2",
+      "D4",
+      ""
+    ],
+    [
+      "A1",
+      "F3",
+      ""
+    ],
+    [
+      "F3",
+      "D4",
+      ""
+    ],
+    [
+      "E6",
+      "F4",
+      ""
+    ],
+    [
+      "F4",
+      "F5",
+      ""
+    ],
+    [
+      "F5",
+      "F6",
+      ""
+    ],
+    [
+      "B2",
+      "B7",
+      ""
+    ],
+    [
+      "B7",
+      "B3",
+      ""
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Create and launch",
+    "Redeem",
+    "Maintain"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "Publish a percentage or fixed discount",
+      "n": "Configure a scoped discount and verify the guest checkout.",
+      "s": "A1 A2 B1 B4 B5 C1 C2 C3 C4 C5 D1 D3 D4 E1 E2 E4 E6 F6",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Create a buy and get offer",
+      "n": "Keep buy and reward groups distinct and verify priced extras.",
+      "s": "A1 A2 B2 B7 B3 B4 B5 B6 C1 C2 C3 C4 D1 D3 D4 E1 E2 E4 E6 F6",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 0,
+      "t": "Gift without a purchase",
+      "n": "Select the gift without setting a buy group.",
+      "s": "A1 A2 B3 B4 C1 C2 C3 C4 D1 D3 D4 E1 E2 E4 E6 F6",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 0,
+      "t": "Resume a future promotion",
+      "n": "Save a draft and recheck scope before scheduling.",
+      "s": "A1 A2 B1 C1 C2 C3 C4 D1 D2 B4 C1 C2 C3 C4 D1 D3 D4 F6",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Redeem at the counter or kiosk",
+      "n": "Trace restaurant device eligibility and final line prices.",
+      "s": "A1 D4 E3 E4 E6 F6",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Use a code with another benefit",
+      "n": "Check the discount, reward, tender and final payment together.",
+      "s": "A1 D4 E1 E2 E4 E5 E6 F6",
+      "side": ""
+    },
+    {
+      "id": "P07",
+      "g": 1,
+      "t": "Edit the basket before paying",
+      "n": "Recheck qualifying spend after removing an item.",
+      "s": "A1 D4 E1 E2 E4 E2 E4 E6 F6",
+      "side": ""
+    },
+    {
+      "id": "P08",
+      "g": 2,
+      "t": "Edit or end a published deal",
+      "n": "Verify availability after each status change.",
+      "s": "A1 F1 D3 D4 F2 D4 F6",
+      "side": ""
+    },
+    {
+      "id": "P09",
+      "g": 2,
+      "t": "Restore an archived deal",
+      "n": "Confirm dates and status before promoting it again.",
+      "s": "A1 F3 D4 F6",
+      "side": ""
+    },
+    {
+      "id": "P10",
+      "g": 2,
+      "t": "Reconcile a partial refund",
+      "n": "Trace the discount from checkout into the refund and the report.",
+      "s": "A1 D4 E1 E2 E4 E6 F4 F5 F6",
+      "side": ""
+    }
+  ],
+  "NOTES": [
+    "The classic deal flow and server availability rules are mapped. Extra controls introduced only by the flow flag are excluded.",
+    "PROD 4673 records the partial-category item-selection limitation. The current numeric limit was not established. PROD 4898 concerns POS meal break reminders, so it is not deal redemption evidence.",
+    "Android POS internal d2b5329 was checked in DealsRepositoryImpl, DealsAndDiscountViewModel, validator.kt and TicketReceiptMapper. Offer refresh, cashier selection and receipt rules are visible in the app. Code-use restoration and the mPOS and Kiosk implementations require separate evidence.",
+    "Zeus internal, 02473c3bac9. See the classic Deal form, deal-campaigns.ts, the relay deal handler and portal/online dealOrderSummary.ts."
+  ]
+}

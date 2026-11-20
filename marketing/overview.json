@@ -1,0 +1,541 @@
+{
+  "key": "overview",
+  "name": "Overview",
+  "title": "Overview: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Set the reporting context",
+      "s": "Choose the restaurant and reporting dates before comparing figures."
+    },
+    {
+      "id": "B",
+      "t": "Measure campaign delivery and engagement",
+      "s": "Compare email and text campaign results for the selected restaurant and period."
+    },
+    {
+      "id": "C",
+      "t": "Inspect guest and sales cards",
+      "s": "Check the definition and scope of each operational measure."
+    },
+    {
+      "id": "D",
+      "t": "Reconcile with the source",
+      "s": "Follow the card into its module and investigate differences."
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Open Marketing Overview",
+      "d": "The operator opens Overview for the selected business and restaurant.",
+      "sys": [
+        "Web Dash: Overview"
+      ],
+      "e": [
+        [
+          "Figures from the previous location remain on screen during a switch",
+          "Operator reports on the wrong restaurant",
+          "H",
+          "R,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose a reporting period",
+      "d": "Most businesses start on Last 7 days. Today, Last month, Last year, All time and a custom range are available.",
+      "sys": [
+        "Web Dash: Overview"
+      ],
+      "e": [
+        [
+          "Business switch restores the default period during a comparison",
+          "Dates change unnoticed",
+          "M",
+          "R,CX",
+          []
+        ],
+        [
+          "All time appears selected while a previous date remains active",
+          "Lifetime totals appear too low",
+          "H",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A3",
+      "b": "A",
+      "k": "soft",
+      "rel": "L",
+      "t": "Resolve the business dates",
+      "d": "The date picker blocks future dates. Several statistics use the restaurant closeout time to define the reporting day.",
+      "sys": [
+        "Web Dash: Overview"
+      ],
+      "e": [
+        [
+          "Orders taken after midnight move into the wrong trading day",
+          "Daily figures disagree with sales",
+          "H",
+          "R,CN",
+          []
+        ],
+        [
+          "A custom range excludes its last service period",
+          "End date appears incomplete",
+          "H",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Inspect campaigns sent",
+      "d": "The card counts launched message campaigns for the restaurant in the selected dates. Changing the reporting period refreshes the figures and their prior period comparison.",
+      "sys": [
+        "Web Dash: Overview",
+        "Marketing Campaigns",
+        "Marketing Journeys"
+      ],
+      "e": [
+        [
+          "A campaign launched near midnight falls into the wrong local date",
+          "The period comparison shifts by one campaign",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "The selected dates persist while the restaurant changes",
+          "The operator compares different audiences",
+          "H",
+          "R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Interpret guests reached",
+      "d": "Guests reached counts distinct guest records with a delivered campaign email or a delivered or read campaign text. A guest reached through both channels counts once. Journey sends are excluded.",
+      "sys": [
+        "Web Dash: Overview",
+        "Marketing Campaigns",
+        "Marketing Journeys"
+      ],
+      "e": [
+        [
+          "Two guest profiles for one person both receive the promotion",
+          "Reach can exceed the number of people",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "Delivery updates arrive after the operator reads the card",
+          "Reach initially looks lower than the final result",
+          "H",
+          "R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Inspect engagement, recent sends and usage",
+      "d": "Email open rate uses human opens on delivered emails. SMS click rate uses delivered texts with a tracked link. Recent lists the latest three launched message campaigns at this location independently of the selected dates. A connected SMS account can open the usage drawer.",
+      "sys": [
+        "Web Dash: Overview",
+        "Marketing Campaigns",
+        "Marketing Journeys"
+      ],
+      "e": [
+        [
+          "Missing historical tracking appears as zero engagement",
+          "The restaurant judges an unmeasured send as ineffective",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "An operator treats the recent list as filtered by the selected dates",
+          "Campaigns outside the period appear to contradict the totals",
+          "M",
+          "R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Inspect guest segments",
+      "d": "New, Occasional, Regular, Lost and Potential cards use guest records for the location and the selected period.",
+      "sys": [
+        "Web Dash: Overview",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Changing segment rules shifts the mix for the same period",
+          "Trend misinterpreted as guest churn",
+          "H",
+          "R,D",
+          []
+        ],
+        [
+          "A guest with no qualifying visit disappears from a comparison",
+          "Potential audience understated",
+          "M",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Filter deal performance",
+      "d": "Deals sold and Revenue are paired with active and complete deal series. The card supports filtering and sorting.",
+      "sys": [
+        "Web Dash: Overview",
+        "Marketing Deals"
+      ],
+      "e": [
+        [
+          "Limits on number sold hide a deal while the operator interprets the chart as all deals",
+          "Top performers misidentified",
+          "H",
+          "R",
+          []
+        ],
+        [
+          "An archived deal disappears from a historical comparison",
+          "Past promotion appears weaker",
+          "H",
+          "R,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Check review activity",
+      "d": "The reputation card shows the location rating, review volume, replied and unreplied measures. Filter by source and compare with the prior period. The tile labelled Total reviews uses the new reviews figure.",
+      "sys": [
+        "Web Dash: Overview"
+      ],
+      "e": [
+        [
+          "A disconnected source stops contributing new reviews",
+          "Silence mistaken for a quality improvement",
+          "H",
+          "R,CN",
+          []
+        ],
+        [
+          "A reply posted after the selected period changes how a historic review is read",
+          "Reply performance misinterpreted",
+          "M",
+          "R",
+          []
+        ],
+        [
+          "The Total reviews tile is interpreted as lifetime volume although it shows new reviews in the selected period",
+          "Restaurant misreads review growth",
+          "H",
+          "R,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Read gift card values",
+      "d": "The selected restaurant and its closeout dates scope purchased, redeemed and imported value. Purchases include reloads and purchase refunds. Redemption reversals reduce redeemed value. Unclaimed is purchased less redeemed plus imported for the selected window.",
+      "sys": [
+        "Web Dash: Overview",
+        "Marketing Gift cards"
+      ],
+      "e": [
+        [
+          "Unspent balances are counted as new sales",
+          "Restaurant overstates period revenue",
+          "H",
+          "M,R",
+          []
+        ],
+        [
+          "A chart with no positive slices looks like no cards were sold",
+          "Sales omitted from discussion",
+          "M",
+          "R,CX",
+          []
+        ],
+        [
+          "A location or closeout boundary differs between reports",
+          "The operator cannot reconcile the same trading period",
+          "H",
+          "R",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "C5",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Read loyalty activity",
+      "d": "The card shows Total Sign-ups, Points redeemed and Points earned. Loyalty statistics use the restaurant and date range. A disabled programme can return zeros.",
+      "sys": [
+        "Web Dash: Overview",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Disabled loyalty looks like an enabled programme with no participation",
+          "Operator investigates the wrong problem",
+          "M",
+          "OB,R",
+          []
+        ],
+        [
+          "Points issued and redeemed are compared as if both were cash",
+          "Liability misreported",
+          "H",
+          "M,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Open the underlying module",
+      "d": "Each card links to its own module. Check the destination location, period, filters and metric definition before comparing totals.",
+      "sys": [
+        "Web Dash: Overview"
+      ],
+      "e": [
+        [
+          "Destination opens with its default period",
+          "Valid figures appear inconsistent",
+          "H",
+          "R,CX",
+          []
+        ],
+        [
+          "A linked module has different access requirements",
+          "Manager cannot investigate the total",
+          "M",
+          "S,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "term",
+      "rel": "L",
+      "t": "Record the comparison",
+      "d": "Record the measure, location, dates and source values when escalating a discrepancy.",
+      "sys": [
+        "Web Dash: Overview"
+      ],
+      "e": [
+        [
+          "A screenshot omits the range and card filters",
+          "Support cannot reproduce the discrepancy",
+          "M",
+          "R,CX",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "A3",
+      ""
+    ],
+    [
+      "A3",
+      "B1",
+      ""
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "D1",
+      ""
+    ],
+    [
+      "D1",
+      "D2",
+      ""
+    ],
+    [
+      "A3",
+      "C1",
+      ""
+    ],
+    [
+      "C1",
+      "D1",
+      ""
+    ],
+    [
+      "A3",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "D1",
+      ""
+    ],
+    [
+      "A3",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "D1",
+      ""
+    ],
+    [
+      "A3",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "D1",
+      ""
+    ],
+    [
+      "A3",
+      "C5",
+      ""
+    ],
+    [
+      "C5",
+      "D1",
+      ""
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Campaign performance",
+    "Card reconciliation"
+  ],
+  "PATHS": [
+    {
+      "id": "P02",
+      "g": 1,
+      "t": "Reconcile the guest mix",
+      "n": "Compare the segment cards with Guest Book.",
+      "s": "A1 A2 A3 C1 D1 D2",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 1,
+      "t": "Investigate deal revenue",
+      "n": "Apply deal filters and compare the listed offers.",
+      "s": "A1 A2 A3 C2 D1 D2",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 1,
+      "t": "Check a review source",
+      "n": "Follow review activity into Review Management.",
+      "s": "A1 A2 A3 C3 D1 D2",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Check outstanding gift value",
+      "n": "Compare redeemed and unclaimed amounts with Gift Cards.",
+      "s": "A1 A2 A3 C4 D1 D2",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Check programme uptake",
+      "n": "Compare sign-ups and points with Loyalty.",
+      "s": "A1 A2 A3 C5 D1 D2",
+      "side": ""
+    },
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "Reconcile campaign reach and engagement",
+      "n": "Compare the selected period with campaign delivery records, then check the dates on the recent list.",
+      "s": "A1 A2 A3 B1 B2 B3 D1 D2",
+      "side": ""
+    }
+  ],
+  "NOTES": [
+    "The internal route mounts six cards. Campaign delivery and gift card figures use the selected location. The earlier production reference has five cards. Restaurant rollout was not verified.",
+    "Recent campaigns are selected independently of the period. Email opens exclude privacy prefetches and likely bots. SMS click rate excludes texts without a link.",
+    "No ticket in the supplied snapshot specifically identifies a failure on these Overview cards.",
+    "Zeus internal, 02473c3bac9. See Marketing/Overview, marketing/campaign/campaign-metrics.service.ts and the gift card dashboard statistics service."
+  ]
+}

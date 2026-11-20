@@ -1,0 +1,1226 @@
+{
+  "key": "journeys",
+  "name": "Journeys",
+  "title": "Journeys: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Identify the stage",
+      "s": "Select a predefined restaurant journey and understand its trigger."
+    },
+    {
+      "id": "B",
+      "t": "Prepare the message",
+      "s": "Choose content, channel and provider prerequisites."
+    },
+    {
+      "id": "C",
+      "t": "Enable and select recipients",
+      "s": "Follow event driven visits, scheduled checks and consent."
+    },
+    {
+      "id": "D",
+      "t": "Deliver the message",
+      "s": "Trace eligible recipients into dispatch and guest actions."
+    },
+    {
+      "id": "E",
+      "t": "Operate and investigate",
+      "s": "Edit, disable and reconcile individual runs."
+    },
+    {
+      "id": "F",
+      "t": "Upcoming Journeys 2.0",
+      "s": "Planned canvas and return attribution rules from the current PRD."
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Open Journeys",
+      "d": "Open the restaurant's existing stage-based Journeys surface, with categories, channel filters, enablement and results.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "A category filter hides an enabled reminder",
+          "Staff assume no send is active",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose a segment stage",
+      "d": "Choose a New, Occasional, Regular or Lost guest stage. The stage set depends on the restaurant's Regular and Lost durations in Guest Book.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Changing segment settings changes which stages are available",
+          "Existing reminder no longer matches the intended guests",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "An impossible duration combination leaves the list empty",
+          "Operator cannot configure reminders",
+          "H",
+          "OB,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A3",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Select a date or loyalty trigger",
+      "d": "Birthday offers month before, week before and on the day. Anniversary uses week before and on the day. Loyalty lists sign-up, tier and redemption reminders.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Operator treats first visit anniversary as birthday",
+          "Guest gets the wrong occasion message",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "An enabled loyalty reminder is assumed to have a populated audience",
+          "Operator expects sends that never occur",
+          "H",
+          "R,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A4",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Inspect the stage audience",
+      "d": "Open the customer view for the stage and selected channel. Presence of a phone or email alone does not establish permission to send.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Audience preview includes a reachable but unsubscribed guest",
+          "Preview exceeds eligible send count",
+          "M",
+          "R,CX",
+          []
+        ],
+        [
+          "Operator compares a stage preview with an earlier run",
+          "Guest list appears inconsistent",
+          "M",
+          "D,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose email or text",
+      "d": "Configure the channel for the stage. Email and text use different content, destination and eligibility rules.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Changing channel leaves the old channel's copy displayed",
+          "Operator approves unintended content",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "The guest has only the other channel available",
+          "Stage has no eligible recipient",
+          "M",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Build the email",
+      "d": "Configure the email and its layout or uploaded template. Check subject, layout, links and the personal unsubscribe destination.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Email service"
+      ],
+      "e": [
+        [
+          "Template preview contains the correct link but the sent HTML omits it",
+          "Guest cannot withdraw consent",
+          "C",
+          "L,CN",
+          []
+        ],
+        [
+          "Stored template image fails to load in the inbox",
+          "Offer terms are missing",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Attach an offer or item",
+      "d": "Select the deal, spotlight or menu item where applicable and verify that it belongs to the restaurant and remains available.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Menu Manager",
+        "Marketing Deals"
+      ],
+      "e": [
+        [
+          "Deactivated spotlight is removed but copy still advertises it",
+          "Guest follows a nonexistent offer",
+          "H",
+          "D,CN",
+          []
+        ],
+        [
+          "A deal expires between selection and delivery",
+          "Message promises an unavailable price",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B4",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Compose the text",
+      "d": "Edit body, optional link and optional media. The body counter changes with the link allowance.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Adding a link leaves existing copy outside the allowed length",
+          "Operator cannot save the final message",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "An old media URL remains after a channel change",
+          "Unexpected image delivered",
+          "H",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B5",
+      "b": "B",
+      "k": "int",
+      "rel": "L",
+      "t": "Verify text setup",
+      "d": "Saving a text configuration or enabling a text journey checks restaurant verification. The relay also needs the marketing messaging service.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Twilio"
+      ],
+      "e": [
+        [
+          "Verification changes after save and before dispatch",
+          "Eligible guests receive nothing",
+          "H",
+          "OB,CN",
+          []
+        ],
+        [
+          "Setup for a different restaurant appears ready",
+          "Operator tries to enable an unusable channel",
+          "H",
+          "OB,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B6",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Save the stage content",
+      "d": "Save channel, body and referenced content. Deal, item and spotlight selections can be cleared by an edit.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Two operators save different versions and overwrite each other",
+          "Unapproved copy becomes current",
+          "H",
+          "D",
+          []
+        ],
+        [
+          "Removing an attachment leaves its old call to action in the body",
+          "Guest sees inconsistent terms",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Enable the stage",
+      "d": "Switch on the selected stage. The status service can dispatch when a send is requested, the stage is enabled and it has a body.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Switch appears on after the service rejects text verification",
+          "Operator expects sends from a disabled stage",
+          "H",
+          "OB,CX",
+          []
+        ],
+        [
+          "A request to enable with immediate sending is repeated",
+          "Guests may receive the same reminder twice",
+          "H",
+          "T,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "int",
+      "rel": "L",
+      "t": "Receive a qualifying visit",
+      "d": "For an identified guest, the visit handler uses the order count supplied for that event. One selects the first visit and two selects the second visit. Sending also requires an enabled current stage for the restaurant and a guest eligible for its channel.",
+      "sys": [
+        "Web Dash: Journeys",
+        "POS",
+        "Online ordering"
+      ],
+      "e": [
+        [
+          "An order event arrives with a visit count of two for a guest completing their first qualifying visit",
+          "The guest can receive the second visit message early",
+          "H",
+          "D,CN",
+          []
+        ],
+        [
+          "The first visit is anonymous when the event is processed and staff identify the guest later",
+          "The guest may miss the first visit message unless a qualifying event is processed after attachment",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Evaluate recurring stages",
+      "d": "The worker loads current, enabled journeys for the restaurant. The segment evaluator matches the guest's stage before dispatch.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "A stage is disabled while a previously selected batch is pending",
+          "Guest receives a retired reminder",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Segment recalculation and the scheduled check run in different orders",
+          "Guest enters the wrong reminder stage",
+          "H",
+          "D,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Match a calendar occasion",
+      "d": "Birthday uses the stored birth date. Anniversary derives from the first visit date. Calendar checks include dates crossing into the next year.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "A December check misses a January birthday",
+          "Guest misses the selected advance notice",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "Leap day or a missing first visit date places the guest in the wrong daily group",
+          "Reminder arrives on the wrong date",
+          "H",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C5",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Evaluate loyalty recipients",
+      "d": "The recurring worker has a loyalty branch, but its recipient lookup in this checkout returns an empty list. Trace any alternative sender separately.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "A loyalty sign-up stage shows enabled but produces no scheduled recipients",
+          "Welcome message never arrives",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "A zero-recipient result is read as no loyalty activity",
+          "Programme performance is understated",
+          "M",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C6",
+      "b": "C",
+      "k": "dec",
+      "rel": "L",
+      "t": "Is this guest eligible?",
+      "d": "Email requires subscription. Text requires an opted-in, valid US phone number. A matching stage must also have usable content. The worker reserves one text credit per selected recipient for SMS or two when the journey includes media.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "Email permission is used as a substitute for SMS consent",
+          "Unconsented text delivered",
+          "C",
+          "L,CN",
+          []
+        ],
+        [
+          "Guest with valid consent is dropped after phone formatting changes",
+          "Expected message missing",
+          "H",
+          "D,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C7",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Reserve text quota",
+      "d": "The service reserves monthly usage by restaurant and journey recipient group. A blocked reservation records an error and excludes that group from sending.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Marketing Campaigns",
+        "Twilio"
+      ],
+      "e": [
+        [
+          "Campaign usage consumes the remaining allowance before the journey reservation",
+          "Entire group misses a reminder",
+          "H",
+          "B,CN",
+          []
+        ],
+        [
+          "Retry reserves usage twice for the same group",
+          "Available allowance is understated",
+          "C",
+          "B,M",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "soft",
+      "rel": "L",
+      "t": "Queue channel batches",
+      "d": "Eligible recipients are grouped by channel and split into batches of up to 50. Keep the stage, location and content tied to the batch.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "A failure after the first batch leaves the remainder unsent",
+          "Some otherwise eligible guests are missed",
+          "H",
+          "T,D",
+          []
+        ],
+        [
+          "Batch is retried after partial success",
+          "Guests receive duplicates",
+          "H",
+          "T,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "int",
+      "rel": "L",
+      "t": "Send the email",
+      "d": "The relay supports stored HTML and a bulk-template path. It counts send outcomes and supplies guest-specific unsubscribe links.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Email service"
+      ],
+      "e": [
+        [
+          "One template fetch fails for a whole batch",
+          "No messages reach that group",
+          "H",
+          "CN,T",
+          []
+        ],
+        [
+          "Provider accepts a message but AIO cannot match its event",
+          "Delivery or open is missing from history",
+          "H",
+          "D,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "int",
+      "rel": "L",
+      "t": "Send the text",
+      "d": "The relay uses the restaurant's marketing text configuration and duplicate handling. It records outcomes by recipient where available. The shared inbound SMS worker records opt outs for future audience selection.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Twilio"
+      ],
+      "e": [
+        [
+          "Provider accepts a message but later delivery fails",
+          "Sent count exceeds messages received",
+          "H",
+          "CN,R",
+          []
+        ],
+        [
+          "A retry skips a guest whose first attempt never reached the provider",
+          "Guest misses the reminder",
+          "H",
+          "T,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "cust",
+      "rel": "L",
+      "t": "Follow the message",
+      "d": "The guest opens the email or text and follows the offer or destination. Receipt, click and a restaurant order are separate events.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Saved link opens a different location",
+          "Guest cannot redeem the advertised deal",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Email opens are interpreted as a completed return visit",
+          "Impact is overstated",
+          "M",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D5",
+      "b": "D",
+      "k": "cust",
+      "rel": "L",
+      "t": "Opt out of the channel",
+      "d": "The guest can use the email unsubscribe link or withdraw SMS consent. Verify the next journey selection with the updated preference.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Guestbook / CRM"
+      ],
+      "e": [
+        [
+          "A queued batch still contains the guest after opt out",
+          "Unwanted message follows withdrawal",
+          "C",
+          "L,CN",
+          []
+        ],
+        [
+          "Opting out of texts changes an unrelated email preference",
+          "Guest loses wanted messages",
+          "H",
+          "D,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Inspect run history",
+      "d": "History exposes time, channel, total, sent and failed. Inspect customer results and distinguish failed attempts from ineligible guests.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Guests excluded before dispatch appear to be a provider failure",
+          "Staff troubleshoot the wrong system",
+          "M",
+          "R,CX",
+          []
+        ],
+        [
+          "Summing retries counts the same guest multiple times",
+          "Reach is overstated",
+          "H",
+          "R,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Edit an enabled stage",
+      "d": "Reopen content and save changes. Check messages already selected separately from subsequent runs.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "A queued message contains an earlier deal while the preview shows the replacement",
+          "Guest receives superseded terms",
+          "H",
+          "D,CN",
+          []
+        ],
+        [
+          "A removed offer still appears in uploaded email HTML",
+          "Guest is sent to a retired promotion",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Disable or re-enable",
+      "d": "Disable the stage to exclude it from future recurring selections. Verify already dispatched messages separately before re-enabling.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Previously queued messages continue after the operator expects a full stop",
+          "Guests receive an unexpected reminder",
+          "H",
+          "CX,T",
+          []
+        ],
+        [
+          "Re-enabling repeats a stage already received by the same person",
+          "Duplicate guest contact",
+          "H",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E4",
+      "b": "E",
+      "k": "term",
+      "rel": "L",
+      "t": "Confirm the run outcome",
+      "d": "Reconcile eligibility, sent and failed counts, consent and provider delivery for the affected guest and channel.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "A zero-send run is closed as healthy without inspecting quota or eligibility",
+          "Unsent reminders remain unexplained",
+          "H",
+          "R,B",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E5",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Compare stage statistics",
+      "d": "The stage summary uses total recipients for sent and successful send attempts for delivered. Compare these labels with run history and actual provider delivery events.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Email service",
+        "Twilio"
+      ],
+      "e": [
+        [
+          "A provider-accepted text fails later but is counted as delivered in stage statistics",
+          "Delivery performance is overstated",
+          "H",
+          "R,CN",
+          []
+        ],
+        [
+          "Recipients selected for an attempt are counted as sent after a partial failure",
+          "Manager overlooks undelivered reminders",
+          "H",
+          "R,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F1",
+      "b": "F",
+      "k": "op",
+      "rel": "NEXT",
+      "t": "Set up a starter journey",
+      "d": "The PRD defines Bring back new guests and Win back lost guests, initially off, with a restaurant deal attached to each. Enabling starts the defined entry rules.",
+      "sys": [
+        "Web Dash: Journeys",
+        "Marketing Deals"
+      ],
+      "e": [
+        [
+          "Starter deal is created twice when setup is retried",
+          "Staff see conflicting incentives",
+          "H",
+          "D,CN",
+          []
+        ],
+        [
+          "Inactive restaurant is enabled without the operator's decision",
+          "Guests receive unapproved messages",
+          "H",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F2",
+      "b": "F",
+      "k": "op",
+      "rel": "NEXT",
+      "t": "Apply canvas changes",
+      "d": "Done stages a single edit. Apply changes publishes the validated canvas after the operator reviews its impact. Revised waits retain their original start.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Moving a step sends it twice to the same entry",
+          "Guest receives a duplicate",
+          "H",
+          "D,T",
+          []
+        ],
+        [
+          "Changing an entry rule moves guests already in progress",
+          "Unexpected reminders or skipped guests",
+          "H",
+          "CN,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F3",
+      "b": "F",
+      "k": "soft",
+      "rel": "NEXT",
+      "t": "Resolve return attribution",
+      "d": "The PRD allows one running journey per guest. A qualifying return can occur during the journey or within 30 days after its last step. Where both journeys reached the guest, the most recent delivered message determines credit.",
+      "sys": [
+        "Web Dash: Journeys"
+      ],
+      "e": [
+        [
+          "Both journeys take credit for one order",
+          "Return revenue counted twice",
+          "H",
+          "M,R",
+          []
+        ],
+        [
+          "A qualifying return fails to cancel later reminders",
+          "Guest receives an offer after meeting the goal",
+          "H",
+          "CN,CX",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "A4",
+      ""
+    ],
+    [
+      "A4",
+      "B1",
+      ""
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "B6",
+      ""
+    ],
+    [
+      "B6",
+      "C1",
+      ""
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C6",
+      ""
+    ],
+    [
+      "C6",
+      "D1",
+      "Queue channel batches"
+    ],
+    [
+      "D1",
+      "D2",
+      ""
+    ],
+    [
+      "D2",
+      "D4",
+      ""
+    ],
+    [
+      "D4",
+      "E1",
+      ""
+    ],
+    [
+      "E1",
+      "E4",
+      ""
+    ],
+    [
+      "A2",
+      "B1",
+      ""
+    ],
+    [
+      "B1",
+      "B4",
+      ""
+    ],
+    [
+      "B4",
+      "B5",
+      ""
+    ],
+    [
+      "B5",
+      "B6",
+      ""
+    ],
+    [
+      "C1",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "C6",
+      ""
+    ],
+    [
+      "C6",
+      "C7",
+      "Reserve text quota"
+    ],
+    [
+      "C7",
+      "D1",
+      ""
+    ],
+    [
+      "D1",
+      "D3",
+      ""
+    ],
+    [
+      "D3",
+      "D4",
+      ""
+    ],
+    [
+      "A1",
+      "A3",
+      ""
+    ],
+    [
+      "A3",
+      "B1",
+      ""
+    ],
+    [
+      "B2",
+      "B6",
+      ""
+    ],
+    [
+      "C3",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "C6",
+      ""
+    ],
+    [
+      "D4",
+      "E4",
+      ""
+    ],
+    [
+      "A3",
+      "A4",
+      ""
+    ],
+    [
+      "C3",
+      "C5",
+      ""
+    ],
+    [
+      "C5",
+      "E1",
+      ""
+    ],
+    [
+      "A4",
+      "C3",
+      ""
+    ],
+    [
+      "C6",
+      "E1",
+      "Inspect run history"
+    ],
+    [
+      "A2",
+      "C3",
+      ""
+    ],
+    [
+      "C7",
+      "E1",
+      ""
+    ],
+    [
+      "D4",
+      "D5",
+      ""
+    ],
+    [
+      "D5",
+      "C3",
+      ""
+    ],
+    [
+      "A2",
+      "E2",
+      ""
+    ],
+    [
+      "E2",
+      "B3",
+      ""
+    ],
+    [
+      "B6",
+      "C3",
+      ""
+    ],
+    [
+      "D2",
+      "E1",
+      ""
+    ],
+    [
+      "A2",
+      "E3",
+      ""
+    ],
+    [
+      "E3",
+      "E1",
+      ""
+    ],
+    [
+      "E1",
+      "E3",
+      ""
+    ],
+    [
+      "E3",
+      "C1",
+      ""
+    ],
+    [
+      "D2",
+      "E4",
+      ""
+    ],
+    [
+      "A1",
+      "F1",
+      ""
+    ],
+    [
+      "F1",
+      "F2",
+      ""
+    ],
+    [
+      "F2",
+      "F3",
+      ""
+    ],
+    [
+      "F3",
+      "E4",
+      ""
+    ],
+    [
+      "E1",
+      "E5",
+      ""
+    ],
+    [
+      "E5",
+      "E4",
+      ""
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Stage setup",
+    "Guest and delivery",
+    "Operations",
+    "Upcoming Journeys 2.0"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "Enable an email visit reminder",
+      "n": "Configure a stage and follow the first or second visit to delivery.",
+      "s": "A1 A2 A4 B1 B2 B3 B6 C1 C2 C6 D1 D2 D4 E1 E4",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Set up an SMS segment reminder",
+      "n": "Verify the number and allowance before sending a recurring text.",
+      "s": "A1 A2 B1 B4 B5 B6 C1 C3 C6 C7 D1 D3 D4 E1 E4",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 1,
+      "t": "Birthday or anniversary email",
+      "n": "Follow a date-based entry and verify the result.",
+      "s": "A1 A3 B1 B2 B6 C1 C3 C4 C6 D1 D2 D4 E4",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 1,
+      "t": "Investigate an empty loyalty stage",
+      "n": "Follow the listed trigger to its recurring audience lookup.",
+      "s": "A1 A3 A4 B1 B2 B6 C1 C3 C5 E1 E4",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Guest does not qualify",
+      "n": "Stop at eligibility and inspect what the run counted.",
+      "s": "A1 A2 A4 C3 C6 E1 E4",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Text quota is exhausted",
+      "n": "Follow a blocked reservation and inspect the recorded error.",
+      "s": "A1 A2 C3 C6 C7 E1 E4",
+      "side": ""
+    },
+    {
+      "id": "P07",
+      "g": 1,
+      "t": "Guest opts out after a text",
+      "n": "Check channel permission again on the next scheduled evaluation.",
+      "s": "A1 A2 C3 C6 C7 D1 D3 D4 D5 C3 C6 E1 E4",
+      "side": ""
+    },
+    {
+      "id": "P08",
+      "g": 1,
+      "t": "Unsubscribe after an email",
+      "n": "Follow the email link and verify the next eligibility decision.",
+      "s": "A1 A2 C3 C6 D1 D2 D4 D5 C3 C6 E1 E4",
+      "side": ""
+    },
+    {
+      "id": "P09",
+      "g": 2,
+      "t": "Edit an active message",
+      "n": "Update a reference and check later sends against the saved version.",
+      "s": "A1 A2 E2 B3 B6 C3 C6 D1 D2 E1 E4",
+      "side": ""
+    },
+    {
+      "id": "P10",
+      "g": 2,
+      "t": "Disable then resume a stage",
+      "n": "Check future selection after both status changes.",
+      "s": "A1 A2 E3 E1 E3 C1 C3 C6 D1 D2 E1 E5 E4",
+      "side": ""
+    },
+    {
+      "id": "P11",
+      "g": 3,
+      "t": "Publish an edit and measure a return",
+      "n": "Follow the planned starter journey through a confirmed edit and a qualifying order.",
+      "s": "A1 F1 F2 F3 E4",
+      "side": ""
+    }
+  ],
+  "NOTES": [
+    "The internal Marketing sidebar opens the existing stage list, with editing and history. The Journeys 2.0 canvas remains represented by the upcoming steps.",
+    "The existing stage, worker and relay paths are distinct from the Journeys 2.0 canvas. The three upcoming steps are based on the Notion PRD dated 19 November 2026.",
+    "The recurring loyalty-stage recipient lookup returns an empty list. Loyalty registration and eligible guest imports can send a separate transactional welcome. Its receipt does not confirm that a recurring stage ran.",
+    "Native device event delivery, behaviour of an already queued batch after disabling a stage, production scheduling and carrier receipt require operational checks. No directly matching PROD incident was supplied.",
+    "Zeus internal, 02473c3bac9. See routes/modules/marketing.ts, cosmicjobs/src/jobs/journeys and libs/milkomeda/src/module/journey/journey.service.ts."
+  ]
+}

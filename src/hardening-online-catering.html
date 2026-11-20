@@ -1,0 +1,5791 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AIO Ordering Paths and Errors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #F3F5F8; --surface: #FFFFFF; --soft: #F7F8FA; --ink: #18212C; --muted: #5C6674; --faint: #8D96A3; --line: #DFE3E9;
+  --accent: #5640D2; --accent-soft: #EEEBFD;
+  --cust: #C94F83; --softw: #2E68AC; --int: #B08714; --dec: #6B7480; --term: #2F7D52;
+  --C: #C6342C; --H: #D9731F; --M: #C49B22; --L: #98A1AD; --C-soft: #FCECEB;
+  --font: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #13171D; --surface: #1B2129; --soft: #20262F; --ink: #E7EBF0; --muted: #A2ACB8; --faint: #77818E; --line: #2D3540;
+    --accent: #A391FF; --accent-soft: #29234A;
+    --cust: #E482AD; --softw: #73A9E6; --int: #DDB650; --dec: #A2ACB8; --term: #6DC394;
+    --C: #F06A61; --H: #F09A50; --M: #E0C05C; --L: #7E8895; --C-soft: #3A2022;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #13171D; --surface: #1B2129; --soft: #20262F; --ink: #E7EBF0; --muted: #A2ACB8; --faint: #77818E; --line: #2D3540;
+  --accent: #A391FF; --accent-soft: #29234A;
+  --cust: #E482AD; --softw: #73A9E6; --int: #DDB650; --dec: #A2ACB8; --term: #6DC394;
+  --C: #F06A61; --H: #F09A50; --M: #E0C05C; --L: #7E8895; --C-soft: #3A2022;
+}
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+[hidden] { display: none !important; }
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+body { height: 100%; margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--font); display: grid; grid-template-rows: auto 1fr; overflow: hidden; }
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.muted { color: var(--muted); }
+
+header { background: var(--surface); border-bottom: 1px solid var(--line); padding: 14px 28px 0; }
+.chan { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 14px; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; }
+.chan button { border: 0; background: none; padding: 7px 18px; border-radius: 9px; font-weight: 700; color: var(--muted); }
+.chan button:hover { color: var(--ink); }
+.chan button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+h1 { margin: 0; font-size: 1.4rem; line-height: 1.2; letter-spacing: -0.01em; }
+#sum { margin: 4px 0 14px; color: var(--muted); font-size: 0.92rem; }
+.bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 24px; }
+.tabs { display: flex; gap: 22px; }
+.tabs button { border: 0; background: none; padding: 8px 0 10px; color: var(--muted); border-bottom: 2px solid transparent; font-weight: 700; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-color: var(--ink); }
+.pathpick { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; }
+.pathpick label { font-size: 0.86rem; color: var(--muted); white-space: nowrap; }
+select { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 6px 10px; min-width: 260px; max-width: 70vw; }
+#clear { border: 0; background: none; color: var(--accent); font-size: 0.88rem; padding: 4px 2px; }
+.key { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px 14px; padding-bottom: 12px; font-size: 0.8rem; color: var(--muted); }
+.key span { display: inline-flex; align-items: center; gap: 6px; }
+.kd { width: 10px; height: 10px; border-radius: 2px; display: inline-block; background: var(--dec); }
+.k-cust.kd { background: var(--cust); } .k-soft.kd { background: var(--softw); } .k-int.kd { background: var(--int); } .k-term.kd { background: var(--term); }
+
+main { display: grid; grid-template-columns: 1fr; min-height: 0; }
+body.open main { grid-template-columns: 1fr 420px; }
+.scroll { overflow: auto; min-height: 0; padding: 20px 28px 60px; }
+
+.stage { display: grid; grid-template-columns: 220px 1fr; gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); transition: opacity .15s; }
+.stage:first-child { border-top: 0; padding-top: 4px; }
+.stage.faded { opacity: 0.4; }
+.stage-head h2 { margin: 0; font-size: 1rem; line-height: 1.3; }
+.sid { color: var(--accent); margin-right: 8px; }
+.stage-head p { margin: 4px 0 0; font-size: 0.84rem; color: var(--muted); }
+.stage-head .sstat { color: var(--faint); font-size: 0.8rem; }
+.cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 12px; }
+.card { position: relative; width: 100%; height: 100%; text-align: left; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 11px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: inset 3px 0 0 var(--dec); transition: border-color .12s, opacity .15s; }
+.card.k-cust { box-shadow: inset 3px 0 0 var(--cust); } .card.k-soft { box-shadow: inset 3px 0 0 var(--softw); }
+.card.k-int { box-shadow: inset 3px 0 0 var(--int); } .card.k-term { box-shadow: inset 3px 0 0 var(--term); }
+.card:hover { border-color: var(--faint); }
+.card.dim { opacity: 0.35; }
+.card.on { border-color: var(--accent); }
+.card.sel { border-color: var(--ink); border-width: 2px; padding: 9px 11px 10px 13px; }
+.top { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--faint); font-weight: 700; }
+.rel { color: var(--accent); }
+.ct { font-weight: 700; font-size: 0.93rem; line-height: 1.3; flex: 1; }
+.ce { font-size: 0.8rem; color: var(--muted); }
+.ce b { color: var(--C); margin-left: 8px; }
+.num { position: absolute; top: -9px; left: -7px; background: var(--accent); color: #fff; font-size: 0.72rem; font-weight: 700; border-radius: 999px; padding: 1px 7px; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+#drawer { overflow: auto; min-height: 0; background: var(--surface); border-left: 1px solid var(--line); padding: 20px 22px 50px; position: relative; }
+.x { position: absolute; top: 12px; right: 12px; border: 0; background: none; color: var(--muted); width: 32px; height: 32px; border-radius: 8px; }
+.x:hover { background: var(--soft); }
+.back { border: 0; background: none; color: var(--accent); padding: 0; margin-bottom: 10px; font-size: 0.86rem; }
+.kicker { margin: 0 36px 4px 0; font-size: 0.82rem; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+#drawer h2 { margin: 0 36px 6px 0; font-size: 1.25rem; line-height: 1.25; }
+.desc { margin: 0; color: var(--muted); font-size: 0.92rem; }
+#drawer h3 { font-size: 0.95rem; margin: 22px 0 8px; }
+.errs { list-style: none; margin: 0; padding: 0; }
+.errs li { padding: 8px 0 8px 12px; border-left: 3px solid var(--L); margin-bottom: 6px; }
+.errs li.sev-C { border-color: var(--C); } .errs li.sev-H { border-color: var(--H); } .errs li.sev-M { border-color: var(--M); }
+.sv { font-size: 0.74rem; font-weight: 700; color: var(--muted); }
+.sev-C .sv { color: var(--C); } .sev-H .sv { color: var(--H); }
+.et { margin: 1px 0 2px; font-weight: 700; font-size: 0.9rem; line-height: 1.35; }
+.ei { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.bn { color: var(--faint); }
+.nav { list-style: none; margin: 0; padding: 0; }
+.nav button { width: 100%; text-align: left; border: 0; background: none; padding: 6px 8px; border-radius: 8px; font-size: 0.9rem; }
+.nav button:hover { background: var(--soft); }
+.nav button span { display: block; font-size: 0.8rem; color: var(--muted); }
+details { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 12px; }
+summary { cursor: pointer; font-weight: 700; font-size: 0.9rem; }
+.lbl { margin: 14px 0 4px; font-size: 0.8rem; font-weight: 700; color: var(--faint); }
+details .muted { margin: 0; font-size: 0.86rem; }
+.stats { display: flex; gap: 18px; margin: 12px 0 0; font-size: 0.86rem; color: var(--muted); }
+.stats b { color: var(--ink); font-size: 1.15rem; margin-right: 3px; }
+.steps { list-style: none; margin: 0; padding: 0; }
+.steps button { display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; width: 100%; text-align: left; border: 0; background: none; padding: 6px 6px; border-radius: 8px; font-size: 0.9rem; }
+.steps button:hover { background: var(--soft); }
+.steps .i { color: var(--faint); text-align: right; }
+.steps .n { color: var(--muted); font-size: 0.82rem; }
+
+.ebar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-bottom: 14px; }
+#q { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 7px 12px; width: min(320px, 100%); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px; font-size: 0.84rem; }
+.chip span { color: var(--muted); margin-left: 3px; }
+.chip[aria-pressed="false"] { opacity: 0.45; }
+.ebar p { margin: 0; font-size: 0.88rem; }
+.twrap { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 0.9rem; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+thead th { font-size: 0.8rem; color: var(--muted); position: sticky; top: 0; background: var(--surface); }
+tr.grp th { background: var(--soft); font-size: 0.92rem; }
+tr[data-node] { cursor: pointer; } tr[data-node]:hover { background: var(--soft); }
+.tstep { font-weight: 700; width: 210px; }
+.pill { font-size: 0.78rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.pill.sev-C { color: var(--C); } .pill.sev-H { color: var(--H); }
+
+@media (max-width: 1100px) {
+  body.open main { grid-template-columns: 1fr; }
+  #drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 94vw); z-index: 10; box-shadow: -10px 0 40px rgba(0,0,0,.18); padding-top: calc(20px + env(safe-area-inset-top, 0px)); }
+  .stage { grid-template-columns: 1fr; gap: 10px; }
+}
+@media (max-width: 640px) {
+  header { padding: 14px 16px 0; } .scroll { padding: 14px 16px 50px; }
+  h1 { font-size: 1.15rem; }
+  .key { display: none; }
+  select { min-width: 0; width: 100%; }
+  .pathpick { width: 100%; }
+  .cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  #drawer { top: auto; height: 72vh; width: 100%; border-left: 0; border-radius: 16px 16px 0 0; padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="chan" role="tablist" aria-label="Channel">
+    <button role="tab" data-ch="online">Online ordering</button>
+    <button role="tab" data-ch="catering">Catering</button>
+  </div>
+  <h1 id="ttl">Online ordering: customer paths and what can go wrong</h1>
+  <p id="sum"></p>
+  <div class="bar">
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="journey">Journey</button>
+      <button role="tab" data-tab="errors">All errors</button>
+    </div>
+    <div class="pathpick">
+      <label for="path">Trace a path</label>
+      <select id="path"></select>
+      <button id="clear" data-act="clear">Clear</button>
+    </div>
+    <div class="key" aria-label="Legend">
+      <span><i class="kd k-cust"></i>Customer</span><span><i class="kd k-soft"></i>Software</span><span><i class="kd k-int"></i>Integration</span><span><i class="kd"></i>◆ Decision</span><span><i class="kd k-term"></i>Start or end</span>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="scroll">
+    <div id="journey"></div>
+    <div id="errors" hidden></div>
+  </div>
+  <aside id="drawer" hidden aria-live="polite"></aside>
+</main>
+<script>
+const BANDS = [
+  { id: "A", t: "Entry and storefront", s: "How the customer arrives, whether ordering is open, and the order type and timing" },
+  { id: "B", t: "Sign up, Login, Guest", s: "Optional. Reached from the header, the cart or checkout, and returns to where it started" },
+  { id: "C", t: "Menu browsing", s: "Menus, categories, search and item availability" },
+  { id: "D", t: "Item and modifiers", s: "Building one item, from a simple add to nested pizza modifiers" },
+  { id: "E", t: "Cart and offers", s: "Review, edit, upsell, deals, loyalty and promo codes" },
+  { id: "F", t: "Checkout", s: "Details, timing changes, tip, fees, consent and gift cards" },
+  { id: "G", t: "Payment", s: "Card, wallets and saved cards through Adyen" },
+  { id: "H", t: "Confirmation and fulfilment", s: "What happens after the order is placed, until the customer has the food" },
+  { id: "I", t: "Post-order and account", s: "My Orders, reorder and account changes" },
+  { id: "J", t: "Gift card purchase", s: "A separate order type that starts on the storefront" }
+];
+
+const NODES = [
+  // A. Entry
+  { id: "A1", b: "A", r: 0, c: 0, k: "term", rel: "L", t: "Customer opens online ordering",
+    d: "Arrives from the restaurant website's order button, a shared link, Google, a marketing SMS or email, social profiles, or a gift card text.",
+    sys: ["Website builder", "Marketing Campaigns"],
+    e: [
+      ["Order button on the restaurant website points to an old or wrong storefront URL", "Customer lands on a 404 or the wrong location and leaves", "H", "CX,OB", 0],
+      ["Campaign or deal link opens the storefront without the promised deal", "Customer feels misled and abandons, campaign ROI drops", "H", "CN,CX", 0],
+      ["Google shows stale hours or a third-party delivery link above the native storefront", "Commission-free order goes to a 3PD instead", "M", "CX", 0]
+    ] },
+  { id: "A2", b: "A", r: 0, c: 1, k: "soft", rel: "L", t: "Storefront loads",
+    d: "Restaurant page renders branding, online banners, menu and hours, configured in Web Dash and Menu Manager.",
+    sys: ["Web Dash: Online settings", "Menu Manager", "Marketing Campaigns"],
+    e: [
+      ["Page or menu takes seconds to load (target: queries under 500ms, good Core Web Vitals)", "Bounce before the first item is seen", "H", "CX,T", 1],
+      ["Online ordering not enabled in Super Admin and the page shows a raw error instead of an unavailable state", "Dead end with no explanation", "C", "OB,CX", 1],
+      ["Banners stretched, cropped or missing on mobile versus desktop", "Broken first impression, marketing message lost", "M", "CN,CX", 1],
+      ["Banner links to a module or deal that no longer exists", "Tap leads nowhere", "M", "CN,CX", 0],
+      ["Layout or scripts break inside Instagram or Facebook in-app browsers", "Social traffic cannot order", "M", "CX,T", 0],
+      ["Wrong restaurant name, logo or address shown", "Customer doubts it is the right place", "H", "CX,D", 0]
+    ] },
+  { id: "A3", b: "A", r: 0, c: 2, k: "dec", rel: "L", t: "Is ordering open right now?",
+    d: "Business hours, online ordering timings, scheduled order settings and busy mode decide what the customer gets: order now, schedule only, or view the menu with ordering turned off. Busy mode pauses ASAP ordering for a set time so the kitchen does not overflow, and the customer can schedule or wait.",
+    sys: ["Web Dash: Online settings", "Business Hours", "MOM"],
+    e: [
+      ["Store shown as closed during open hours (time zone or split-shift gap misread)", "Orders lost during service", "C", "CN", 0],
+      ["Store accepts ASAP orders after closing time", "Kitchen gets orders it cannot make", "C", "CN,CX", 1],
+      ["ASAP still selectable while busy mode is on", "The overflow busy mode was meant to stop", "C", "CX", 1],
+      ["Multi-slot hours (lunch and dinner) ignore the break in between", "Orders accepted while the kitchen is closed", "H", "CN", 1],
+      ["Special-day hours or early closures not respected (R9)", "Orders on holidays or after early close", "H", "CX", 1],
+      ["Busy mode does not lift when the timer ends", "Lost sales after the rush", "H", "CX", 0],
+      ["Busy mode turns on mid-order and the order still goes through as ASAP without warning", "Order joins the overflow, customer expects normal timing", "H", "CX", 0],
+      ["Status does not change at the open or close boundary until the page is refreshed", "Customer sees stale availability", "H", "T,CX", 0],
+      ["Blank page or a raw error instead of a clear closed or busy state", "Looks broken, hurts trust", "H", "CX", 0],
+      ["Countdown, back-at time or next opening time missing or wrong", "Customer leaves instead of coming back", "M", "CX", 0],
+      ["No notice on the storefront, customer only finds out at checkout", "Wasted cart building, abandonment", "M", "CX", 0]
+    ] },
+  { id: "A4", b: "A", r: 0, c: 3, k: "cust", rel: "L", t: "Pickup or delivery",
+    d: "Order type chosen at the start, from the types the restaurant has enabled. It can be changed at checkout. Delivery routes through Kitchen Hub 3PD, which is not live yet, so confirm how far to map it.",
+    sys: ["Web Dash: Online settings", "Kitchen Hub (3PD)"],
+    e: [
+      ["Delivery offered when the restaurant has no delivery route set up", "Dead end at checkout after the cart is built", "C", "CN", 0],
+      ["Delivery address not validated, or an address outside the delivery range accepted", "Order cannot be delivered", "H", "CX", 0],
+      ["Delivery fee, minimum spend or quoted delivery time not shown until checkout", "Surprise cost, abandonment", "H", "M,CX", 0],
+      ["Order type not carried through to the cart, checkout and the kitchen ticket", "Food prepared for the wrong fulfilment", "H", "CN", 0],
+      ["Changing the type later does not re-price fees, taxes or minimum spend", "Wrong charge", "H", "M", 0],
+      ["Only one type enabled but the selector is still shown", "Extra step", "L", "CX", 0]
+    ] },
+  { id: "A5", b: "A", r: 1, c: 0, k: "dec", rel: "L", t: "Order now or later",
+    d: "Timing chosen at the start, limited to what the store status allows. It can be changed at checkout.",
+    sys: ["Web Dash: Online settings"],
+    e: [
+      ["ASAP offered when the store is closed or busy mode is on", "Order the kitchen cannot take", "C", "CX", 0],
+      ["Schedule option missing although scheduling is enabled", "Lost future orders", "H", "CN", 0],
+      ["Choice made here is not carried into checkout", "Customer picks twice, or the wrong timing is used", "H", "CX", 0],
+      ["No indication of how long ASAP takes before the customer commits", "Expectation mismatch at pickup", "M", "CX", 0]
+    ] },
+  { id: "A6", b: "A", r: 1, c: 1, k: "cust", rel: "L", t: "Pick a date and time",
+    d: "Slots within business hours and scheduled order settings, for orders placed for later.",
+    sys: ["Web Dash: Online settings", "Business Hours"],
+    e: [
+      ["Slots outside business hours or in the past offered", "Orders for times the store is closed", "C", "CN", 1],
+      ["Special-day closures not reflected in slots", "Orders on closed days", "H", "CX", 1],
+      ["Times shown in device time zone, not the restaurant's", "Customer arrives at the wrong time", "H", "CX", 0],
+      ["Menu and item availability for the scheduled time not checked", "Unfulfillable scheduled order", "H", "CN", 1],
+      ["Lead time or days-ahead limit not enforced", "Kitchen cannot plan", "M", "CN", 0]
+    ] },
+
+  // B. Sign up, Login, Guest
+  { id: "B1", b: "B", r: 0, c: 0, k: "dec", rel: "L", t: "Sign in or continue as guest?",
+    d: "Offered from the header, from the cart when redeeming a reward, and at checkout. Continuing as guest keeps public deals but not loyalty. Either way the customer returns to the step they came from.",
+    sys: ["Guestbook / CRM"],
+    e: [
+      ["After sign-in the customer lands on the home page, not back at the cart or checkout", "Cart abandoned", "H", "CX", 0],
+      ["Guest cart not merged into the account, cart empties on sign-in", "Order rebuilt or lost", "C", "CX,D", 0],
+      ["Continue as guest is hidden or looks secondary", "Guests feel forced to register and leave", "H", "CX", 1],
+      ["Public auto-applied deals silently dropped for guests", "Guest pays more than advertised", "H", "CN", 0],
+      ["Guest nagged to sign up on every step", "Friction, lower conversion", "M", "CX", 0],
+      ["Guest signs up later but past guest orders are not linked", "History and points lost", "M", "D", 0],
+      ["Benefit of signing in (rewards, discounts) not explained", "Fewer sign-ups", "L", "CX", 0]
+    ] },
+  { id: "B2", b: "B", r: 0, c: 1, k: "cust", rel: "L", t: "Log in to an existing account",
+    d: "Phone or email with verification, then the Guestbook profile loads: points balance, segment deals, saved allergens and tags. Confirm the exact method with engineering, this map assumes a verification code.",
+    sys: ["Guestbook / CRM", "Twilio", "Marketing Loyalty & Deals"],
+    e: [
+      ["Verification code not delivered or delayed", "Customer cannot log in", "C", "CN,CX", 0],
+      ["Previous person's profile still loaded on a shared device", "Privacy breach, wrong rewards used", "C", "S,D", 0],
+      ["Correct code rejected or expires too fast", "Repeated attempts, abandonment", "H", "S,CX", 0],
+      ["Account made with phone on the Kiosk is not found when using email online", "Duplicate account, split points", "H", "D,CX", 0],
+      ["Points balance stale after a redemption on Kiosk or POS", "Customer sees the wrong balance", "H", "CN,D", 1],
+      ["Session expires mid-order and applied rewards or the cart are lost", "Rework or abandonment", "H", "S,CX", 0],
+      ["Lockout after failed attempts with no recovery path", "Customer stuck", "M", "S", 0],
+      ["Saved allergens and tags not loaded", "Allergen prompts do not appear", "M", "D", 0],
+      ["One-time code autofill not supported on mobile", "Slower login", "L", "CX", 0]
+    ] },
+  { id: "B3", b: "B", r: 0, c: 2, k: "cust", rel: "L", t: "Social login",
+    d: "Google and other enabled providers, then the Guestbook profile loads. Apple ID is being explored.",
+    sys: ["Guestbook / CRM", "Marketing Loyalty & Deals"],
+    e: [
+      ["Social pop-up blocked inside in-app browsers", "Login fails silently", "H", "CX", 0],
+      ["Social email does not match the phone-based profile, a duplicate profile is created", "Points and history split across two accounts", "H", "D,CN", 0],
+      ["Segment deals not loaded for the customer's segment", "Customer misses a targeted offer", "H", "CN", 0],
+      ["Provider returns no phone number", "SMS alerts and phone-based loyalty lookup break later", "M", "D", 0],
+      ["No Apple ID option for iPhone users", "Drop-off for the largest mobile segment", "M", "CX", 1]
+    ] },
+  { id: "B4", b: "B", r: 0, c: 3, k: "cust", rel: "L", t: "Sign up",
+    d: "Name, phone, email and consent. Creates a Guestbook profile and grants any sign-up reward.",
+    sys: ["Guestbook / CRM", "Marketing Loyalty"],
+    e: [
+      ["SMS or marketing consent pre-ticked or bundled with terms", "TCPA exposure", "C", "L", 0],
+      ["Phone already registered shows a dead-end error instead of a log in prompt", "Customer gives up", "H", "CX", 0],
+      ["Invalid US phone or email accepted", "Unreachable profile, alerts fail", "H", "CX,D", 0],
+      ["Profile shows on the storefront but is not created in Guestbook", "Customer invisible to CRM and loyalty", "H", "CN,D", 0],
+      ["Sign-up reward bonus not granted (R9)", "Broken promise at the moment of sign-up", "H", "CN", 1]
+    ] },
+
+  // C. Menu
+  { id: "C1", b: "C", r: 0, c: 0, k: "cust", rel: "L", t: "Select a menu",
+    d: "Shown when more than one menu is active. Menus follow their menu timings and the timing chosen at entry.",
+    sys: ["Menu Manager"],
+    e: [
+      ["Wrong menu for the time of day (breakfast menu at dinner)", "Customer orders items the kitchen is not serving", "H", "CN", 0],
+      ["Scheduled order uses the current menu instead of the menu active at the scheduled time", "Unavailable items ordered for later", "H", "CN,CX", 0],
+      ["Menu with no visible items still listed", "Dead end", "M", "CN", 1],
+      ["Menu selector shown when only one menu is active", "Extra step", "L", "CX", 0]
+    ] },
+  { id: "C2", b: "C", r: 0, c: 1, k: "cust", rel: "L", t: "Browse, search and filter",
+    d: "Categories and items in Menu Manager sort order, with search, filters, images and prices. Items that are out of stock or outside their menu timing show as unavailable and cannot be added.",
+    sys: ["Menu Manager", "POS"],
+    e: [
+      ["All items shown as unavailable when they are in fact available", "No orders possible", "C", "CN", 0],
+      ["Items visible in Menu Manager are missing from the storefront", "Lost sales on those items", "C", "CN", 1],
+      ["Prices differ from Menu Manager or POS", "Wrong charges, complaints", "C", "CN,M", 0],
+      ["Item marked out of stock on POS mid-session but the storefront only updates on refresh", "Late surprise at checkout or pickup", "H", "CN,T", 0],
+      ["Ordering disabled state not applied when the store is closed, so items can still be added", "Frustration after building an order that cannot be placed", "H", "CX", 0],
+      ["Category and item order differs from Menu Manager (R8 sort order)", "Featured items buried", "M", "CN", 1],
+      ["Search misses partial words, typos or descriptions", "Customer cannot find the item", "M", "CX", 0],
+      ["Filters hide every item with no clear-filters option", "Looks like an empty menu", "M", "CX", 1],
+      ["Images missing, slow or matched to the wrong item", "Lower appeal, confusion", "M", "CX", 0],
+      ["Empty categories displayed", "Clutter, looks broken", "L", "CX", 0]
+    ] },
+  { id: "C3", b: "C", r: 0, c: 2, k: "cust", rel: "L", t: "Open item details",
+    d: "Image, description, price, calories, allergens and tags. Unavailable items open in a read-only state that cannot be added.",
+    sys: ["Menu Manager"],
+    e: [
+      ["Unavailable item can still be added to the cart", "Order the kitchen cannot fulfil", "C", "CN", 0],
+      ["Price on the item screen differs from the list price", "Trust drops at the decision moment", "H", "M", 0],
+      ["Allergens missing or not flagged against the customer's saved allergens", "Health risk", "H", "L,CX", 0],
+      ["Out-of-stock item not flagged until add to cart", "Wasted customisation", "H", "CN", 0],
+      ["No reason or available-from time shown for an unavailable item", "Customer leaves instead of waiting", "M", "CX", 0],
+      ["Wrong or placeholder image", "Expectation mismatch", "L", "CX", 0]
+    ] },
+
+  // D. Item
+  { id: "D1", b: "D", r: 0, c: 0, k: "dec", rel: "L", t: "Does the item have modifiers?",
+    d: "Simple items go straight to the cart. Items with modifiers open the customise screen.",
+    sys: ["Menu Manager"],
+    e: [
+      ["Item with required modifiers treated as simple and added with no choices", "Incomplete order reaches the kitchen", "C", "CN", 0],
+      ["Simple item forced through an empty modifier screen", "Extra step", "L", "CX", 0]
+    ] },
+  { id: "D2", b: "D", r: 0, c: 1, k: "soft", rel: "R8", t: "Pre-fill from last order",
+    d: "For signed-in customers who ordered this item before, choices are pre-filled from their last order.",
+    sys: ["Guestbook / CRM", "Menu Manager"],
+    e: [
+      ["Pre-fills a modifier that is now out of stock or deleted", "Invalid item in the cart", "H", "CN", 0],
+      ["Pre-fill applied to a different item or size", "Wrong order", "H", "CX", 0],
+      ["Customer does not notice the choices were pre-filled", "Unwanted modifiers ordered", "M", "CX", 0],
+      ["Modifier prices changed since the last order and are not refreshed", "Wrong price", "H", "M", 0]
+    ] },
+  { id: "D3", b: "D", r: 0, c: 2, k: "cust", rel: "L", t: "Choose modifiers",
+    d: "Required and optional groups, minimum and maximum selections, nested modifiers, pizza modifiers.",
+    sys: ["Menu Manager"],
+    e: [
+      ["Required group not enforced", "Incomplete item reaches the kitchen", "C", "CN", 0],
+      ["Minimum or maximum selections not enforced", "Unpriced extras or invalid item", "H", "CN", 0],
+      ["Out-of-stock modifier option can be selected", "Kitchen cannot make it as ordered", "H", "CN", 1],
+      ["Nested modifier levels do not open or lose the selection (multi-parent, R9)", "Customer cannot build the item", "H", "CN", 1],
+      ["Running price does not update with priced modifiers", "Surprise total in the cart", "H", "M", 0],
+      ["Default modifiers not pre-selected", "Customer forgets standard choices", "M", "CN", 0],
+      ["Complex modifier layouts break on small screens", "Options cannot be reached", "M", "CX", 1]
+    ] },
+  { id: "D4", b: "D", r: 0, c: 3, k: "cust", rel: "L", t: "Half and half selection",
+    d: "Left, right or whole placement, mainly pizza.",
+    sys: ["Menu Manager"],
+    e: [
+      ["Half topping priced as whole, or whole priced as half", "Overcharge or lost revenue", "C", "M", 1],
+      ["Left, right or whole placement missing from the item summary and cart", "Customer cannot confirm the build", "H", "CX", 0],
+      ["Same topping on both halves charged twice", "Overcharge", "H", "M", 0]
+    ] },
+  { id: "D5", b: "D", r: 0, c: 4, k: "cust", rel: "L", t: "Choose add-ons",
+    d: "Optional extras attached to the item.",
+    sys: ["Menu Manager"],
+    e: [
+      ["Add-on price not added to the item total", "Revenue loss", "H", "M", 0],
+      ["Unavailable add-on can be selected", "Kitchen cannot fulfil", "H", "CN", 0],
+      ["Add-ons from another item shown", "Confusion, wrong order", "M", "CN", 0],
+      ["Add-on behaviour differs from the Kiosk for the same item", "Inconsistent brand experience", "M", "CX", 1]
+    ] },
+  { id: "D6", b: "D", r: 1, c: 4, k: "cust", rel: "L", t: "Special instructions and quantity",
+    d: "Free-text note for the kitchen and item quantity.",
+    sys: ["Menu Manager"],
+    e: [
+      ["Instructions field shown when the restaurant has turned instructions off", "Notes the kitchen will ignore", "M", "CN", 0],
+      ["Long text cut off without warning", "Kitchen misses part of the request", "M", "CX", 0],
+      ["Instruction saved on screen but missing on the order", "Customer finds out at pickup", "H", "CN", 0],
+      ["Quantity accepts zero, negatives or very large numbers", "Broken totals or a huge accidental order", "H", "CX,M", 0]
+    ] },
+  { id: "D7", b: "D", r: 1, c: 0, k: "soft", rel: "L", t: "Add to cart",
+    d: "Item saved to the cart with its choices. Customer keeps browsing or opens the cart.",
+    sys: [],
+    e: [
+      ["Double tap adds the item twice", "Accidental duplicate", "H", "CX", 0],
+      ["Price in the cart differs from the item screen", "Trust breaks", "C", "M", 0],
+      ["Modifiers or instructions lost between item screen and cart", "Wrong food", "C", "D", 0],
+      ["Add fails on a weak network with no message", "Customer thinks it was added", "H", "CX,T", 0],
+      ["Cart count does not update", "Customer adds again", "M", "CX", 0]
+    ] },
+
+  // E. Cart
+  { id: "E1", b: "E", r: 0, c: 0, k: "cust", rel: "L", t: "Review cart",
+    d: "Items, choices, subtotal and the way into offers and checkout.",
+    sys: [],
+    e: [
+      ["Out-of-stock item allowed to proceed to checkout", "Order the kitchen cannot fulfil", "C", "CN", 0],
+      ["Item that became unavailable after it was added is not flagged", "Late failure or refund", "H", "CN", 0],
+      ["Cart and checkout totals disagree (cart reconciliation, R9)", "Wrong charge or abandoned checkout", "C", "M", 1],
+      ["Cart lost on refresh, back navigation or sign-in", "Order rebuilt or abandoned", "H", "D,CX", 0],
+      ["Empty cart can still proceed to checkout", "Broken checkout", "M", "CX", 0],
+      ["Too many steps from cart to checkout (R9)", "Drop-off", "M", "CX", 1]
+    ] },
+  { id: "E2", b: "E", r: 0, c: 1, k: "cust", rel: "L", t: "Edit quantity, remove or edit item",
+    d: "Change quantity, remove an item, or reopen an item to change its choices.",
+    sys: [],
+    e: [
+      ["Removing an item leaves its deal or reward discount applied", "Discount on nothing, revenue loss", "C", "M", 0],
+      ["Quantity change does not recalculate totals", "Wrong charge", "H", "M", 0],
+      ["Editing an item loses its modifiers or instructions", "Wrong food", "H", "CX", 0],
+      ["Removing the last item leaves fees or a negative subtotal", "Broken checkout", "H", "M", 0]
+    ] },
+  { id: "E3", b: "E", r: 0, c: 2, k: "soft", rel: "L", t: "AI recommendations",
+    d: "Recommendation engine suggests add-ons and items to raise order value.",
+    sys: ["AI Recommendation Engine", "Menu Manager"],
+    e: [
+      ["Recommends unavailable items", "Dead taps, lost upsell", "H", "CN", 0],
+      ["Recommended item that needs modifiers is added without them", "Incomplete item reaches the kitchen", "C", "CN", 0],
+      ["Recommends items already in the cart", "Looks unintelligent", "M", "CX", 0],
+      ["Recommendations slow down the cart load", "Drop-off at the cart", "M", "T", 1],
+      ["Suggestions ignore time of day or the active menu", "Irrelevant offers", "L", "CX", 0]
+    ] },
+  { id: "E4", b: "E", r: 1, c: 0, k: "dec", rel: "L", t: "Apply an offer?",
+    d: "Deal, loyalty reward, promo code, or none. Guests choosing a reward are sent to sign in.",
+    sys: ["Marketing Loyalty & Deals"],
+    e: [
+      ["Offers entry point hidden or below the fold", "Eligible customers miss rewards", "M", "CX", 0],
+      ["Guest taps a reward and gets no prompt to sign in", "Reward never applied", "M", "CX", 0]
+    ] },
+  { id: "E5", b: "E", r: 1, c: 1, k: "soft", rel: "L", t: "Deal applied",
+    d: "Auto-applied or picked manually. Four deal types, some segment-based.",
+    sys: ["Marketing Deals", "Marketing Campaigns"],
+    e: [
+      ["Eligible deal not auto-applied", "Customer overpays, complaint", "H", "CN", 0],
+      ["Ineligible deal applied (wrong items, segment or minimum spend)", "Revenue loss", "C", "CN,M", 0],
+      ["Deal works outside its set timings", "Unplanned discounting", "H", "CN", 1],
+      ["Totals wrong when service charge and tax apply on the original subtotal", "Wrong charge, reporting mismatch", "C", "M", 1],
+      ["Deal stacks with loyalty or gift cards against the rules", "Over-discounting", "H", "M", 1],
+      ["Deal shown greyed out with no reason", "Confusion", "L", "CX", 0]
+    ] },
+  { id: "E6", b: "E", r: 1, c: 2, k: "cust", rel: "L", t: "Redeem loyalty reward",
+    d: "Signed-in only. Multi-item redemption, points limits, rewards on priced modifiers, tiered discounts (R9).",
+    sys: ["Marketing Loyalty", "Guestbook / CRM"],
+    e: [
+      ["Points balance differs from Kiosk or POS", "Customer disputes the balance", "H", "CN,D", 1],
+      ["Points deducted but discount not applied", "Customer loses value", "C", "M", 0],
+      ["Points redemption limit not enforced", "Over-redemption", "H", "M", 1],
+      ["Reward on a priced modifier miscalculated", "Wrong discount", "H", "M", 1],
+      ["Reward applied to the wrong item in a multi-item cart", "Wrong discount value", "H", "M", 0],
+      ["Tiered discount reward misapplied (R9)", "Wrong discount", "H", "M", 1]
+    ] },
+  { id: "E7", b: "E", r: 1, c: 3, k: "cust", rel: "R9", t: "Enter promo code",
+    d: "Code-based deals, valid across channels where configured.",
+    sys: ["Marketing Deals"],
+    e: [
+      ["Valid code rejected because of case or spaces", "Customer abandons", "H", "CN", 0],
+      ["Expired or wrong-channel code accepted", "Unplanned discounting", "H", "CN", 1],
+      ["Code stacks with deals against the rules", "Over-discounting", "H", "M", 0],
+      ["No reason shown when a code fails", "Repeated attempts, support tickets", "M", "CX", 0]
+    ] },
+  { id: "E8", b: "E", r: 2, c: 1, k: "soft", rel: "L", t: "Totals recalculated",
+    d: "Subtotal, discounts, service charges and tax recalculated after every change.",
+    sys: ["Web Dash: Payments"],
+    e: [
+      ["Discount larger than the item price creates a negative line", "Negative totals, refund risk", "C", "M", 0],
+      ["$0.00 total not recognised, card still requested", "Customer charged nothing but blocked", "C", "M", 1],
+      ["Totals not updated after an offer is removed", "Wrong charge", "H", "M", 0],
+      ["Rounding differs from POS by a cent", "Reconciliation noise", "M", "M", 0]
+    ] },
+
+  // F. Checkout
+  { id: "F1", b: "F", r: 0, c: 0, k: "dec", rel: "L", t: "Guest or signed in?",
+    d: "Signed-in customers skip details. Guests enter details or choose to sign in to use rewards.",
+    sys: ["Guestbook / CRM"],
+    e: [
+      ["Signed-in customer asked for details again", "Friction", "M", "CX", 0],
+      ["Signing in at checkout removes deals already applied", "Customer pays more", "H", "CN", 0],
+      ["Guest checkout hidden or forced sign-in", "Drop-off", "H", "CX", 1]
+    ] },
+  { id: "F2", b: "F", r: 0, c: 1, k: "cust", rel: "L", t: "Enter guest details",
+    d: "Name, phone and email, only the fields needed. Delivery orders also need the address.",
+    sys: [],
+    e: [
+      ["Phone number not validated for US format", "Order alerts never arrive", "H", "CX,D", 0],
+      ["Delivery address accepted without validation against the delivery range", "Order cannot be delivered", "H", "CX", 0],
+      ["Email typo accepted", "Receipt never arrives", "M", "CX", 0],
+      ["More fields than needed", "Lower conversion", "M", "CX", 1],
+      ["Browser autofill fills the wrong fields", "Bad contact data", "L", "CX", 0]
+    ] },
+  { id: "F3", b: "F", r: 0, c: 2, k: "cust", rel: "L", t: "Confirm or change timing",
+    d: "Shows the order type and timing chosen at entry, with the estimated ready time for ASAP orders, and lets the customer change either before paying.",
+    sys: ["Web Dash: Online settings", "Business Hours", "KDS"],
+    e: [
+      ["Order placed seconds before closing still accepted as ASAP", "Kitchen reopens or cancels", "H", "CN", 0],
+      ["Timing or order type chosen at entry not shown here, customer has to pick again", "Friction, wrong timing used", "H", "CX", 0],
+      ["Switching to a scheduled time does not recheck item availability for that time", "Unfulfillable scheduled order", "H", "CN", 1],
+      ["Changing the order type here does not update fees, taxes or the delivery address", "Wrong charge or undeliverable order", "H", "M", 0],
+      ["Slots outside business hours or on closed days offered when rescheduling here", "Orders the kitchen cannot take", "H", "CN", 1],
+      ["Ready-time estimate unrealistic during a rush, or missing", "Customer arrives too early or waits at the counter", "M", "CX", 0]
+    ] },
+  { id: "F4", b: "F", r: 0, c: 3, k: "cust", rel: "L", t: "Select tip",
+    d: "Preset percentages, custom amount or no tip, from restaurant tip settings.",
+    sys: ["Super Admin: Tip settings"],
+    e: [
+      ["Tip calculated on the wrong base (before or after discount)", "Wrong charge", "H", "M", 0],
+      ["Custom tip accepts negative or very large amounts", "Broken total or accidental huge tip", "H", "M", 0],
+      ["No-tip default not respected (R9)", "Restaurants that asked for it get complaints", "M", "CN", 1],
+      ["Presets do not match the restaurant's settings", "Wrong tip options", "M", "CN", 0],
+      ["Changing the tip resets the payment form", "Re-entry, drop-off", "M", "CX", 1]
+    ] },
+  { id: "F5", b: "F", r: 1, c: 0, k: "soft", rel: "L", t: "Taxes and service charges",
+    d: "Applied from Web Dash payment settings.",
+    sys: ["Web Dash: Payments"],
+    e: [
+      ["Wrong tax rate for the location", "Under- or over-collected tax", "C", "M", 0],
+      ["Service charge on the discounted versus original subtotal applied wrongly", "Wrong charge", "C", "M", 1],
+      ["Total differs from POS for the same order", "Disputes and reconciliation gaps", "C", "M", 1],
+      ["Service charge not clearly labelled", "Fee transparency complaints", "H", "L", 0]
+    ] },
+  { id: "F6", b: "F", r: 1, c: 1, k: "cust", rel: "L", t: "SMS and email opt-in",
+    d: "Twilio SMS opt-in for order alerts and marketing, email subscription.",
+    sys: ["Twilio", "Guestbook / CRM"],
+    e: [
+      ["Consent pre-ticked or required disclosure missing", "TCPA exposure", "C", "L", 0],
+      ["Customer who opted out is re-subscribed", "Compliance breach", "C", "L", 1],
+      ["Opt-in not saved, no alerts sent", "Customer misses the ready alert", "H", "CN", 0],
+      ["Email subscription not stored separately from the account", "Marketing list errors", "M", "D", 1]
+    ] },
+  { id: "F7", b: "F", r: 1, c: 2, k: "cust", rel: "L", t: "Redeem a gift card",
+    d: "Gift card covers part or all of the total.",
+    sys: ["Marketing Gift cards"],
+    e: [
+      ["Gift card applied but balance not deducted", "Free money", "C", "M", 0],
+      ["Valid gift card rejected", "Customer cannot use their gift", "H", "CN", 0],
+      ["Balance shown is stale", "Disputes", "H", "D", 0],
+      ["Remaining amount not split to card when balance is short", "Checkout blocked", "H", "M", 0],
+      ["Gift card combined with loyalty and deals breaks the totals", "Wrong charge", "H", "M", 1],
+      ["Second gift card rejected with no explanation", "Confusion", "L", "CX", 0]
+    ] },
+  { id: "F8", b: "F", r: 1, c: 3, k: "dec", rel: "L", t: "Is the total $0.00?",
+    d: "Rewards, deals or a gift card cover everything, so payment is skipped.",
+    sys: [],
+    e: [
+      ["$0.00 food total with a tip skips charging the tip", "Staff lose the tip", "C", "M", 0],
+      ["Order fully covered by a gift card skips payment but the card is not charged", "Free order", "C", "M", 0],
+      ["$0.00 order still shows the card form", "Customer confused or blocked", "H", "CX", 1]
+    ] },
+
+  // G. Payment
+  { id: "G1", b: "G", r: 0, c: 0, k: "dec", rel: "L", t: "Choose payment method",
+    d: "Card, Apple Pay, Google Pay, or a saved card (R9).",
+    sys: ["Adyen"],
+    e: [
+      ["Wallet button missing on a supported device", "Slower checkout, drop-off", "M", "CX", 0],
+      ["Methods shown that the restaurant has not enabled", "Payment fails", "M", "CN", 0]
+    ] },
+  { id: "G2", b: "G", r: 0, c: 1, k: "cust", rel: "L", t: "Enter card details",
+    d: "Adyen card fields.",
+    sys: ["Adyen"],
+    e: [
+      ["Card fields fail to load", "No way to pay", "C", "T", 0],
+      ["Double submit charges twice", "Duplicate charge", "C", "M", 0],
+      ["ZIP check rejects a valid card", "Lost order", "H", "CX", 0],
+      ["Decline message vague", "Customer does not know what to fix", "M", "CX", 0]
+    ] },
+  { id: "G3", b: "G", r: 0, c: 2, k: "cust", rel: "L", t: "Apple Pay or Google Pay",
+    d: "Native wallet sheet.",
+    sys: ["Adyen"],
+    e: [
+      ["Amount in the wallet sheet differs from the order total", "Wrong charge", "C", "M", 0],
+      ["Cancelling the sheet leaves checkout stuck loading", "Customer cannot retry", "H", "CX", 0],
+      ["Wallet fails inside in-app browsers", "Social traffic cannot pay", "M", "CX", 0]
+    ] },
+  { id: "G4", b: "G", r: 0, c: 3, k: "cust", rel: "R9", t: "Use a saved card",
+    d: "Card saved to the account on an earlier order.",
+    sys: ["Adyen", "Guestbook / CRM"],
+    e: [
+      ["Saved card visible to another person on a shared device", "Fraud risk", "C", "S", 1],
+      ["Card saved without explicit consent", "Compliance and trust risk", "H", "L,S", 0],
+      ["Same last four digits treated differently for guest and signed-in", "Duplicate or mismatched records", "M", "D", 1],
+      ["Expired saved card offered", "Failed payment", "M", "CX", 0]
+    ] },
+  { id: "G5", b: "G", r: 1, c: 2, k: "soft", rel: "L", t: "Adyen authorises payment",
+    d: "Authorisation, including 3D Secure when the bank requires it.",
+    sys: ["Adyen"],
+    e: [
+      ["Payment authorised but order not created", "Customer charged with no order", "C", "M,D", 0],
+      ["Timeout leaves the customer unsure if they were charged", "Duplicate attempts", "C", "CX", 0],
+      ["Retry after a timeout charges twice", "Duplicate charge", "C", "M", 0],
+      ["3D Secure challenge does not open or loops", "Payment blocked", "H", "CX", 0]
+    ] },
+  { id: "G6", b: "G", r: 1, c: 0, k: "soft", rel: "L", t: "Payment failed or declined",
+    d: "Customer is shown why and can retry with the same or another method.",
+    sys: ["Adyen"],
+    e: [
+      ["Retry creates a duplicate order", "Kitchen makes two", "C", "D", 0],
+      ["Cart or details cleared after the failure", "Customer gives up", "H", "CX", 0],
+      ["Failure reason not explained", "Repeated failures", "M", "CX", 0]
+    ] },
+  { id: "G7", b: "G", r: 0, c: 5, k: "int", rel: "L", t: "Order placed",
+    d: "Order created and sent to KDS, POS and MOM. Scheduled orders are held until their time.",
+    sys: ["KDS", "POS", "MOM"],
+    e: [
+      ["Confirmation shown but the order never reaches the kitchen", "Customer arrives to no food", "C", "CN", 0],
+      ["Order created twice", "Double food and charge", "C", "D", 0],
+      ["Order reaches the kitchen without modifiers or instructions", "Wrong food", "C", "CN", 0],
+      ["Scheduled order fired to the kitchen immediately", "Food made hours early", "H", "CN", 0]
+    ] },
+
+  // H. Confirmation
+  { id: "H1", b: "H", r: 0, c: 0, k: "soft", rel: "L", t: "Confirmation screen",
+    d: "Order number, pickup time, items and totals.",
+    sys: [],
+    e: [
+      ["Blank or error screen after a successful payment", "Customer pays again", "C", "CX", 0],
+      ["Refreshing the page re-submits the order", "Duplicate order", "C", "T", 0],
+      ["Wrong pickup time or order type", "Customer arrives at the wrong time", "H", "CX", 0],
+      ["Discounts not itemised", "Customer unsure the reward applied", "M", "CX", 1]
+    ] },
+  { id: "H2", b: "H", r: 0, c: 1, k: "soft", rel: "L", t: "Email receipt",
+    d: "Sent to the customer's email.",
+    sys: ["Email service"],
+    e: [
+      ["Receipt totals differ from the amount charged", "Disputes", "H", "M", 0],
+      ["Not sent or delayed", "No proof of order", "M", "CX", 0],
+      ["Discounts missing or format differs from other channels", "Confusion", "M", "CX", 1],
+      ["No sign-up link on guest receipts", "Missed CRM growth", "L", "CN", 1]
+    ] },
+  { id: "H3", b: "H", r: 0, c: 2, k: "int", rel: "L", t: "SMS order alerts",
+    d: "Received and ready texts for customers who opted in.",
+    sys: ["Twilio", "KDS"],
+    e: [
+      ["Text sent after the customer opted out", "Compliance breach", "C", "L", 1],
+      ["Ready alert not sent or late", "Food goes cold", "H", "CN", 0],
+      ["Duplicate texts", "Annoyance, more opt-outs", "M", "CX", 0],
+      ["Restaurant cannot turn ready alerts off (R9 config)", "Unwanted texts", "M", "CN", 1]
+    ] },
+  { id: "H4", b: "H", r: 0, c: 3, k: "soft", rel: "L", t: "Loyalty points earned",
+    d: "Signed-in customers earn points on every order.",
+    sys: ["Marketing Loyalty", "Guestbook / CRM"],
+    e: [
+      ["Points not credited", "Customer complaint", "H", "CN", 0],
+      ["Points earned on the wrong amount (full versus paid)", "Over- or under-crediting", "H", "M", 0],
+      ["Points credited twice after a payment retry", "Over-crediting", "M", "M", 0],
+      ["Guest order earns nothing and gets no prompt to claim", "Missed sign-up", "L", "CX", 0]
+    ] },
+  { id: "H5", b: "H", r: 1, c: 0, k: "soft", rel: "L", t: "Track order status",
+    d: "Received, Preparing, Ready.",
+    sys: ["KDS"],
+    e: [
+      ["Ready shown before the food is ready", "Customer waits at the counter", "H", "CN", 0],
+      ["Status stuck on Preparing after pickup", "Looks broken", "M", "CN", 0],
+      ["Scheduled order shows Preparing long before its time", "Confusion", "M", "CX", 0],
+      ["Status link needs sign-in or expires", "Guest cannot track", "M", "CX", 0]
+    ] },
+  { id: "H6", b: "H", r: 1, c: 3, k: "soft", rel: "L", t: "Restaurant cancels or refunds",
+    d: "Cancellations come from the restaurant. Self-serve cancellation is beyond Release 9.",
+    sys: ["POS", "Adyen", "Marketing Loyalty & Gift cards"],
+    e: [
+      ["Customer not told the order was cancelled", "Customer arrives to nothing", "C", "CX", 0],
+      ["Redeemed points or reward not restored", "Customer loses value", "H", "CN,M", 0],
+      ["Gift card balance not restored", "Customer loses value", "H", "M", 0],
+      ["Partial refund amount wrong", "Disputes", "H", "M", 0],
+      ["Refund not shown anywhere with no timeline", "Support tickets", "M", "CX", 0]
+    ] },
+  { id: "H7", b: "H", r: 1, c: 1, k: "term", rel: "L", t: "Order collected or delivered",
+    d: "Customer collects the order, or the delivery arrives.",
+    sys: [],
+    e: [
+      ["Scheduled order never prepared", "Customer arrives to nothing", "C", "CN", 0],
+      ["Order not ready at the quoted time", "Wait at the counter", "H", "CX", 0],
+      ["Wrong order handed over for a shared name", "Wrong food", "M", "CX", 0]
+    ] },
+
+  // I. Post-order
+  { id: "I1", b: "I", r: 0, c: 0, k: "cust", rel: "L", t: "My Orders",
+    d: "Active and past orders for signed-in customers.",
+    sys: ["Guestbook / CRM", "MOM"],
+    e: [
+      ["Recent order missing", "Customer thinks it failed", "H", "D", 0],
+      ["Status differs from the status page", "Confusion", "M", "D", 0],
+      ["Guest orders not linked after sign-up", "History lost", "M", "D", 0],
+      ["Cancelled and refunded orders mixed in with no filter", "Clutter", "L", "CX", 1]
+    ] },
+  { id: "I2", b: "I", r: 0, c: 1, k: "cust", rel: "L", t: "Reorder",
+    d: "Past order copied into the cart.",
+    sys: ["Menu Manager"],
+    e: [
+      ["Old prices used", "Wrong charge", "C", "M", 0],
+      ["Unavailable items dropped or added without a message", "Wrong order", "H", "CN", 0],
+      ["Deleted modifiers carried over", "Invalid items", "H", "CN", 0],
+      ["Reorder ignores the current store status (closed or busy)", "Order the kitchen cannot take", "H", "CX", 0]
+    ] },
+  { id: "I3", b: "I", r: 0, c: 2, k: "cust", rel: "L", t: "Edit My Account",
+    d: "Personal info, allergens and tags.",
+    sys: ["Guestbook / CRM"],
+    e: [
+      ["Changes not saved to Guestbook", "Data reverts", "H", "CN,D", 0],
+      ["Changing phone number breaks login or the loyalty link", "Locked out, points lost", "H", "D", 0],
+      ["Saved allergens not used to flag menu items", "Health risk", "M", "CN", 0],
+      ["No way to delete the account or data (CCPA, beyond R9)", "Privacy compliance gap", "M", "L", 1]
+    ] },
+  { id: "I4", b: "I", r: 0, c: 3, k: "term", rel: "L", t: "Session ends",
+    d: "Customer leaves or signs out.",
+    sys: [],
+    e: [
+      ["Sign out leaves the session active on a shared device", "Next person uses the account", "H", "S", 0]
+    ] },
+
+  // J. Gift card purchase
+  { id: "J1", b: "J", r: 0, c: 0, k: "cust", rel: "L", t: "Choose buy a gift card",
+    d: "Started from the storefront.",
+    sys: ["Marketing Gift cards"],
+    e: [
+      ["Gift card option missing although enabled in Marketing", "Lost gift card sales", "M", "CN", 0],
+      ["Option shown for a restaurant with no gift card setup", "Dead end", "M", "CN", 0]
+    ] },
+  { id: "J2", b: "J", r: 0, c: 1, k: "cust", rel: "L", t: "Amount and recipient",
+    d: "Amount, for self or someone else, message.",
+    sys: ["Marketing Gift cards"],
+    e: [
+      ["Minimum or maximum amount not enforced", "Invalid cards issued", "H", "M", 0],
+      ["Recipient phone or email not validated", "Gift never arrives", "H", "CX", 0],
+      ["Message breaks with emoji or long text", "Ugly delivery", "L", "CX", 0]
+    ] },
+  { id: "J3", b: "J", r: 0, c: 2, k: "cust", rel: "L", t: "Delivery method and time",
+    d: "Email or text, now or on a scheduled date.",
+    sys: ["Twilio", "Email service"],
+    e: [
+      ["Scheduled delivery in the past accepted", "Sent at an odd time or never", "M", "CX", 0],
+      ["Delivery time uses the wrong time zone", "Arrives on the wrong day", "M", "CX", 0],
+      ["Link in the text is not shortened", "Looks like spam", "L", "CX", 1]
+    ] },
+  { id: "J4", b: "J", r: 0, c: 3, k: "cust", rel: "L", t: "Pay for the gift card",
+    d: "Paid through Adyen.",
+    sys: ["Adyen"],
+    e: [
+      ["Charged but gift card not issued", "Customer loses money", "C", "M", 0],
+      ["Retry charges twice", "Duplicate charge", "C", "M", 0],
+      ["Deals or rewards apply to a gift card purchase", "Discounting cash-equivalent value", "M", "M", 0]
+    ] },
+  { id: "J5", b: "J", r: 0, c: 4, k: "soft", rel: "L", t: "Gift card issued and delivered",
+    d: "Card activated and sent. Purchases show as tickets in Orders Hub (R8).",
+    sys: ["Marketing Gift cards", "Twilio", "Email service", "MOM"],
+    e: [
+      ["Gift card not delivered", "Failed gift", "C", "CX", 0],
+      ["Balance not active at delivery", "Recipient cannot use it", "H", "D", 0],
+      ["Refunded purchase leaves the card active", "Free money", "H", "M", 1],
+      ["Purchaser gets no confirmation when scheduled delivery succeeds", "Anxiety, support tickets", "M", "CX", 1]
+    ] },
+  { id: "J6", b: "J", r: 0, c: 5, k: "term", rel: "L", t: "Recipient receives gift card",
+    d: "Recipient opens the storefront from the link and redeems at checkout.",
+    sys: ["Marketing Gift cards"],
+    e: [
+      ["Link opens the storefront without the gift card ready to apply", "Recipient has to find the code", "M", "CX", 0],
+      ["Recipient cannot check the balance", "Uncertainty", "M", "CX", 0],
+      ["Redemption flow differs from Kiosk and POS", "Inconsistent experience", "M", "CX", 1]
+    ] }
+];
+
+// [from, to, label, dashed]
+const EDGES = [
+  ["A1", "A2", ""],
+  ["A2", "A3", ""],
+  ["A2", "B1", "Sign in from the header", 1],
+  ["A2", "J1", "Buy a gift card", 1],
+  ["A3", "A4", "Ordering open, busy or schedule only"],
+  ["A3", "C1", "Closed, menu viewing only", 1],
+  ["A4", "A5", ""],
+  ["A5", "C1", "Order now"],
+  ["A5", "A6", "Order later"],
+  ["A6", "C1", ""],
+
+  ["B1", "B2", "Log in"],
+  ["B1", "B3", "Social"],
+  ["B1", "B4", "Sign up"],
+  ["B1", "A3", "Continue as guest, back to the storefront"],
+  ["B1", "E4", "Continue as guest, back to the cart"],
+  ["B1", "F1", "Continue as guest, back to checkout"],
+  ["B2", "A3", "Back to the storefront"],
+  ["B2", "E4", "Back to cart offers"],
+  ["B2", "F1", "Back to checkout"],
+  ["B2", "I1", "Go to My Orders"],
+  ["B3", "A3", "Back to the storefront"],
+  ["B3", "E4", "Back to cart offers"],
+  ["B3", "F1", "Back to checkout"],
+  ["B3", "I1", "Go to My Orders"],
+  ["B4", "A3", "Back to the storefront"],
+  ["B4", "E4", "Back to cart offers"],
+  ["B4", "F1", "Back to checkout"],
+  ["B4", "I1", "Go to My Orders"],
+
+  ["C1", "C2", ""],
+  ["C2", "C3", ""],
+  ["C3", "C2", "Back to menu"],
+  ["C3", "D1", "Add or customise"],
+
+  ["D1", "D2", "Ordered before"],
+  ["D1", "D3", "Has modifiers"],
+  ["D1", "D7", "No modifiers"],
+  ["D2", "D3", ""],
+  ["D3", "D4", "Half and half"],
+  ["D3", "D5", "Add-ons"],
+  ["D3", "D6", "No add-ons"],
+  ["D4", "D5", ""],
+  ["D5", "D6", ""],
+  ["D6", "D7", ""],
+  ["D7", "C2", "Keep browsing"],
+  ["D7", "E1", "View cart"],
+
+  ["E1", "E2", "Edit"],
+  ["E2", "E1", ""],
+  ["E1", "E3", ""],
+  ["E3", "E1", "Simple item added"],
+  ["E3", "D1", "Suggested item needs choices"],
+  ["E1", "C2", "Add more"],
+  ["E1", "E4", ""],
+  ["E4", "E5", "Deal"],
+  ["E4", "E6", "Loyalty"],
+  ["E4", "E7", "Promo code"],
+  ["E4", "E8", "None"],
+  ["E6", "B1", "Not signed in"],
+  ["E5", "E8", ""],
+  ["E6", "E8", ""],
+  ["E7", "E8", ""],
+  ["E8", "F1", "Checkout"],
+
+  ["F1", "F2", "Guest"],
+  ["F1", "F3", "Signed in"],
+  ["F1", "B1", "Sign in for rewards"],
+  ["F2", "F3", ""],
+  ["F3", "F4", ""],
+  ["F4", "F5", ""],
+  ["F5", "F6", ""],
+  ["F6", "F7", "Has gift card"],
+  ["F6", "F8", ""],
+  ["F7", "F8", ""],
+  ["F8", "G1", "Balance due"],
+  ["F8", "G7", "$0.00"],
+
+  ["G1", "G2", "Card"],
+  ["G1", "G3", "Wallet"],
+  ["G1", "G4", "Saved card"],
+  ["G2", "G5", ""],
+  ["G3", "G5", ""],
+  ["G4", "G5", ""],
+  ["G5", "G7", "Approved"],
+  ["G5", "G6", "Declined"],
+  ["G6", "G1", "Retry"],
+  ["G7", "H1", ""],
+
+  ["H1", "H2", "", 1],
+  ["H1", "H3", "If opted in", 1],
+  ["H1", "H4", "If signed in", 1],
+  ["H1", "H5", ""],
+  ["H5", "H7", "Ready"],
+  ["H5", "H6", "Restaurant cancels"],
+  ["H6", "I1", "Check refund"],
+  ["H7", "I1", "Signed in"],
+  ["H7", "I4", ""],
+
+  ["I1", "I2", ""],
+  ["I1", "I3", ""],
+  ["I1", "I4", ""],
+  ["I2", "E1", "Items to cart"],
+  ["I3", "I4", ""],
+
+  ["J1", "J2", ""],
+  ["J2", "J3", ""],
+  ["J3", "J4", ""],
+  ["J4", "J5", ""],
+  ["J5", "J6", ""],
+  ["J6", "A1", "Recipient opens storefront"]
+];
+
+const PATH_GROUPS = [
+  "Core ordering",
+  "Sign in and accounts",
+  "Timing and availability",
+  "Offers and payment",
+  "After the order",
+  "Gift cards"
+];
+
+const PATHS = [
+  { id: "P01", g: 0, t: "Guest, ASAP pickup, card", n: "The baseline every other path is compared to.",
+    s: "A1 A2 A3 A4 A5 C1 C2 C3 D1 D3 D5 D6 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H7 I4", side: "H2 H3" },
+  { id: "P02", g: 0, t: "Guest, simple item, Apple Pay or Google Pay", n: "No modifiers, wallet payment.",
+    s: "A1 A2 A3 A4 A5 C1 C2 C3 D1 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G3 G5 G7 H1 H5 H7 I4", side: "H2" },
+  { id: "P20", g: 0, t: "Guest, delivery order, card", n: "Delivery picked at entry and routed through Kitchen Hub 3PD, which is not live yet.",
+    s: "A1 A2 A3 A4 A5 C1 C2 C3 D1 D3 D6 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H7 I4", side: "H2 H3" },
+  { id: "P15", g: 0, t: "Accepts an upsell that needs choices", n: "Recommendation engine sends the customer back into item customisation.",
+    s: "A1 A2 A3 A4 A5 C1 C2 C3 D1 D7 E1 E3 D1 D3 D6 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H7 I4", side: "H2" },
+  { id: "P16", g: 0, t: "Multi-item cart with an unavailable item", n: "Guest chosen at entry, hits an unavailable item, keeps browsing and adds three items.",
+    s: "A1 A2 B1 A3 A4 A5 C1 C2 C3 C2 C3 D1 D7 C2 C3 D1 D3 D6 D7 E1 C2 C3 D1 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H7 I4", side: "H2" },
+
+  { id: "P03", g: 1, t: "Signs in at entry, redeems a reward", n: "Returning loyalty member.",
+    s: "A1 A2 B1 B2 A3 A4 A5 C1 C2 C3 D1 D3 D6 D7 E1 E4 E6 E8 F1 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H7 I1 I4", side: "H2 H3 H4" },
+  { id: "P04", g: 1, t: "Guest signs up at the cart to redeem", n: "Detour to sign-up returns to cart offers.",
+    s: "A1 A2 A3 A4 A5 C1 C2 C3 D1 D3 D4 D5 D6 D7 E1 E4 E6 B1 B4 E4 E6 E8 F1 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H7 I4", side: "H2 H4" },
+  { id: "P05", g: 1, t: "Social login at checkout, deal applied", n: "Takes a quick upsell, then a wallet payment.",
+    s: "A1 A2 A3 A4 A5 C1 C2 C3 D1 D3 D6 D7 E1 E3 E1 E4 E5 E8 F1 B1 B3 F1 F3 F4 F5 F6 F8 G1 G3 G5 G7 H1 H5 H7 I4", side: "H2 H4" },
+
+  { id: "P06", g: 2, t: "Schedules for later while open", n: "Edits the cart before checkout.",
+    s: "A1 A2 A3 A4 A5 A6 C1 C2 C3 D1 D3 D6 D7 E1 E2 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H7 I4", side: "H2 H3" },
+  { id: "P07", g: 2, t: "Store closed, schedule-only order", n: "Only Order later is offered at entry.",
+    s: "A1 A2 A3 A4 A5 A6 C1 C2 C3 D1 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H7 I4", side: "H2" },
+  { id: "P08", g: 2, t: "Busy mode, schedules instead of ASAP", n: "Release 8. Busy mode pauses ASAP, so the customer picks a later slot.",
+    s: "A1 A2 A3 A4 A5 A6 C1 C2 C3 D1 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G3 G5 G7 H1 H5 H7 I4", side: "" },
+  { id: "P21", g: 2, t: "Changes the timing at checkout", n: "Starts as ASAP at entry, then switches to a scheduled time before paying.",
+    s: "A1 A2 A3 A4 A5 C1 C2 C3 D1 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H7 I4", side: "" },
+  { id: "P09", g: 2, t: "Store closed, browses and leaves", n: "Exit path. Menu viewing only, no order possible.",
+    s: "A1 A2 A3 C1 C2 C3", side: "" },
+
+  { id: "P10", g: 3, t: "Rewards cover the total, $0.00 checkout", n: "Uses pre-fill from last order (R8). Payment is skipped.",
+    s: "A1 A2 B1 B2 A3 A4 A5 C1 C2 C3 D1 D2 D3 D6 D7 E1 E4 E6 E8 F1 F3 F4 F5 F6 F8 G7 H1 H5 H7 I4", side: "H2 H4" },
+  { id: "P11", g: 3, t: "Promo code, partial gift card, card", n: "Release 9 promo codes.",
+    s: "A1 A2 A3 A4 A5 C1 C2 C3 D1 D3 D5 D6 D7 E1 E4 E7 E8 F1 F2 F3 F4 F5 F6 F7 F8 G1 G2 G5 G7 H1 H5 H7 I4", side: "H2" },
+  { id: "P13", g: 3, t: "Card declined, retries with a wallet", n: "Recovery path after a failed payment.",
+    s: "A1 A2 A3 A4 A5 C1 C2 C3 D1 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F8 G1 G2 G5 G6 G1 G3 G5 G7 H1 H5 H7 I4", side: "" },
+
+  { id: "P14", g: 4, t: "Reorders from My Orders, saved card", n: "Saved card is Release 9.",
+    s: "A1 A2 B1 B2 I1 I2 E1 E4 E8 F1 F3 F4 F5 F6 F8 G1 G4 G5 G7 H1 H5 H7 I4", side: "H2 H4" },
+  { id: "P18", g: 4, t: "Restaurant cancels and refunds", n: "Customer checks the refund in My Orders.",
+    s: "A1 A2 B1 B2 A3 A4 A5 C1 C2 C3 D1 D7 E1 E4 E8 F1 F3 F4 F5 F6 F8 G1 G2 G5 G7 H1 H5 H6 I1 I4", side: "H3" },
+  { id: "P19", g: 4, t: "Updates My Account", n: "No order placed.",
+    s: "A1 A2 B1 B2 I1 I3 I4", side: "" },
+
+  { id: "P17", g: 5, t: "Buys a gift card for someone", n: "Ends when the recipient receives it.",
+    s: "A1 A2 J1 J2 J3 J4 J5 J6", side: "" },
+  { id: "P12", g: 5, t: "Recipient pays fully with the gift card", n: "Gift card covers the total, payment skipped.",
+    s: "J6 A1 A2 A3 A4 A5 C1 C2 C3 D1 D7 E1 E4 E8 F1 F2 F3 F4 F5 F6 F7 F8 G7 H1 H5 H7 I4", side: "H2" }
+];
+
+
+
+// ---------- Catering data: Quick catering and Plan an event ----------
+// Stored on its own so online ordering edits do not change it. rel TBC = unconfirmed for catering.
+const CATERING = {
+ "BANDS": [
+  {
+   "id": "A",
+   "t": "Entry and catering type",
+   "s": "How the customer arrives, whether catering is on, and which catering type they choose"
+  },
+  {
+   "id": "B",
+   "t": "Sign in",
+   "s": "Optional for Quick catering. Reached from the header, checkout or the Plan an event inquiry"
+  },
+  {
+   "id": "C",
+   "t": "Quick catering: menu",
+   "s": "Items visible for the Catering channel in Menu Manager"
+  },
+  {
+   "id": "D",
+   "t": "Quick catering: item and modifiers",
+   "s": "Same item building as online ordering, including half and half"
+  },
+  {
+   "id": "E",
+   "t": "Quick catering: cart",
+   "s": "Separate catering cart, upsell pop-up and the minimum order. No deals, loyalty or promo codes"
+  },
+  {
+   "id": "F",
+   "t": "Quick catering: checkout",
+   "s": "Guest or signed in, pickup or delivery, lead time and ASAP, tax exemption"
+  },
+  {
+   "id": "G",
+   "t": "Quick catering: payment",
+   "s": "Card, wallets and saved cards through Adyen"
+  },
+  {
+   "id": "H",
+   "t": "Quick catering: confirmation and fulfilment",
+   "s": "Firing to the kitchen, pickup or DoorDash delivery, and cancellations"
+  },
+  {
+   "id": "I",
+   "t": "Quick catering: post-order and account",
+   "s": "Catering tab in My Orders, cancellation against the policy, reorder and account settings. Signed-in only"
+  },
+  {
+   "id": "J",
+   "t": "Plan an event: packages",
+   "s": "Browsing, customising and adding packages to the event cart"
+  },
+  {
+   "id": "K",
+   "t": "Plan an event: inquiry",
+   "s": "Event details, package total and submitting the inquiry"
+  },
+  {
+   "id": "L",
+   "t": "Plan an event: restaurant review",
+   "s": "The restaurant accepts or declines in WebDash or MoM"
+  },
+  {
+   "id": "M",
+   "t": "Plan an event: invoices and payment",
+   "s": "Pay by Link invoices released one at a time"
+  },
+  {
+   "id": "N",
+   "t": "Plan an event: event day and after",
+   "s": "Kitchen firing, fulfilment, review and tip, cancellation"
+  }
+ ],
+ "NODES": [
+  {
+   "id": "A1",
+   "b": "A",
+   "r": 0,
+   "c": 0,
+   "k": "term",
+   "rel": "L",
+   "t": "Customer opens catering",
+   "d": "Arrives from the Catering tab on the storefront, the restaurant website's catering button, a shared catering link or a marketing message.",
+   "sys": [
+    "Website builder",
+    "Marketing Campaigns"
+   ],
+   "e": [
+    [
+     "Catering link opens the online ordering tab instead of catering",
+     "Customer builds a regular order or leaves",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Website catering button points to an old or wrong storefront URL",
+     "Customer lands on a 404 or the wrong location",
+     "H",
+     "CX,OB",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "A2",
+   "b": "A",
+   "r": 0,
+   "c": 1,
+   "k": "soft",
+   "rel": "L",
+   "t": "Storefront loads",
+   "d": "Restaurant page renders with the Catering tab alongside online ordering.",
+   "sys": [
+    "Web Dash: Online settings",
+    "Menu Manager",
+    "Marketing Campaigns"
+   ],
+   "e": [
+    [
+     "Catering tab missing although catering is set up",
+     "No catering orders possible",
+     "C",
+     "OB,CN",
+     0
+    ],
+    [
+     "Page or menu takes seconds to load (target: queries under 500ms, good Core Web Vitals)",
+     "Bounce before the first item is seen",
+     "H",
+     "CX,T",
+     1
+    ],
+    [
+     "Online ordering not enabled in Super Admin and the page shows a raw error instead of an unavailable state",
+     "Dead end with no explanation",
+     "C",
+     "OB,CX",
+     1
+    ],
+    [
+     "Banners stretched, cropped or missing on mobile versus desktop",
+     "Broken first impression, marketing message lost",
+     "M",
+     "CN,CX",
+     1
+    ],
+    [
+     "Banner links to a module that no longer exists",
+     "Tap leads nowhere",
+     "M",
+     "CN,CX",
+     0
+    ],
+    [
+     "Layout or scripts break inside Instagram or Facebook in-app browsers",
+     "Social traffic cannot order",
+     "M",
+     "CX,T",
+     0
+    ],
+    [
+     "Wrong restaurant name, logo or address shown",
+     "Customer doubts it is the right place",
+     "H",
+     "CX,D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "A3",
+   "b": "A",
+   "k": "dec",
+   "rel": "L",
+   "t": "Is catering available?",
+   "d": "Super Admin catering module setting, the WebDash catering toggle and the Quick catering and Plan an event sub-toggles, plus at least one item or package visible for catering.",
+   "sys": [
+    "Super Admin: Catering module",
+    "WebDash: Catering configurations",
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Catering toggle off but ordering is still possible",
+     "Orders the restaurant has switched off",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Catering tab shown with no catering-visible items or packages",
+     "Empty tab, looks broken",
+     "H",
+     "CN,CX",
+     0
+    ],
+    [
+     "Sub-toggle off but that catering type still shows",
+     "Unwanted orders or inquiries",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Super Admin catering setting off but the tab is still visible",
+     "Catering sold at a location not onboarded",
+     "H",
+     "OB",
+     0
+    ],
+    [
+     "Toggle changes only take effect after a page refresh",
+     "Customer sees stale availability",
+     "M",
+     "T",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "A4",
+   "b": "A",
+   "k": "term",
+   "rel": "L",
+   "t": "Catering unavailable",
+   "d": "Catering toggle is off. The Catering tab stays visible and every option shows as unavailable, matching the online ordering unavailable state.",
+   "sys": [
+    "WebDash: Catering configurations"
+   ],
+   "e": [
+    [
+     "Blank page instead of the unavailable state",
+     "Looks broken, hurts trust",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "No clear way back to online ordering",
+     "Customer leaves instead of ordering normally",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Copy and styling differ from the online ordering unavailable state",
+     "Inconsistent experience",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "A5",
+   "b": "A",
+   "k": "dec",
+   "rel": "L",
+   "t": "Quick catering or Plan an event?",
+   "d": "Shown when both are on. Quick catering is ready-made items for up to 50 guests; Plan an event is packages for 50+ guests. Skipped when only one is on.",
+   "sys": [
+    "WebDash: Catering configurations"
+   ],
+   "e": [
+    [
+     "Option shown for a catering type that is turned off",
+     "Dead end",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Guest-count guidance missing, customer picks the wrong type",
+     "Large event ordered as trays, or a small order sent as an inquiry",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Switching type empties the other type's cart",
+     "Order rebuilt",
+     "M",
+     "CX,D",
+     0
+    ],
+    [
+     "Picker shown when only one type is on",
+     "Extra step",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "B1",
+   "b": "B",
+   "r": 0,
+   "c": 0,
+   "k": "dec",
+   "rel": "L",
+   "t": "Sign in or continue as guest?",
+   "d": "Optional at entry for Quick catering. Offered from the header and checkout, and from the Plan an event inquiry. Returns the customer to the step they came from.",
+   "sys": [
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "After sign-in the customer lands on the home page, not back at the cart or checkout",
+     "Cart abandoned",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Guest cart not merged into the account, cart empties on sign-in",
+     "Order rebuilt or lost",
+     "C",
+     "CX,D",
+     0
+    ],
+    [
+     "Continue as guest is hidden or looks secondary",
+     "Guests feel forced to register and leave",
+     "H",
+     "CX",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "B2",
+   "b": "B",
+   "r": 1,
+   "c": 0,
+   "k": "cust",
+   "rel": "L",
+   "t": "Log in to an existing account",
+   "d": "Phone or email with verification. Confirm the exact method with engineering, this map assumes a verification code.",
+   "sys": [
+    "Guestbook / CRM",
+    "Twilio"
+   ],
+   "e": [
+    [
+     "Verification code not delivered or delayed",
+     "Customer cannot log in",
+     "C",
+     "CN,CX",
+     0
+    ],
+    [
+     "Correct code rejected or expires too fast",
+     "Repeated attempts, abandonment",
+     "H",
+     "S,CX",
+     0
+    ],
+    [
+     "Account made with phone on the Kiosk is not found when using email online",
+     "Duplicate account, split order history",
+     "H",
+     "D,CX",
+     0
+    ],
+    [
+     "Lockout after failed attempts with no recovery path",
+     "Customer stuck",
+     "M",
+     "S",
+     0
+    ],
+    [
+     "One-time code autofill not supported on mobile",
+     "Slower login",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "B3",
+   "b": "B",
+   "r": 1,
+   "c": 1,
+   "k": "cust",
+   "rel": "L",
+   "t": "Social login",
+   "d": "Google and other enabled providers. Apple ID is being explored.",
+   "sys": [
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "Social pop-up blocked inside in-app browsers",
+     "Login fails silently",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Social email does not match the phone-based profile, a duplicate profile is created",
+     "Order history split across two accounts",
+     "H",
+     "D,CN",
+     0
+    ],
+    [
+     "Provider returns no phone number",
+     "SMS alerts and phone-based lookup break later",
+     "M",
+     "D",
+     0
+    ],
+    [
+     "No Apple ID option for iPhone users",
+     "Drop-off for the largest mobile segment",
+     "M",
+     "CX",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "B4",
+   "b": "B",
+   "r": 1,
+   "c": 2,
+   "k": "cust",
+   "rel": "L",
+   "t": "Sign up",
+   "d": "Name, phone, email and consent. Creates a Guestbook profile.",
+   "sys": [
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "Phone already registered shows a dead-end error instead of a log in prompt",
+     "Customer gives up",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Invalid US phone or email accepted",
+     "Unreachable profile, alerts fail",
+     "H",
+     "CX,D",
+     0
+    ],
+    [
+     "SMS or marketing consent pre-ticked or bundled with terms",
+     "TCPA exposure",
+     "C",
+     "L",
+     0
+    ],
+    [
+     "Profile shows on the storefront but is not created in Guestbook",
+     "Customer invisible to CRM",
+     "H",
+     "CN,D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "B5",
+   "b": "B",
+   "r": 2,
+   "c": 1,
+   "k": "int",
+   "rel": "L",
+   "t": "Profile loaded from Guestbook",
+   "d": "Returns the profile, saved tax exemption, allergens and tags. Sends the customer back to the step they came from.",
+   "sys": [
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "Session expires mid-order and the cart is lost",
+     "Rework or abandonment",
+     "H",
+     "S,CX",
+     0
+    ],
+    [
+     "Previous person's profile still loaded on a shared device",
+     "Privacy breach, wrong saved details used",
+     "C",
+     "S,D",
+     0
+    ],
+    [
+     "Saved allergens and tags not loaded",
+     "Allergen prompts do not appear",
+     "M",
+     "D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "B6",
+   "b": "B",
+   "r": 1,
+   "c": 4,
+   "k": "cust",
+   "rel": "L",
+   "t": "Continue as guest",
+   "d": "No account. Can order Quick catering. My Orders, reorder and saved tax exemption need an account.",
+   "sys": [],
+   "e": [
+    [
+     "Guest nagged to sign up on every step",
+     "Friction, lower conversion",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Guest signs up later but past guest orders are not linked",
+     "Order history lost",
+     "M",
+     "D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "C1",
+   "b": "C",
+   "r": 0,
+   "c": 0,
+   "k": "soft",
+   "rel": "L",
+   "t": "Catering menu loads",
+   "d": "Shows categories, items and modifiers set as visible for the Catering channel in Menu Manager.",
+   "sys": [
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Online ordering menu shown instead of the catering menu",
+     "Wrong items, portions and prices",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Catering-visible items missing",
+     "Lost catering sales",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Item hidden from the Catering channel still shows",
+     "Customer orders something not offered for catering",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Menu timing checked for today instead of the scheduled catering date",
+     "Items unavailable at fulfilment",
+     "H",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "C2",
+   "b": "C",
+   "r": 0,
+   "c": 1,
+   "k": "cust",
+   "rel": "L",
+   "t": "Browse, search and filter",
+   "d": "Categories and items in Menu Manager sort order, with search, filters, images and prices.",
+   "sys": [
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "All items shown as unavailable when they are in fact available",
+     "No orders possible",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Items visible in Menu Manager are missing from the storefront",
+     "Lost sales on those items",
+     "C",
+     "CN",
+     1
+    ],
+    [
+     "Prices differ from Menu Manager or POS",
+     "Wrong charges, complaints",
+     "C",
+     "CN,M",
+     0
+    ],
+    [
+     "Category and item order differs from Menu Manager (R8 sort order)",
+     "Featured items buried",
+     "M",
+     "CN",
+     1
+    ],
+    [
+     "Search misses partial words, typos or descriptions",
+     "Customer cannot find the item",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Filters hide every item with no clear-filters option",
+     "Looks like an empty menu",
+     "M",
+     "CX",
+     1
+    ],
+    [
+     "Empty categories displayed",
+     "Clutter, looks broken",
+     "L",
+     "CX",
+     0
+    ],
+    [
+     "Images missing, slow or matched to the wrong item",
+     "Lower appeal, confusion",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "C3",
+   "b": "C",
+   "r": 0,
+   "c": 2,
+   "k": "cust",
+   "rel": "L",
+   "t": "Open item details",
+   "d": "Image, description, price, size tiers, calories, allergens and tags. Sized pricing works as in online ordering.",
+   "sys": [
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Size tier price differs from Menu Manager",
+     "Wrong charge",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Price on the item screen differs from the list price",
+     "Trust drops at the decision moment",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Allergens missing or not flagged against the customer's saved allergens",
+     "Health risk",
+     "H",
+     "L,CX",
+     0
+    ],
+    [
+     "Out-of-stock item not flagged until add to cart",
+     "Wasted customisation",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Wrong or placeholder image",
+     "Expectation mismatch",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "C4",
+   "b": "C",
+   "r": 0,
+   "c": 3,
+   "k": "soft",
+   "rel": "L",
+   "t": "Item unavailable state",
+   "d": "Item is out of stock or outside its menu timing. Shown as unavailable and cannot be added.",
+   "sys": [
+    "Menu Manager",
+    "POS"
+   ],
+   "e": [
+    [
+     "Unavailable item can still be added",
+     "Order the kitchen cannot fulfil",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Available item shown as unavailable (stale availability)",
+     "Lost sale",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Item marked out of stock on POS mid-session but the storefront only updates on refresh",
+     "Late surprise at checkout or pickup",
+     "H",
+     "CN,T",
+     0
+    ],
+    [
+     "No reason or available-from time for timed items",
+     "Customer leaves instead of waiting",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "D1",
+   "b": "D",
+   "r": 0,
+   "c": 0,
+   "k": "dec",
+   "rel": "L",
+   "t": "Does the item have modifiers?",
+   "d": "Simple items go straight to the cart. Items with modifiers open the customise screen.",
+   "sys": [
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Item with required modifiers treated as simple and added with no choices",
+     "Incomplete order reaches the kitchen",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Simple item forced through an empty modifier screen",
+     "Extra step",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "D2",
+   "b": "D",
+   "r": 0,
+   "c": 1,
+   "k": "soft",
+   "rel": "R8",
+   "t": "Pre-fill from last order",
+   "d": "For signed-in customers who ordered this item before, choices are pre-filled from their last order.",
+   "sys": [
+    "Guestbook / CRM",
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Pre-fills a modifier that is now out of stock or deleted",
+     "Invalid item in the cart",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Pre-fill applied to a different item or size",
+     "Wrong order",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Customer does not notice the choices were pre-filled",
+     "Unwanted modifiers ordered",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Modifier prices changed since the last order and are not refreshed",
+     "Wrong price",
+     "H",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "D3",
+   "b": "D",
+   "r": 0,
+   "c": 2,
+   "k": "cust",
+   "rel": "L",
+   "t": "Choose modifiers",
+   "d": "Required and optional groups, minimum and maximum selections, nested modifiers, pizza modifiers.",
+   "sys": [
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Required group not enforced",
+     "Incomplete item reaches the kitchen",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Minimum or maximum selections not enforced",
+     "Unpriced extras or invalid item",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Out-of-stock modifier option can be selected",
+     "Kitchen cannot make it as ordered",
+     "H",
+     "CN",
+     1
+    ],
+    [
+     "Nested modifier levels do not open or lose the selection (multi-parent, R9)",
+     "Customer cannot build the item",
+     "H",
+     "CN",
+     1
+    ],
+    [
+     "Running price does not update with priced modifiers",
+     "Surprise total in the cart",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Default modifiers not pre-selected",
+     "Customer forgets standard choices",
+     "M",
+     "CN",
+     0
+    ],
+    [
+     "Complex modifier layouts break on small screens",
+     "Options cannot be reached",
+     "M",
+     "CX",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "D4",
+   "b": "D",
+   "r": 0,
+   "c": 3,
+   "k": "cust",
+   "rel": "L",
+   "t": "Half and half selection",
+   "d": "Left, right or whole placement, mainly pizza.",
+   "sys": [
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Half topping priced as whole, or whole priced as half",
+     "Overcharge or lost revenue",
+     "C",
+     "M",
+     1
+    ],
+    [
+     "Left, right or whole placement missing from the item summary and cart",
+     "Customer cannot confirm the build",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Same topping on both halves charged twice",
+     "Overcharge",
+     "H",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "D5",
+   "b": "D",
+   "r": 0,
+   "c": 4,
+   "k": "cust",
+   "rel": "L",
+   "t": "Choose add-ons",
+   "d": "Optional extras attached to the item.",
+   "sys": [
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Add-on price not added to the item total",
+     "Revenue loss",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Unavailable add-on can be selected",
+     "Kitchen cannot fulfil",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Add-ons from another item shown",
+     "Confusion, wrong order",
+     "M",
+     "CN",
+     0
+    ],
+    [
+     "Add-on behaviour differs from the Kiosk for the same item",
+     "Inconsistent brand experience",
+     "M",
+     "CX",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "D6",
+   "b": "D",
+   "r": 1,
+   "c": 4,
+   "k": "cust",
+   "rel": "L",
+   "t": "Special instructions and quantity",
+   "d": "Free-text note for the kitchen and item quantity.",
+   "sys": [
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Instructions field shown when the restaurant has turned instructions off",
+     "Notes the kitchen will ignore",
+     "M",
+     "CN",
+     0
+    ],
+    [
+     "Long text cut off without warning",
+     "Kitchen misses part of the request",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Instruction saved on screen but missing on the order",
+     "Customer finds out at pickup",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Quantity accepts zero, negatives or very large numbers",
+     "Broken totals or a huge accidental order",
+     "H",
+     "CX,M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "D7",
+   "b": "D",
+   "r": 1,
+   "c": 0,
+   "k": "soft",
+   "rel": "L",
+   "t": "Add to catering cart",
+   "d": "Item saved to the catering cart, which is separate from the online ordering cart and kept when switching tabs.",
+   "sys": [],
+   "e": [
+    [
+     "Item lands in the online ordering cart",
+     "Wrong order type reaches the kitchen",
+     "C",
+     "CN,D",
+     0
+    ],
+    [
+     "Catering cart emptied after switching to online ordering and back",
+     "Order rebuilt or abandoned",
+     "H",
+     "D,CX",
+     0
+    ],
+    [
+     "Double tap adds the item twice",
+     "Accidental duplicate",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Price in the cart differs from the item screen",
+     "Trust breaks",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Modifiers or instructions lost between item screen and cart",
+     "Wrong food",
+     "C",
+     "D",
+     0
+    ],
+    [
+     "Add fails on a weak network with no message",
+     "Customer thinks it was added",
+     "H",
+     "CX,T",
+     0
+    ],
+    [
+     "Cart count does not update",
+     "Customer adds again",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "E1",
+   "b": "E",
+   "r": 0,
+   "c": 0,
+   "k": "cust",
+   "rel": "L",
+   "t": "Review catering cart",
+   "d": "Items, choices, subtotal, the minimum order progress and the way into checkout.",
+   "sys": [],
+   "e": [
+    [
+     "Out-of-stock item allowed to proceed to checkout",
+     "Order the kitchen cannot fulfil",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Item that became unavailable after it was added is not flagged",
+     "Late failure or refund",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Cart and checkout totals disagree (cart reconciliation, R9)",
+     "Wrong charge or abandoned checkout",
+     "C",
+     "M",
+     1
+    ],
+    [
+     "Cart lost on refresh, back navigation or sign-in",
+     "Order rebuilt or abandoned",
+     "H",
+     "D,CX",
+     0
+    ],
+    [
+     "Empty cart can still proceed to checkout",
+     "Broken checkout",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Too many steps from cart to checkout (R9)",
+     "Drop-off",
+     "M",
+     "CX",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "E2",
+   "b": "E",
+   "r": 0,
+   "c": 1,
+   "k": "cust",
+   "rel": "L",
+   "t": "Edit quantity, remove or edit item",
+   "d": "Change quantity, remove an item, or reopen an item to change its choices.",
+   "sys": [],
+   "e": [
+    [
+     "Quantity change does not recalculate totals",
+     "Wrong charge",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Editing an item loses its modifiers or instructions",
+     "Wrong food",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Removing the last item leaves fees or a negative subtotal",
+     "Broken checkout",
+     "H",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "E3",
+   "b": "E",
+   "k": "soft",
+   "rel": "L",
+   "t": "Catering upsell pop-up",
+   "d": "Configured in WebDash: shown when the cart reaches a set order amount or item count, at the set frequency.",
+   "sys": [
+    "WebDash: Catering upsell",
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Upsell item that needs choices is added without them",
+     "Incomplete item reaches the kitchen",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Suggests items not visible for catering or unavailable",
+     "Dead taps, lost upsell",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Pop-up blocks checkout on mobile with no clear close",
+     "Abandonment",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Shows on every visit despite the frequency setting",
+     "Annoyance, drop-off",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Triggers below the configured amount or item count",
+     "Irrelevant interruption",
+     "M",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "E8",
+   "b": "E",
+   "r": 2,
+   "c": 1,
+   "k": "soft",
+   "rel": "L",
+   "t": "Totals recalculated",
+   "d": "Subtotal, service charges and tax recalculated after every change. No deals, loyalty or promo codes in catering.",
+   "sys": [
+    "Web Dash: Payments"
+   ],
+   "e": [
+    [
+     "$0.00 total not recognised, card still requested",
+     "Customer charged nothing but blocked",
+     "C",
+     "M",
+     1
+    ],
+    [
+     "Rounding differs from POS by a cent",
+     "Reconciliation noise",
+     "M",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "E9",
+   "b": "E",
+   "k": "dec",
+   "rel": "L",
+   "t": "Is the minimum order met?",
+   "d": "Separate minimums for pickup and delivery, checked on the cart page against the subtotal. Checkout stays disabled until the minimum is met.",
+   "sys": [
+    "WebDash: Catering configurations"
+   ],
+   "e": [
+    [
+     "Checkout enabled below the minimum",
+     "Orders below the minimum reach the kitchen",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Subtotal counts tax, fees or tip toward the minimum",
+     "Minimum met too early",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Pickup minimum used for a delivery order",
+     "Wrong threshold",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Server accepts an order below the minimum",
+     "Rule not enforced",
+     "H",
+     "S,CN",
+     0
+    ],
+    [
+     "Progress message stays after the minimum is met",
+     "Confusion",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "F1",
+   "b": "F",
+   "r": 0,
+   "c": 0,
+   "k": "dec",
+   "rel": "L",
+   "t": "Guest or signed in?",
+   "d": "Signed-in customers skip details. Guests enter details or choose to sign in to use their saved tax exemption.",
+   "sys": [
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "Signed-in customer asked for details again",
+     "Friction",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Guest checkout hidden or forced sign-in",
+     "Drop-off",
+     "H",
+     "CX",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "F2",
+   "b": "F",
+   "r": 0,
+   "c": 1,
+   "k": "cust",
+   "rel": "L",
+   "t": "Enter guest details",
+   "d": "Name, phone and email, only the fields needed.",
+   "sys": [],
+   "e": [
+    [
+     "Phone number not validated for US format",
+     "Order alerts never arrive",
+     "H",
+     "CX,D",
+     0
+    ],
+    [
+     "Email typo accepted",
+     "Receipt never arrives",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "More fields than needed",
+     "Lower conversion",
+     "M",
+     "CX",
+     1
+    ],
+    [
+     "Browser autofill fills the wrong fields",
+     "Bad contact data",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "F11",
+   "b": "F",
+   "k": "dec",
+   "rel": "L",
+   "t": "Pickup or delivery?",
+   "d": "Fulfilment type for Quick catering. Delivery runs through DoorDash.",
+   "sys": [
+    "WebDash: Catering configurations",
+    "DoorDash"
+   ],
+   "e": [
+    [
+     "Delivery offered when the restaurant has catering delivery off",
+     "Order cannot be fulfilled",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Switching fulfilment type does not re-check the minimum",
+     "Order below the delivery minimum",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Switching type resets the chosen time",
+     "Re-entry",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "F12",
+   "b": "F",
+   "k": "int",
+   "rel": "L",
+   "t": "Delivery address and DoorDash quote",
+   "d": "Customer enters the delivery address and the DoorDash delivery fee is quoted.",
+   "sys": [
+    "DoorDash"
+   ],
+   "e": [
+    [
+     "Address outside the delivery zone accepted",
+     "Delivery cannot be dispatched",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Delivery fee quote missing or stale at payment",
+     "Wrong charge",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Quote request fails with no message",
+     "Checkout blocked",
+     "H",
+     "T,CX",
+     0
+    ],
+    [
+     "Address autocomplete picks the wrong unit or building",
+     "Driver goes to the wrong place",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "F3",
+   "b": "F",
+   "r": 0,
+   "c": 2,
+   "k": "dec",
+   "rel": "L",
+   "t": "Is lead time on?",
+   "d": "Lead time on: schedule only, ASAP hidden. Lead time off: ASAP or later, as in online ordering. ASAP also needs the store to be open.",
+   "sys": [
+    "WebDash: Catering lead time",
+    "Business Hours"
+   ],
+   "e": [
+    [
+     "ASAP offered while lead time is on",
+     "Order the kitchen cannot prepare in time",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "ASAP offered while the store is closed",
+     "Order the kitchen cannot take",
+     "C",
+     "CX",
+     0
+    ],
+    [
+     "ASAP missing when lead time is off",
+     "Lost same-day catering orders",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Lead time turned on mid-session, but a cart already set to ASAP still goes through",
+     "Short-notice order",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Schedule option missing",
+     "Lost future orders",
+     "H",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "F4",
+   "b": "F",
+   "r": 0,
+   "c": 3,
+   "k": "soft",
+   "rel": "L",
+   "t": "ASAP, estimated ready time",
+   "d": "Only when lead time is off and the store is open. The order fires to the kitchen now with a quoted ready time.",
+   "sys": [
+    "KDS"
+   ],
+   "e": [
+    [
+     "Ready-time estimate unrealistic during a rush",
+     "Customer waits at the counter",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "No ready time shown",
+     "Customer arrives too early or late",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Order placed seconds before closing accepted as ASAP",
+     "Kitchen reopens or cancels",
+     "H",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "F5",
+   "b": "F",
+   "r": 0,
+   "c": 4,
+   "k": "cust",
+   "rel": "L",
+   "t": "Pick a date and time",
+   "d": "Date strip and 30-minute slots. Pickup and delivery lead times applied separately; slots follow hours of operation or 24 hours as configured.",
+   "sys": [
+    "WebDash: Catering lead time",
+    "Business Hours"
+   ],
+   "e": [
+    [
+     "Dates or slots inside the lead time can be picked",
+     "Order the kitchen cannot prepare in time",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Pickup lead time used for a delivery order",
+     "Wrong earliest slot",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "24-hour time selection ignored, only operating-hour slots shown",
+     "Lost orders",
+     "M",
+     "CN",
+     0
+    ],
+    [
+     "Slots outside business hours or in the past offered",
+     "Orders for times the store is closed",
+     "C",
+     "CN",
+     1
+    ],
+    [
+     "Special-day closures not reflected in slots",
+     "Orders on closed days",
+     "H",
+     "CX",
+     1
+    ],
+    [
+     "Times shown in device time zone, not the restaurant's",
+     "Customer arrives at the wrong time",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Items unavailable at the scheduled time still allowed",
+     "Unfulfillable scheduled order",
+     "H",
+     "CN",
+     1
+    ],
+    [
+     "Lead time or days-ahead limit not enforced",
+     "Kitchen cannot plan",
+     "M",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "F6",
+   "b": "F",
+   "r": 1,
+   "c": 4,
+   "k": "cust",
+   "rel": "L",
+   "t": "Select tip",
+   "d": "Preset percentages, custom amount or no tip, from restaurant tip settings.",
+   "sys": [
+    "Super Admin: Tip settings"
+   ],
+   "e": [
+    [
+     "Tip calculated on the wrong base",
+     "Wrong charge",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Custom tip accepts negative or very large amounts",
+     "Broken total or accidental huge tip",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "No-tip default not respected (R9)",
+     "Restaurants that asked for it get complaints",
+     "M",
+     "CN",
+     1
+    ],
+    [
+     "Presets do not match the restaurant's settings",
+     "Wrong tip options",
+     "M",
+     "CN",
+     0
+    ],
+    [
+     "Changing the tip resets the payment form",
+     "Re-entry, drop-off",
+     "M",
+     "CX",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "F7",
+   "b": "F",
+   "r": 1,
+   "c": 3,
+   "k": "soft",
+   "rel": "L",
+   "t": "Taxes and service charges",
+   "d": "Applied from Web Dash payment settings.",
+   "sys": [
+    "Web Dash: Payments"
+   ],
+   "e": [
+    [
+     "Wrong tax rate for the location",
+     "Under- or over-collected tax",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Service charge not clearly labelled",
+     "Fee transparency complaints",
+     "H",
+     "L",
+     0
+    ],
+    [
+     "Total differs from POS for the same order",
+     "Disputes and reconciliation gaps",
+     "C",
+     "M",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "F13",
+   "b": "F",
+   "k": "cust",
+   "rel": "L",
+   "t": "Apply tax exemption",
+   "d": "Optional accordion: Tax Exemption ID, state and certificate. Auto-applies from the profile for signed-in customers with auto-apply on. Applying it clears an active gift card.",
+   "sys": [
+    "Guestbook / CRM",
+    "WebDash: Catering configurations"
+   ],
+   "e": [
+    [
+     "Tax not zeroed after the exemption is applied",
+     "Customer overcharged",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Active gift card not cleared, or no toast explaining it",
+     "Wrong split, confusion",
+     "H",
+     "M,CX",
+     0
+    ],
+    [
+     "Exemption fields shown when tax exemption is off in WebDash",
+     "Unwanted exemptions",
+     "H",
+     "CN,L",
+     0
+    ],
+    [
+     "Guest exemption saved or auto-applied on a later order",
+     "Exemption on the wrong person",
+     "H",
+     "D,S",
+     0
+    ],
+    [
+     "Saved exemption not auto-applied with auto-apply on",
+     "Customer overcharged",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Certificate upload accepts the wrong file type or over 5 MB",
+     "Unusable certificate",
+     "M",
+     "L",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "F8",
+   "b": "F",
+   "r": 1,
+   "c": 2,
+   "k": "cust",
+   "rel": "TBC",
+   "t": "SMS and email opt-in",
+   "d": "Twilio SMS opt-in for order alerts and marketing, email subscription. Unconfirmed for catering: kept as in online ordering.",
+   "sys": [
+    "Twilio",
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "Consent pre-ticked or required disclosure missing",
+     "TCPA exposure",
+     "C",
+     "L",
+     0
+    ],
+    [
+     "Customer who opted out is re-subscribed",
+     "Compliance breach",
+     "C",
+     "L",
+     1
+    ],
+    [
+     "Opt-in not saved, no alerts sent",
+     "Customer misses the ready alert",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Email subscription not stored separately from the account",
+     "Marketing list errors",
+     "M",
+     "D",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "F9",
+   "b": "F",
+   "r": 1,
+   "c": 1,
+   "k": "cust",
+   "rel": "TBC",
+   "t": "Redeem a gift card",
+   "d": "Gift card covers part or all of the total. Unconfirmed for catering: kept as in online ordering.",
+   "sys": [
+    "Marketing Gift cards"
+   ],
+   "e": [
+    [
+     "Gift card applied but balance not deducted",
+     "Free money",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Valid gift card rejected",
+     "Customer cannot use their gift",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Balance shown is stale",
+     "Disputes",
+     "H",
+     "D",
+     0
+    ],
+    [
+     "Remaining amount not split to card when balance is short",
+     "Checkout blocked",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Second gift card rejected with no explanation",
+     "Confusion",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "F10",
+   "b": "F",
+   "r": 1,
+   "c": 0,
+   "k": "dec",
+   "rel": "L",
+   "t": "Is the total $0.00?",
+   "d": "A gift card covers everything, so payment is skipped.",
+   "sys": [],
+   "e": [
+    [
+     "$0.00 order still shows the card form",
+     "Customer confused or blocked",
+     "H",
+     "CX",
+     1
+    ],
+    [
+     "$0.00 food total with a tip skips charging the tip",
+     "Staff lose the tip",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Order fully covered by a gift card skips payment but the card is not charged",
+     "Free order",
+     "C",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "G1",
+   "b": "G",
+   "r": 0,
+   "c": 0,
+   "k": "dec",
+   "rel": "L",
+   "t": "Choose payment method",
+   "d": "Card, Apple Pay, Google Pay, or a saved card (R9).",
+   "sys": [
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Wallet button missing on a supported device",
+     "Slower checkout, drop-off",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Methods shown that the restaurant has not enabled",
+     "Payment fails",
+     "M",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "G2",
+   "b": "G",
+   "r": 0,
+   "c": 1,
+   "k": "cust",
+   "rel": "L",
+   "t": "Enter card details",
+   "d": "Adyen card fields.",
+   "sys": [
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Card fields fail to load",
+     "No way to pay",
+     "C",
+     "T",
+     0
+    ],
+    [
+     "Double submit charges twice",
+     "Duplicate charge",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "ZIP check rejects a valid card",
+     "Lost order",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Decline message vague",
+     "Customer does not know what to fix",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "G3",
+   "b": "G",
+   "r": 0,
+   "c": 2,
+   "k": "cust",
+   "rel": "L",
+   "t": "Apple Pay or Google Pay",
+   "d": "Native wallet sheet.",
+   "sys": [
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Amount in the wallet sheet differs from the order total",
+     "Wrong charge",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Cancelling the sheet leaves checkout stuck loading",
+     "Customer cannot retry",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Wallet fails inside in-app browsers",
+     "Social traffic cannot pay",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "G4",
+   "b": "G",
+   "r": 0,
+   "c": 3,
+   "k": "cust",
+   "rel": "R9",
+   "t": "Use a saved card",
+   "d": "Card saved to the account on an earlier order.",
+   "sys": [
+    "Adyen",
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "Saved card visible to another person on a shared device",
+     "Fraud risk",
+     "C",
+     "S",
+     1
+    ],
+    [
+     "Card saved without explicit consent",
+     "Compliance and trust risk",
+     "H",
+     "L,S",
+     0
+    ],
+    [
+     "Same last four digits treated differently for guest and signed-in",
+     "Duplicate or mismatched records",
+     "M",
+     "D",
+     1
+    ],
+    [
+     "Expired saved card offered",
+     "Failed payment",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "G5",
+   "b": "G",
+   "r": 1,
+   "c": 2,
+   "k": "soft",
+   "rel": "L",
+   "t": "Adyen authorises payment",
+   "d": "Authorisation, including 3D Secure when the bank requires it.",
+   "sys": [
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Payment authorised but order not created",
+     "Customer charged with no order",
+     "C",
+     "M,D",
+     0
+    ],
+    [
+     "Timeout leaves the customer unsure if they were charged",
+     "Duplicate attempts",
+     "C",
+     "CX",
+     0
+    ],
+    [
+     "Retry after a timeout charges twice",
+     "Duplicate charge",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "3D Secure challenge does not open or loops",
+     "Payment blocked",
+     "H",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "G6",
+   "b": "G",
+   "r": 1,
+   "c": 0,
+   "k": "soft",
+   "rel": "L",
+   "t": "Payment failed or declined",
+   "d": "Customer is shown why and can retry with the same or another method.",
+   "sys": [
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Retry creates a duplicate order",
+     "Kitchen makes two",
+     "C",
+     "D",
+     0
+    ],
+    [
+     "Cart or details cleared after the failure",
+     "Customer gives up",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Failure reason not explained",
+     "Repeated failures",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "G7",
+   "b": "G",
+   "r": 0,
+   "c": 5,
+   "k": "int",
+   "rel": "L",
+   "t": "Order placed",
+   "d": "Order created and labelled Catering on KDS, POS Orders Hub and MoM. ASAP orders fire now; scheduled orders are held until fire time.",
+   "sys": [
+    "KDS",
+    "POS",
+    "MOM"
+   ],
+   "e": [
+    [
+     "Order not labelled Catering",
+     "Kitchen treats it as a regular order",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Confirmation shown but the order never reaches the kitchen",
+     "Customer arrives to no food",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Order created twice",
+     "Double food and charge",
+     "C",
+     "D",
+     0
+    ],
+    [
+     "Order reaches the kitchen without modifiers or instructions",
+     "Wrong food",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Scheduled order fired to the kitchen immediately",
+     "Food made hours early",
+     "H",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "H1",
+   "b": "H",
+   "r": 0,
+   "c": 0,
+   "k": "soft",
+   "rel": "L",
+   "t": "Confirmation screen",
+   "d": "Order number, pickup time, items and totals.",
+   "sys": [],
+   "e": [
+    [
+     "Blank or error screen after a successful payment",
+     "Customer pays again",
+     "C",
+     "CX",
+     0
+    ],
+    [
+     "Refreshing the page re-submits the order",
+     "Duplicate order",
+     "C",
+     "T",
+     0
+    ],
+    [
+     "Wrong pickup time or order type",
+     "Customer arrives at the wrong time",
+     "H",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "H2",
+   "b": "H",
+   "r": 0,
+   "c": 1,
+   "k": "soft",
+   "rel": "L",
+   "t": "Email receipt",
+   "d": "Sent to the customer's email.",
+   "sys": [
+    "Email service"
+   ],
+   "e": [
+    [
+     "Receipt totals differ from the amount charged",
+     "Disputes",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Not sent or delayed",
+     "No proof of order",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Format differs from other channels",
+     "Confusion",
+     "M",
+     "CX",
+     1
+    ],
+    [
+     "No sign-up link on guest receipts",
+     "Missed CRM growth",
+     "L",
+     "CN",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "H3",
+   "b": "H",
+   "r": 0,
+   "c": 2,
+   "k": "int",
+   "rel": "TBC",
+   "t": "SMS order alerts",
+   "d": "Received and ready texts for customers who opted in. Unconfirmed for catering: kept as in online ordering.",
+   "sys": [
+    "Twilio",
+    "KDS"
+   ],
+   "e": [
+    [
+     "Text sent after the customer opted out",
+     "Compliance breach",
+     "C",
+     "L",
+     1
+    ],
+    [
+     "Ready alert not sent or late",
+     "Food goes cold",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Duplicate texts",
+     "Annoyance, more opt-outs",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Restaurant cannot turn ready alerts off (R9 config)",
+     "Unwanted texts",
+     "M",
+     "CN",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "H8",
+   "b": "H",
+   "k": "int",
+   "rel": "L",
+   "t": "Fire to KDS",
+   "d": "ASAP orders fire immediately. Scheduled orders fire at the scheduled time minus the order fire time set in WebDash.",
+   "sys": [
+    "KDS",
+    "WebDash: Catering configurations"
+   ],
+   "e": [
+    [
+     "Fire time added to the scheduled time instead of subtracted",
+     "Food ready late",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Order never fires",
+     "Customer arrives to nothing",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Scheduled order fired immediately",
+     "Food made hours early",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Fire time toggle off but the offset is still applied",
+     "Wrong prep timing",
+     "M",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "H5",
+   "b": "H",
+   "r": 1,
+   "c": 0,
+   "k": "soft",
+   "rel": "L",
+   "t": "Track order status",
+   "d": "Received, Preparing, Ready.",
+   "sys": [
+    "KDS"
+   ],
+   "e": [
+    [
+     "Ready shown before the food is ready",
+     "Customer waits at the counter",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Status stuck on Preparing after pickup",
+     "Looks broken",
+     "M",
+     "CN",
+     0
+    ],
+    [
+     "Scheduled order shows Preparing long before its time",
+     "Confusion",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Status link needs sign-in or expires",
+     "Guest cannot track",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "H9",
+   "b": "H",
+   "k": "int",
+   "rel": "L",
+   "t": "DoorDash driver dispatched",
+   "d": "Delivery orders: DoorDash is requested so the driver arrives when the food is ready.",
+   "sys": [
+    "DoorDash"
+   ],
+   "e": [
+    [
+     "Dispatch fails with no alert to the restaurant",
+     "Order never delivered",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Driver dispatched late, food sits",
+     "Cold food, complaints",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Delivery status not shown in order tracking",
+     "Customer unsure where the order is",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "H7",
+   "b": "H",
+   "r": 1,
+   "c": 1,
+   "k": "term",
+   "rel": "L",
+   "t": "Picked up or delivered, order complete",
+   "d": "Customer collects the order or DoorDash delivers it.",
+   "sys": [],
+   "e": [
+    [
+     "Scheduled order never prepared",
+     "Customer arrives to nothing",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Order not ready at the quoted time",
+     "Wait at the counter",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Wrong order handed over for a shared name",
+     "Wrong food",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "H10",
+   "b": "H",
+   "r": 1,
+   "c": 3,
+   "k": "soft",
+   "rel": "L",
+   "t": "Restaurant cancels and refunds",
+   "d": "From WebDash or MoM. Full refund; cancellation policy tiers are not applied.",
+   "sys": [
+    "POS",
+    "Adyen",
+    "Marketing Loyalty & Gift cards"
+   ],
+   "e": [
+    [
+     "Customer not told the order was cancelled",
+     "Customer arrives to nothing",
+     "C",
+     "CX",
+     0
+    ],
+    [
+     "Gift card balance not restored",
+     "Customer loses value",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Partial refund amount wrong",
+     "Disputes",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Refund not shown anywhere with no timeline",
+     "Support tickets",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I1",
+   "b": "I",
+   "r": 0,
+   "c": 0,
+   "k": "cust",
+   "rel": "L",
+   "t": "My Orders, Catering tab",
+   "d": "Signed-in only. Quick catering orders sit in the Catering tab under Active and Past orders.",
+   "sys": [
+    "Guestbook / CRM",
+    "MOM"
+   ],
+   "e": [
+    [
+     "Recent order missing",
+     "Customer thinks it failed",
+     "H",
+     "D",
+     0
+    ],
+    [
+     "Status differs from the status page",
+     "Confusion",
+     "M",
+     "D",
+     0
+    ],
+    [
+     "Guest orders not linked after sign-up",
+     "History lost",
+     "M",
+     "D",
+     0
+    ],
+    [
+     "Cancelled and refunded orders mixed in with no filter",
+     "Clutter",
+     "L",
+     "CX",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "I5",
+   "b": "I",
+   "k": "cust",
+   "rel": "L",
+   "t": "Open order details",
+   "d": "Active Quick catering order with Track Order and Cancel Order. Cancel Order shows only while the order can still be cancelled.",
+   "sys": [
+    "MOM",
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "Cancel Order shown on a completed or already cancelled order",
+     "Second refund attempt",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Order details show a different status from the kitchen",
+     "Customer cancels an order already being made",
+     "H",
+     "D",
+     0
+    ],
+    [
+     "Cancel Order missing on an order that is still cancellable",
+     "Support calls, no self-serve",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I6",
+   "b": "I",
+   "k": "dec",
+   "rel": "L",
+   "t": "Can this order be cancelled?",
+   "d": "Cancel Order is hidden once the order is Preparing, and blocked for DoorDash orders once a driver is assigned. Track Order stays available.",
+   "sys": [
+    "KDS",
+    "DoorDash"
+   ],
+   "e": [
+    [
+     "Cancel available while the order is Preparing",
+     "Food already made, kitchen waste",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Cancel allowed after a DoorDash driver is assigned",
+     "Driver paid, food wasted",
+     "H",
+     "M,CN",
+     0
+    ],
+    [
+     "Status changes to Preparing while the cancel modal is open and the cancel still goes through",
+     "Refund on food already being made",
+     "H",
+     "CN,T",
+     0
+    ],
+    [
+     "Blocked state shows no reason",
+     "Customer confused, calls the restaurant",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I7",
+   "b": "I",
+   "k": "soft",
+   "rel": "L",
+   "t": "Cancellation policy modal",
+   "d": "Shows the active policy name, the tier that applies for the time left before the order, the original amounts collected, the cancellation fee and the refund. Show more lists the other tiers (hidden when there is only one). With no active policy the fee is $0.00 and the refund is full.",
+   "sys": [
+    "WebDash: Cancellation policy"
+   ],
+   "e": [
+    [
+     "Wrong tier picked for the time left before the order",
+     "Wrong refund",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Fee shown on the modal differs from the refund actually issued",
+     "Disputes, chargebacks",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Inactive or old policy used instead of the active one",
+     "Wrong refund",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Time to the order measured in the device time zone",
+     "Wrong tier near the cutoff",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "No active policy but a fee is still shown",
+     "Overcharge",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Show more appears when the policy has only one tier",
+     "Clutter",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I8",
+   "b": "I",
+   "k": "soft",
+   "rel": "L",
+   "t": "Refund calculated",
+   "d": "Cancellation fee is a percentage of the subtotal only. Tax is refunded in proportion to the subtotal refunded, tips are always refunded in full, and service charges, delivery fee and regulatory fee are refunded per the tier's toggles and percentages.",
+   "sys": [
+    "WebDash: Cancellation policy",
+    "Web Dash: Payments"
+   ],
+   "e": [
+    [
+     "Fee applied to the order total instead of the subtotal",
+     "Customer under-refunded",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Tip not refunded in full",
+     "Customer loses value",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Tax not refunded in proportion to the subtotal",
+     "Wrong refund, tax reporting off",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Service charge, delivery or regulatory fee refunded although the tier toggle is off",
+     "Restaurant over-refunds",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Rounding leaves the refund a cent off the modal",
+     "Reconciliation noise",
+     "M",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I9",
+   "b": "I",
+   "k": "dec",
+   "rel": "L",
+   "t": "Paid with a gift card and a card?",
+   "d": "Gift card plus card orders get a second step showing how the refund splits across each payment source. Single-source orders go straight to the refund.",
+   "sys": [
+    "Marketing Gift cards",
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Second step skipped for a gift card and card order",
+     "Customer unsure where money goes",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Second step shown for a single payment source",
+     "Extra step",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I10",
+   "b": "I",
+   "k": "cust",
+   "rel": "L",
+   "t": "Review refund breakdown",
+   "d": "Step 2: refund allocated per payment source (gift card and card) before final confirmation.",
+   "sys": [
+    "Marketing Gift cards",
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Refund split across gift card and card is wrong",
+     "Customer loses value",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Breakdown total differs from the refund on the first step",
+     "Trust breaks",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Back from step 2 cancels the order anyway",
+     "Unintended cancellation",
+     "H",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I11",
+   "b": "I",
+   "k": "int",
+   "rel": "L",
+   "t": "Order cancelled, refund issued",
+   "d": "Refund sent through Adyen and gift card balance restored. Order marked Cancelled on KDS, POS Orders Hub, MoM and WebDash, and a cancellation email lists the policy tiers and the refund.",
+   "sys": [
+    "Adyen",
+    "Marketing Gift cards",
+    "KDS",
+    "POS",
+    "MOM",
+    "Email service"
+   ],
+   "e": [
+    [
+     "Refund fails but the order still shows cancelled",
+     "Customer charged for a cancelled order",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Double tap on Yes, proceed refunds twice",
+     "Duplicate refund",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Order still on KDS after cancellation",
+     "Kitchen makes the food",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Gift card balance not restored",
+     "Customer loses value",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "DoorDash delivery not cancelled",
+     "Driver sent for a cancelled order",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Cancellation email missing or shows the wrong amounts",
+     "Disputes, support tickets",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I12",
+   "b": "I",
+   "k": "term",
+   "rel": "L",
+   "t": "Cancellation complete",
+   "d": "Order shows as Cancelled in My Orders with the refund amount per payment source.",
+   "sys": [
+    "MOM"
+   ],
+   "e": [
+    [
+     "Cancelled order still listed under Active",
+     "Confusion",
+     "M",
+     "D",
+     0
+    ],
+    [
+     "Refund amount or timeline not shown",
+     "Support tickets",
+     "M",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I2",
+   "b": "I",
+   "r": 0,
+   "c": 1,
+   "k": "cust",
+   "rel": "L",
+   "t": "Reorder",
+   "d": "Reorder modal with Add to cart or Add more items. Unavailable items are greyed out and cannot be selected.",
+   "sys": [
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Unavailable items selectable in the reorder modal",
+     "Invalid cart",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Old prices used",
+     "Wrong charge",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Unavailable items dropped or added without a message",
+     "Wrong order",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Deleted modifiers carried over",
+     "Invalid items",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Reorder ignores the current store status (closed or busy)",
+     "Order the kitchen cannot take",
+     "H",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "I3",
+   "b": "I",
+   "r": 0,
+   "c": 2,
+   "k": "cust",
+   "rel": "L",
+   "t": "Edit My Account",
+   "d": "Personal info, allergens, tags and tax exemption settings with an auto-apply toggle.",
+   "sys": [
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "Auto-apply toggle in My Account and the checkout checkbox save to different places",
+     "Exemption applied inconsistently",
+     "H",
+     "D",
+     0
+    ],
+    [
+     "Changes not saved to Guestbook",
+     "Data reverts",
+     "H",
+     "CN,D",
+     0
+    ],
+    [
+     "Changing phone number breaks login",
+     "Locked out, order history lost",
+     "H",
+     "D",
+     0
+    ],
+    [
+     "Saved allergens not used to flag menu items",
+     "Health risk",
+     "M",
+     "CN",
+     0
+    ],
+    [
+     "No way to delete the account or data (CCPA, beyond R9)",
+     "Privacy compliance gap",
+     "M",
+     "L",
+     1
+    ]
+   ]
+  },
+  {
+   "id": "I4",
+   "b": "I",
+   "r": 0,
+   "c": 3,
+   "k": "term",
+   "rel": "L",
+   "t": "Session ends",
+   "d": "Customer leaves or signs out.",
+   "sys": [],
+   "e": [
+    [
+     "Sign out leaves the session active on a shared device",
+     "Next person uses the account",
+     "H",
+     "S",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "J1",
+   "b": "J",
+   "k": "cust",
+   "rel": "L",
+   "t": "Browse packages",
+   "d": "Most Popular and All packages.",
+   "sys": [
+    "WebDash: Package configuration"
+   ],
+   "e": [
+    [
+     "Inactive or deleted package listed",
+     "Inquiry for something not offered",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Packages from another location shown",
+     "Wrong offer",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Price per person missing on the card",
+     "Customer cannot compare",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Most Popular shown with fewer than three qualifying packages",
+     "Thin, odd-looking tab",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "J2",
+   "b": "J",
+   "k": "cust",
+   "rel": "L",
+   "t": "Package details",
+   "d": "Items by category, food and non-food, price per person.",
+   "sys": [
+    "WebDash: Package configuration"
+   ],
+   "e": [
+    [
+     "Details differ from what the restaurant configured",
+     "Disputes later",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Package items or categories missing",
+     "Customer unsure what is included",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Food and non-food items not separated",
+     "Confusing breakdown",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "J3",
+   "b": "J",
+   "k": "dec",
+   "rel": "L",
+   "t": "Customisable package?",
+   "d": "Pre-built packages go straight to the event cart. Customisable ones open the customise screen.",
+   "sys": [
+    "WebDash: Package configuration"
+   ],
+   "e": [
+    [
+     "Customisable package added without its required picks",
+     "Incomplete inquiry",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Pre-built package forced through an empty customise screen",
+     "Extra step",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "J4",
+   "b": "J",
+   "k": "cust",
+   "rel": "L",
+   "t": "Customise package",
+   "d": "Min and max per category, required selections, bulk options and add-ons such as servers.",
+   "sys": [
+    "WebDash: Package configuration",
+    "Menu Manager"
+   ],
+   "e": [
+    [
+     "Required category not enforced",
+     "Incomplete package",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Min or max per category not enforced",
+     "Wrong quantities",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Add-on price not added to the package total",
+     "Revenue loss",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Out-of-stock item selectable",
+     "Kitchen cannot fulfil",
+     "M",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "J5",
+   "b": "J",
+   "k": "soft",
+   "rel": "L",
+   "t": "Add to event cart",
+   "d": "Up to 6 packages, duplicates allowed. Add to cart is disabled on every card at the limit.",
+   "sys": [],
+   "e": [
+    [
+     "Event cart mixed with the Quick catering cart",
+     "Wrong order type",
+     "H",
+     "D",
+     0
+    ],
+    [
+     "Seventh package can be added",
+     "Cap not enforced",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Add to cart not disabled on every card at once",
+     "Inconsistent cap",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Duplicate package rejected",
+     "Customer cannot order two of the same",
+     "M",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "J6",
+   "b": "J",
+   "k": "cust",
+   "rel": "L",
+   "t": "Review event cart",
+   "d": "Packages chosen so far, with the option to add more or continue to the inquiry.",
+   "sys": [],
+   "e": [
+    [
+     "Cart lost when going back from the inquiry form",
+     "Rework, abandonment",
+     "H",
+     "D,CX",
+     0
+    ],
+    [
+     "Removing a package leaves its amount in the total",
+     "Wrong estimate",
+     "M",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "K1",
+   "b": "K",
+   "k": "dec",
+   "rel": "TBC",
+   "t": "Sign in or continue as guest?",
+   "d": "Unconfirmed whether an inquiry needs sign-in. Kept optional for now.",
+   "sys": [
+    "Guestbook / CRM"
+   ],
+   "e": [
+    [
+     "Signing in loses the event cart",
+     "Rework",
+     "H",
+     "D",
+     0
+    ],
+    [
+     "Guest contact details not captured",
+     "Restaurant cannot reply",
+     "H",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "K2",
+   "b": "K",
+   "k": "cust",
+   "rel": "L",
+   "t": "Event details",
+   "d": "Event date, time slot, guest count, venue and service type (pickup, delivery or on-premises). Slots follow hours of operation or 24 hours as configured.",
+   "sys": [
+    "WebDash: Catering configurations",
+    "Business Hours"
+   ],
+   "e": [
+    [
+     "Time slots outside hours of operation offered",
+     "Inquiries the restaurant cannot serve",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Lead time not applied to the event date",
+     "Too-short notice",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Date picker uses the device time zone",
+     "Wrong event date",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Guest count below the package minimum accepted",
+     "Unviable inquiry",
+     "M",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "K3",
+   "b": "K",
+   "k": "soft",
+   "rel": "L",
+   "t": "Package total",
+   "d": "Price per person × guest count for each package, plus add-ons.",
+   "sys": [],
+   "e": [
+    [
+     "Total not updated when the guest count changes",
+     "Wrong estimate",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Add-ons left out of the total",
+     "Underquoted",
+     "M",
+     "M",
+     0
+    ],
+    [
+     "Rounding differs from WebDash",
+     "Mismatch later",
+     "L",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "K4",
+   "b": "K",
+   "k": "cust",
+   "rel": "L",
+   "t": "Tax exemption on inquiry",
+   "d": "Optional: Tax Exemption ID, state and certificate, carried onto the WebDash inquiry.",
+   "sys": [
+    "WebDash: Catering"
+   ],
+   "e": [
+    [
+     "Shows on WebDash with the exemption checkbox unchecked",
+     "Tax charged on invoices",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Certificate not attached to the inquiry",
+     "Restaurant cannot verify",
+     "M",
+     "L",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "K5",
+   "b": "K",
+   "k": "soft",
+   "rel": "L",
+   "t": "Submit inquiry",
+   "d": "Inquiry created in WebDash and MoM Pending inquiries with the cart packages pre-filled.",
+   "sys": [
+    "WebDash: Catering",
+    "MoM",
+    "Email service"
+   ],
+   "e": [
+    [
+     "Confirmation shown but the inquiry is not created",
+     "Lost lead",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Cart packages not pre-filled on the inquiry",
+     "Restaurant re-keys, errors",
+     "H",
+     "D",
+     0
+    ],
+    [
+     "Double submit creates two inquiries",
+     "Duplicate work",
+     "M",
+     "D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "K6",
+   "b": "K",
+   "k": "soft",
+   "rel": "TBC",
+   "t": "Inquiry confirmation",
+   "d": "Confirmation screen and email to the customer. Exact behaviour not specified yet.",
+   "sys": [
+    "Email service"
+   ],
+   "e": [
+    [
+     "No confirmation email",
+     "Customer unsure it went through",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "No expected response time shown",
+     "Follow-up calls",
+     "L",
+     "CX",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "L1",
+   "b": "L",
+   "k": "dec",
+   "rel": "L",
+   "t": "Restaurant accepts or declines?",
+   "d": "Operator reviews the inquiry in WebDash or MoM.",
+   "sys": [
+    "WebDash: Catering",
+    "MoM"
+   ],
+   "e": [
+    [
+     "Inquiry sits unanswered with no reminder to staff",
+     "Lost lead",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Customer not notified of the decision",
+     "Uncertainty",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Accepted and declined at the same time from two devices",
+     "Conflicting status",
+     "M",
+     "D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "L2",
+   "b": "L",
+   "k": "term",
+   "rel": "L",
+   "t": "Inquiry declined",
+   "d": "Moves to the Rejected tab. Terminal.",
+   "sys": [
+    "WebDash: Catering",
+    "MoM"
+   ],
+   "e": [
+    [
+     "Customer not told",
+     "Customer waits for an event that will not happen",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Declined inquiry reappears in Pending",
+     "Duplicate handling",
+     "L",
+     "D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "L3",
+   "b": "L",
+   "k": "soft",
+   "rel": "L",
+   "t": "Order confirmed, quote shared",
+   "d": "Order created from the inquiry. Packages, guest count and pricing confirmed with the customer (PDF quote planned).",
+   "sys": [
+    "WebDash: Catering"
+   ],
+   "e": [
+    [
+     "Quote differs from the event cart",
+     "Disputes",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Changes agreed offline not reflected in the order",
+     "Wrong order",
+     "H",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "M1",
+   "b": "M",
+   "k": "int",
+   "rel": "L",
+   "t": "Invoice email with Pay by Link",
+   "d": "Deposit and payment plan invoices released one at a time, each with a due date.",
+   "sys": [
+    "Adyen",
+    "Email service"
+   ],
+   "e": [
+    [
+     "Pay by Link fails to open",
+     "Payment blocked",
+     "C",
+     "T",
+     0
+    ],
+    [
+     "Tax and service charge not split proportionally across invoices",
+     "Wrong amounts",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Email sent to the wrong recipient",
+     "Missed payment",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Two unpaid invoices released at once",
+     "Customer pays out of order",
+     "M",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "M2",
+   "b": "M",
+   "k": "cust",
+   "rel": "L",
+   "t": "Pay invoice",
+   "d": "Customer pays through the Adyen link. The next invoice is released after payment.",
+   "sys": [
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Duplicate payment on the same link",
+     "Overcharge",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Paid but the invoice still shows unpaid",
+     "Payment chased twice",
+     "H",
+     "D,M",
+     0
+    ],
+    [
+     "Next invoice not released after payment",
+     "Collection stalls",
+     "H",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "M3",
+   "b": "M",
+   "k": "soft",
+   "rel": "L",
+   "t": "Payment link expired",
+   "d": "Links expire at the due date (up to 30 days). The invoice is voided with reason expired and the restaurant sends a new one.",
+   "sys": [
+    "Adyen",
+    "WebDash: Catering"
+   ],
+   "e": [
+    [
+     "Expired link still payable",
+     "Payment on a void invoice",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Restaurant not aware the link expired",
+     "Payment never collected",
+     "M",
+     "CN",
+     0
+    ],
+    [
+     "Expired invoice shown as manually voided",
+     "Audit confusion",
+     "L",
+     "D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "M4",
+   "b": "M",
+   "k": "soft",
+   "rel": "L",
+   "t": "Order edited after invoice sent",
+   "d": "The unpaid invoice is voided and regenerated with the new amounts.",
+   "sys": [
+    "WebDash: Catering"
+   ],
+   "e": [
+    [
+     "Customer pays the voided invoice",
+     "Reconciliation problems",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Edit allowed after full payment",
+     "Untracked changes",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "No audit trail of the void",
+     "Disputes",
+     "M",
+     "D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "M5",
+   "b": "M",
+   "k": "cust",
+   "rel": "L",
+   "t": "Final invoice with tip options",
+   "d": "Tip options on the final invoice email. Skipped if a tip was already set at order creation.",
+   "sys": [
+    "Adyen",
+    "Email service"
+   ],
+   "e": [
+    [
+     "Tip charged twice",
+     "Overcharge",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Tip options shown when a tip was already set",
+     "Confusion",
+     "M",
+     "CX",
+     0
+    ],
+    [
+     "Tip not marked resolved after payment",
+     "Asked again on the review page",
+     "M",
+     "D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "N1",
+   "b": "N",
+   "k": "int",
+   "rel": "L",
+   "t": "Auto-fire to KDS",
+   "d": "Fires at event time minus prep time. Manual Send to KDS and scheduled send stay available as overrides.",
+   "sys": [
+    "KDS",
+    "WebDash: Catering"
+   ],
+   "e": [
+    [
+     "Order fires early or late",
+     "Food not ready, or cold",
+     "C",
+     "CN",
+     0
+    ],
+    [
+     "Order not held in KDS before fire time",
+     "Kitchen confusion",
+     "H",
+     "CN",
+     0
+    ],
+    [
+     "Manual send and auto-fire both fire",
+     "Duplicate prep",
+     "H",
+     "CN",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "N2",
+   "b": "N",
+   "k": "soft",
+   "rel": "L",
+   "t": "Event fulfilled",
+   "d": "Pickup, delivery or on-premises service completed.",
+   "sys": [
+    "WebDash: Catering",
+    "MoM"
+   ],
+   "e": [
+    [
+     "Event marked complete while invoices are unpaid",
+     "Receivable missed",
+     "M",
+     "M",
+     0
+    ],
+    [
+     "Status not updated after the event",
+     "Stale dashboard",
+     "L",
+     "D",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "N3",
+   "b": "N",
+   "k": "cust",
+   "rel": "L",
+   "t": "Review page with tip",
+   "d": "From the order complete email. Rating and optional text; tip section only if no tip was given earlier.",
+   "sys": [
+    "ARM",
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Tip shown after it was already paid",
+     "Double tip",
+     "H",
+     "M",
+     0
+    ],
+    [
+     "Review not routed to ARM with a catering tag",
+     "Lost feedback",
+     "M",
+     "CN",
+     0
+    ],
+    [
+     "Link reused after submission",
+     "Duplicate reviews",
+     "L",
+     "S",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "N4",
+   "b": "N",
+   "k": "soft",
+   "rel": "L",
+   "t": "Restaurant cancels event",
+   "d": "Operator-initiated. Unpaid invoices are voided; paid invoices are refunded with amounts entered by hand.",
+   "sys": [
+    "WebDash: Catering",
+    "Adyen"
+   ],
+   "e": [
+    [
+     "Pending invoice not voided",
+     "Customer pays for a cancelled event",
+     "C",
+     "M",
+     0
+    ],
+    [
+     "Customer not notified",
+     "Customer still expects the event",
+     "H",
+     "CX",
+     0
+    ],
+    [
+     "Refund amount pre-filled from the policy",
+     "Wrong refund",
+     "M",
+     "M",
+     0
+    ]
+   ]
+  },
+  {
+   "id": "N5",
+   "b": "N",
+   "k": "term",
+   "rel": "L",
+   "t": "Event complete",
+   "d": "All invoices settled and the event closed.",
+   "sys": [],
+   "e": [
+    [
+     "Order not moved to completed",
+     "Reporting gaps",
+     "L",
+     "R",
+     0
+    ]
+   ]
+  }
+ ],
+ "EDGES": [
+  [
+   "A1",
+   "A2",
+   ""
+  ],
+  [
+   "A2",
+   "A3",
+   ""
+  ],
+  [
+   "A2",
+   "B1",
+   "Sign in from header",
+   1
+  ],
+  [
+   "A3",
+   "A4",
+   "Catering off"
+  ],
+  [
+   "A3",
+   "A5",
+   "Available"
+  ],
+  [
+   "A5",
+   "C1",
+   "Quick catering"
+  ],
+  [
+   "A5",
+   "J1",
+   "Plan an event"
+  ],
+  [
+   "B1",
+   "B2",
+   "Log in"
+  ],
+  [
+   "B1",
+   "B3",
+   "Social"
+  ],
+  [
+   "B1",
+   "B4",
+   "Sign up"
+  ],
+  [
+   "B1",
+   "B6",
+   "Guest"
+  ],
+  [
+   "B2",
+   "B5",
+   ""
+  ],
+  [
+   "B3",
+   "B5",
+   ""
+  ],
+  [
+   "B4",
+   "B5",
+   ""
+  ],
+  [
+   "B5",
+   "C1",
+   "From header"
+  ],
+  [
+   "B5",
+   "F1",
+   "Back to checkout"
+  ],
+  [
+   "B5",
+   "K2",
+   "Back to inquiry"
+  ],
+  [
+   "B5",
+   "I1",
+   "Go to My Orders"
+  ],
+  [
+   "B6",
+   "C1",
+   ""
+  ],
+  [
+   "C1",
+   "C2",
+   ""
+  ],
+  [
+   "C2",
+   "C3",
+   ""
+  ],
+  [
+   "C3",
+   "C4",
+   "Unavailable"
+  ],
+  [
+   "C4",
+   "C2",
+   "Back to menu"
+  ],
+  [
+   "C3",
+   "D1",
+   "Add or customise"
+  ],
+  [
+   "D1",
+   "D2",
+   "Ordered before"
+  ],
+  [
+   "D1",
+   "D3",
+   "Has modifiers"
+  ],
+  [
+   "D1",
+   "D7",
+   "No modifiers"
+  ],
+  [
+   "D2",
+   "D3",
+   ""
+  ],
+  [
+   "D3",
+   "D4",
+   "Half and half"
+  ],
+  [
+   "D3",
+   "D5",
+   "Add-ons"
+  ],
+  [
+   "D3",
+   "D6",
+   "No add-ons"
+  ],
+  [
+   "D4",
+   "D5",
+   ""
+  ],
+  [
+   "D5",
+   "D6",
+   ""
+  ],
+  [
+   "D6",
+   "D7",
+   ""
+  ],
+  [
+   "D7",
+   "C2",
+   "Keep browsing"
+  ],
+  [
+   "D7",
+   "E1",
+   "View cart"
+  ],
+  [
+   "E1",
+   "E2",
+   "Edit"
+  ],
+  [
+   "E2",
+   "E1",
+   ""
+  ],
+  [
+   "E1",
+   "E3",
+   "Threshold reached"
+  ],
+  [
+   "E3",
+   "E1",
+   "Simple item added"
+  ],
+  [
+   "E3",
+   "D1",
+   "Suggested item needs choices"
+  ],
+  [
+   "E1",
+   "C2",
+   "Add more"
+  ],
+  [
+   "E1",
+   "E8",
+   ""
+  ],
+  [
+   "E8",
+   "E9",
+   ""
+  ],
+  [
+   "E9",
+   "C2",
+   "Below minimum, add more"
+  ],
+  [
+   "E9",
+   "F1",
+   "Minimum met"
+  ],
+  [
+   "F1",
+   "F2",
+   "Guest"
+  ],
+  [
+   "F1",
+   "F11",
+   "Signed in"
+  ],
+  [
+   "F1",
+   "B1",
+   "Sign in"
+  ],
+  [
+   "F2",
+   "F11",
+   ""
+  ],
+  [
+   "F11",
+   "F3",
+   "Pickup"
+  ],
+  [
+   "F11",
+   "F12",
+   "Delivery"
+  ],
+  [
+   "F12",
+   "F3",
+   ""
+  ],
+  [
+   "F3",
+   "F5",
+   "Lead time on, or later"
+  ],
+  [
+   "F3",
+   "F4",
+   "Lead time off, ASAP"
+  ],
+  [
+   "F4",
+   "F6",
+   ""
+  ],
+  [
+   "F5",
+   "F6",
+   ""
+  ],
+  [
+   "F6",
+   "F7",
+   ""
+  ],
+  [
+   "F7",
+   "F13",
+   ""
+  ],
+  [
+   "F13",
+   "F8",
+   ""
+  ],
+  [
+   "F8",
+   "F9",
+   "Has gift card"
+  ],
+  [
+   "F8",
+   "F10",
+   ""
+  ],
+  [
+   "F9",
+   "F10",
+   ""
+  ],
+  [
+   "F10",
+   "G1",
+   "Balance due"
+  ],
+  [
+   "F10",
+   "G7",
+   "$0.00"
+  ],
+  [
+   "G1",
+   "G2",
+   "Card"
+  ],
+  [
+   "G1",
+   "G3",
+   "Wallet"
+  ],
+  [
+   "G1",
+   "G4",
+   "Saved card"
+  ],
+  [
+   "G2",
+   "G5",
+   ""
+  ],
+  [
+   "G3",
+   "G5",
+   ""
+  ],
+  [
+   "G4",
+   "G5",
+   ""
+  ],
+  [
+   "G5",
+   "G7",
+   "Approved"
+  ],
+  [
+   "G5",
+   "G6",
+   "Declined"
+  ],
+  [
+   "G6",
+   "G1",
+   "Retry"
+  ],
+  [
+   "G7",
+   "H1",
+   ""
+  ],
+  [
+   "H1",
+   "H2",
+   "",
+   1
+  ],
+  [
+   "H1",
+   "H3",
+   "If opted in",
+   1
+  ],
+  [
+   "H1",
+   "H8",
+   ""
+  ],
+  [
+   "H8",
+   "H5",
+   ""
+  ],
+  [
+   "H5",
+   "H7",
+   "Pickup ready"
+  ],
+  [
+   "H5",
+   "H9",
+   "Delivery"
+  ],
+  [
+   "H9",
+   "H7",
+   "Delivered"
+  ],
+  [
+   "H5",
+   "I5",
+   "Customer cancels from My Orders",
+   1
+  ],
+  [
+   "H5",
+   "H10",
+   "Restaurant cancels"
+  ],
+  [
+   "H10",
+   "I1",
+   "Check refund"
+  ],
+  [
+   "H7",
+   "I1",
+   "Signed in"
+  ],
+  [
+   "H7",
+   "I4",
+   ""
+  ],
+  [
+   "I1",
+   "I5",
+   "Open an active order"
+  ],
+  [
+   "I5",
+   "H5",
+   "Track order"
+  ],
+  [
+   "I5",
+   "I6",
+   "Cancel order"
+  ],
+  [
+   "I6",
+   "I5",
+   "Not cancellable, Cancel hidden"
+  ],
+  [
+   "I6",
+   "I7",
+   "Cancellable"
+  ],
+  [
+   "I7",
+   "I5",
+   "Keep order"
+  ],
+  [
+   "I7",
+   "I8",
+   "Yes, proceed"
+  ],
+  [
+   "I8",
+   "I9",
+   ""
+  ],
+  [
+   "I9",
+   "I10",
+   "Gift card and card"
+  ],
+  [
+   "I9",
+   "I11",
+   "Single payment source"
+  ],
+  [
+   "I10",
+   "I11",
+   "Confirm"
+  ],
+  [
+   "I11",
+   "I12",
+   ""
+  ],
+  [
+   "I12",
+   "I4",
+   ""
+  ],
+  [
+   "I1",
+   "I2",
+   ""
+  ],
+  [
+   "I1",
+   "I3",
+   ""
+  ],
+  [
+   "I1",
+   "I4",
+   ""
+  ],
+  [
+   "I2",
+   "E1",
+   "Add to cart"
+  ],
+  [
+   "I2",
+   "C2",
+   "Add more items"
+  ],
+  [
+   "I3",
+   "I4",
+   ""
+  ],
+  [
+   "J1",
+   "J2",
+   ""
+  ],
+  [
+   "J2",
+   "J3",
+   ""
+  ],
+  [
+   "J3",
+   "J4",
+   "Customisable"
+  ],
+  [
+   "J3",
+   "J5",
+   "Pre-built"
+  ],
+  [
+   "J4",
+   "J5",
+   ""
+  ],
+  [
+   "J5",
+   "J6",
+   ""
+  ],
+  [
+   "J6",
+   "J1",
+   "Add another package"
+  ],
+  [
+   "J6",
+   "K1",
+   "Continue"
+  ],
+  [
+   "K1",
+   "B1",
+   "Sign in"
+  ],
+  [
+   "K1",
+   "K2",
+   "Guest or signed in"
+  ],
+  [
+   "K2",
+   "K3",
+   ""
+  ],
+  [
+   "K3",
+   "K4",
+   ""
+  ],
+  [
+   "K4",
+   "K5",
+   ""
+  ],
+  [
+   "K5",
+   "K6",
+   ""
+  ],
+  [
+   "K6",
+   "L1",
+   ""
+  ],
+  [
+   "L1",
+   "L2",
+   "Decline"
+  ],
+  [
+   "L1",
+   "L3",
+   "Accept"
+  ],
+  [
+   "L3",
+   "M1",
+   ""
+  ],
+  [
+   "M1",
+   "M2",
+   ""
+  ],
+  [
+   "M2",
+   "M1",
+   "Next invoice released"
+  ],
+  [
+   "M1",
+   "M3",
+   "Link expired"
+  ],
+  [
+   "M3",
+   "M1",
+   "New invoice sent"
+  ],
+  [
+   "M1",
+   "M4",
+   "Order edited"
+  ],
+  [
+   "M4",
+   "M1",
+   "Regenerated invoice"
+  ],
+  [
+   "M2",
+   "M5",
+   "Final invoice"
+  ],
+  [
+   "M5",
+   "N1",
+   ""
+  ],
+  [
+   "M2",
+   "N4",
+   "Restaurant cancels",
+   1
+  ],
+  [
+   "N1",
+   "N2",
+   ""
+  ],
+  [
+   "N2",
+   "N3",
+   ""
+  ],
+  [
+   "N3",
+   "N5",
+   ""
+  ],
+  [
+   "N4",
+   "N5",
+   ""
+  ]
+ ],
+ "PATH_GROUPS": [
+  "Quick catering: core",
+  "Quick catering: timing and fulfilment",
+  "Quick catering: tax and payment",
+  "Quick catering: after the order",
+  "Plan an event",
+  "Entry"
+ ],
+ "PATHS": [
+  {
+   "id": "Q01",
+   "g": 0,
+   "t": "Guest, scheduled pickup, card (lead time on)",
+   "n": "The baseline Quick catering order.",
+   "s": "A1 A2 A3 A5 C1 C2 C3 D1 D3 D5 D6 D7 E1 E8 E9 F1 F2 F11 F3 F5 F6 F7 F13 F8 F10 G1 G2 G5 G7 H1 H8 H5 H7 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q02",
+   "g": 0,
+   "t": "Signs in at entry, half and half pizza",
+   "n": "Pre-fill from last order, then half and half toppings.",
+   "s": "A1 A2 B1 B2 B5 C1 C2 C3 D1 D2 D3 D4 D5 D6 D7 E1 E8 E9 F1 F11 F3 F5 F6 F7 F13 F8 F10 G1 G2 G5 G7 H1 H8 H5 H7 I1 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q03",
+   "g": 0,
+   "t": "Below the minimum, adds more items",
+   "n": "Checkout stays disabled until the subtotal reaches the minimum.",
+   "s": "A1 A2 A3 A5 C1 C2 C3 D1 D7 E1 E8 E9 C2 C3 D1 D3 D6 D7 E1 E8 E9 F1 F2 F11 F3 F5 F6 F7 F13 F8 F10 G1 G2 G5 G7 H1 H8 H5 H7 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q04",
+   "g": 0,
+   "t": "Accepts an upsell that needs choices",
+   "n": "Upsell pop-up sends the customer back into item customisation.",
+   "s": "A1 A2 A3 A5 C1 C2 C3 D1 D7 E1 E3 D1 D3 D6 D7 E1 E8 E9 F1 F2 F11 F3 F5 F6 F7 F13 F8 F10 G1 G2 G5 G7 H1 H8 H5 H7 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q05",
+   "g": 1,
+   "t": "Guest, ASAP pickup, card (lead time off)",
+   "n": "ASAP is offered because lead time is off and the store is open.",
+   "s": "A1 A2 A3 A5 C1 C2 C3 D1 D7 E1 E8 E9 F1 F2 F11 F3 F4 F6 F7 F13 F8 F10 G1 G2 G5 G7 H1 H8 H5 H7 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q06",
+   "g": 1,
+   "t": "Guest, scheduled DoorDash delivery, wallet",
+   "n": "Delivery minimum and delivery lead time apply.",
+   "s": "A1 A2 A3 A5 C1 C2 C3 D1 D3 D6 D7 E1 E8 E9 F1 F2 F11 F12 F3 F5 F6 F7 F13 F8 F10 G1 G3 G5 G7 H1 H8 H5 H9 H7 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q07",
+   "g": 2,
+   "t": "Guest tax exempt at checkout",
+   "n": "Exemption applies to this order only and is not saved.",
+   "s": "A1 A2 A3 A5 C1 C2 C3 D1 D7 E1 E8 E9 F1 F2 F11 F3 F5 F6 F7 F13 F8 F10 G1 G2 G5 G7 H1 H8 H5 H7 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q08",
+   "g": 2,
+   "t": "Tax exemption auto-applied, gift card and card",
+   "n": "Signed in with auto-apply on. Unconfirmed: gift cards in catering.",
+   "s": "A1 A2 B1 B2 B5 C1 C2 C3 D1 D7 E1 E8 E9 F1 F11 F3 F5 F6 F7 F13 F8 F9 F10 G1 G2 G5 G7 H1 H8 H5 H7 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q10",
+   "g": 2,
+   "t": "Card declined, retries with a wallet",
+   "n": "Recovery path after a failed payment.",
+   "s": "A1 A2 A3 A5 C1 C2 C3 D1 D7 E1 E8 E9 F1 F2 F11 F3 F5 F6 F7 F13 F8 F10 G1 G2 G5 G6 G1 G3 G5 G7 H1 H8 H5 H7 I4",
+   "side": ""
+  },
+  {
+   "id": "Q11",
+   "g": 3,
+   "t": "Reorders from the Catering tab",
+   "n": "Unavailable items are greyed out in the reorder modal.",
+   "s": "A1 A2 B1 B2 B5 I1 I2 E1 E8 E9 F1 F11 F3 F5 F6 F7 F13 F8 F10 G1 G4 G5 G7 H1 H8 H5 H7 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q12",
+   "g": 3,
+   "t": "Cancels from My Orders, card refund",
+   "n": "Fee from the active policy tier is taken off the subtotal; the rest is refunded to the card.",
+   "s": "A1 A2 B1 B2 B5 C1 C2 C3 D1 D7 E1 E8 E9 F1 F11 F3 F5 F6 F7 F13 F8 F10 G1 G2 G5 G7 H1 H8 H5 I1 I5 I6 I7 I8 I9 I11 I12 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q15",
+   "g": 3,
+   "t": "Cancels a gift card and card order",
+   "n": "Two-step cancellation with the refund split per payment source. Unconfirmed: gift cards in catering.",
+   "s": "A1 A2 B1 B2 B5 C1 C2 C3 D1 D7 E1 E8 E9 F1 F11 F3 F5 F6 F7 F13 F8 F9 F10 G1 G2 G5 G7 H1 H8 H5 I1 I5 I6 I7 I8 I9 I10 I11 I12 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q16",
+   "g": 3,
+   "t": "Tries to cancel once the order is Preparing",
+   "n": "Cancel Order is hidden; only Track Order remains.",
+   "s": "A1 A2 B1 B2 B5 C1 C2 C3 D1 D7 E1 E8 E9 F1 F11 F3 F5 F6 F7 F13 F8 F10 G1 G2 G5 G7 H1 H8 H5 I1 I5 I6 I5 H5 H7 I4",
+   "side": "H2"
+  },
+  {
+   "id": "Q13",
+   "g": 3,
+   "t": "Restaurant cancels and refunds",
+   "n": "Full refund, no policy tiers.",
+   "s": "A1 A2 B1 B2 B5 C1 C2 C3 D1 D7 E1 E8 E9 F1 F11 F3 F5 F6 F7 F13 F8 F10 G1 G2 G5 G7 H1 H8 H5 H10 I1 I4",
+   "side": "H3"
+  },
+  {
+   "id": "P01",
+   "g": 4,
+   "t": "Single pre-built package, declined",
+   "n": "Inquiry submitted and declined by the restaurant.",
+   "s": "A1 A2 A3 A5 J1 J2 J3 J5 J6 K1 K2 K3 K5 K6 L1 L2",
+   "side": ""
+  },
+  {
+   "id": "P02",
+   "g": 4,
+   "t": "Customised packages, deposit and final invoice",
+   "n": "Two packages, accepted, paid in two invoices, reviewed.",
+   "s": "A1 A2 A3 A5 J1 J2 J3 J4 J5 J6 J1 J2 J3 J4 J5 J6 K1 K2 K3 K5 K6 L1 L3 M1 M2 M1 M2 M5 N1 N2 N3 N5",
+   "side": ""
+  },
+  {
+   "id": "P03",
+   "g": 4,
+   "t": "Payment link expires, new invoice sent",
+   "n": "Invoice voided with reason expired.",
+   "s": "A1 A2 A3 A5 J1 J2 J3 J5 J6 K1 K2 K3 K5 K6 L1 L3 M1 M3 M1 M2 M5 N1 N2 N3 N5",
+   "side": ""
+  },
+  {
+   "id": "P04",
+   "g": 4,
+   "t": "Order edited after an invoice was sent",
+   "n": "Unpaid invoice voided and regenerated.",
+   "s": "A1 A2 A3 A5 J1 J2 J3 J5 J6 K1 K2 K3 K5 K6 L1 L3 M1 M4 M1 M2 M5 N1 N2 N3 N5",
+   "side": ""
+  },
+  {
+   "id": "P05",
+   "g": 4,
+   "t": "Tax-exempt event",
+   "n": "Exemption details carried onto the WebDash inquiry.",
+   "s": "A1 A2 A3 A5 J1 J2 J3 J5 J6 K1 K2 K3 K4 K5 K6 L1 L3 M1 M2 M5 N1 N2 N3 N5",
+   "side": ""
+  },
+  {
+   "id": "P06",
+   "g": 4,
+   "t": "Restaurant cancels the event",
+   "n": "Unpaid invoices voided, deposit refunded by hand.",
+   "s": "A1 A2 A3 A5 J1 J2 J3 J5 J6 K1 K2 K3 K5 K6 L1 L3 M1 M2 N4 N5",
+   "side": ""
+  },
+  {
+   "id": "P07",
+   "g": 4,
+   "t": "Tip given on the review page",
+   "n": "No tip set at creation or on the final invoice.",
+   "s": "A1 A2 A3 A5 J1 J2 J3 J5 J6 K1 B1 B2 B5 K2 K3 K5 K6 L1 L3 M1 M2 M5 N1 N2 N3 N5",
+   "side": ""
+  },
+  {
+   "id": "Q14",
+   "g": 5,
+   "t": "Catering turned off",
+   "n": "Exit path. Unavailable state, no order possible.",
+   "s": "A1 A2 A3 A4",
+   "side": ""
+  }
+ ],
+ "ORDER": {
+  "G": "G1 G2 G3 G4 G5 G7 G6",
+  "H": "H1 H8 H5 H9 H7 H2 H3 H10"
+ }
+};
+
+// Each channel has its own map.
+const CHANNELS = {
+  online: { title: "Online ordering: customer paths and what can go wrong", data: { BANDS, NODES, EDGES, PATH_GROUPS, PATHS } },
+  catering: { title: "Catering: customer paths and what can go wrong", data: CATERING }
+};
+
+(function () {
+  const SEV = { C: "Critical", H: "High", M: "Medium", L: "Low" };
+  const SO = { C: 0, H: 1, M: 2, L: 3 };
+  const KIND = { cust: "Customer action", soft: "Software action", int: "Product integration", dec: "Decision", term: "Start or end" };
+  const BUCKET = { M: "Math / Accounting", L: "Legal, Compliance", S: "Platform security", OB: "Onboarding, Offboarding", D: "Data storage", B: "Billing", R: "Reports", CN: "Consumptions", CX: "Customer experience", T: "Tech debt" };
+  const REL = { R8: "Release 8", R9: "Release 9", TBC: "Unconfirmed for catering" };
+  const ONLINE_ORDER = { G: "G1 G2 G3 G4 G5 G7 G6", H: "H1 H5 H7 H2 H3 H4 H6" };
+  let ORDER = ONLINE_ORDER;
+
+  let BANDS, NODES, EDGES, PATH_GROUPS, PATHS, N, B;
+  Object.values(CHANNELS).forEach(c => c.data.PATHS.forEach(p => {
+    p.seq = p.s.split(" ");
+    p.sideIds = (p.side || "").split(" ").filter(Boolean);
+    p.nodes = new Set(p.seq.concat(p.sideIds));
+  }));
+  const stepsOf = b => ORDER[b] ? ORDER[b].split(" ").map(id => N[id]) : NODES.filter(n => n.b === b);
+
+  const st = { ch: "online", tab: "journey", path: null, sel: null, sev: { C: 1, H: 1, M: 1, L: 1 }, q: "" };
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const pl = (k, w) => `${k} ${w}${k === 1 ? "" : "s"}`;
+  const crit = n => n.e.filter(x => x[2] === "C").length;
+  const curPath = () => st.path ? PATHS.find(p => p.id === st.path) : null;
+
+  // ---------- journey ----------
+  function renderJourney() {
+    const P = curPath();
+    let h = "";
+    BANDS.forEach(b => {
+      const steps = stepsOf(b.id);
+      const errs = steps.reduce((a, n) => a + n.e.length, 0);
+      const onPath = P && steps.some(n => P.nodes.has(n.id));
+      h += `<section class="stage ${P && !onPath ? "faded" : ""}">
+        <div class="stage-head"><h2><span class="sid">${b.id}</span>${esc(b.t)}</h2><p>${esc(b.s)}</p><p class="sstat">${pl(steps.length, "step")}, ${pl(errs, "error")}</p></div>
+        <ol class="cards">`;
+      steps.forEach(n => {
+        const c = crit(n), on = P && P.nodes.has(n.id);
+        let num = "";
+        if (on) {
+          const idx = P.seq.map((x, i) => x === n.id ? i + 1 : 0).filter(Boolean);
+          num = `<span class="num" aria-label="Step ${idx.join(" and ") || "side effect"}">${idx.length ? idx.join(", ") : "+"}</span>`;
+        }
+        h += `<li><button class="card k-${n.k} ${P ? (on ? "on" : "dim") : ""} ${st.sel === n.id ? "sel" : ""}" data-node="${n.id}">
+          ${num}<span class="top"><span class="cid">${n.k === "dec" ? "◆ " : ""}${n.id}</span>${n.rel !== "L" ? `<span class="rel">${n.rel}</span>` : ""}</span>
+          <span class="ct">${esc(n.t)}</span>
+          <span class="ce">${pl(n.e.length, "error")}${c ? `<b>${c} critical</b>` : ""}</span></button></li>`;
+      });
+      h += `</ol></section>`;
+    });
+    $("#journey").innerHTML = h;
+  }
+
+  // ---------- drawer ----------
+  function errItems(list) {
+    return `<ul class="errs">${list.slice().sort((a, b) => SO[a[2]] - SO[b[2]]).map(x => `<li class="sev-${x[2]}">
+      <span class="sv">${SEV[x[2]]}</span><p class="et">${esc(x[0])}</p><p class="ei">${esc(x[1])}${x[4] ? `<span class="bn"> (from L1 board note)</span>` : ""}</p></li>`).join("")}</ul>`;
+  }
+  function renderDrawer() {
+    const d = $("#drawer"), P = curPath();
+    if (!st.sel && !P) { d.hidden = true; document.body.classList.remove("open"); return; }
+    d.hidden = false; document.body.classList.add("open");
+    let h = `<button class="x" data-act="close" aria-label="Close">✕</button>`;
+    if (st.sel) {
+      const n = N[st.sel];
+      const out = EDGES.filter(e => e[0] === n.id), inn = EDGES.filter(e => e[1] === n.id);
+      if (P) h += `<button class="back" data-act="back">Back to path ${esc(P.id)}</button>`;
+      h += `<p class="kicker"><span class="kd k-${n.k}"></span>${KIND[n.k]}${n.rel !== "L" ? `, ${REL[n.rel]}` : ""}</p>`;
+      h += `<h2>${esc(n.t)}</h2><p class="desc">${esc(n.d)}</p>`;
+      h += `<h3>What can go wrong</h3>` + errItems(n.e);
+      h += `<h3>Next</h3><ul class="nav">${out.map(e => `<li><button data-node="${e[1]}">${esc(N[e[1]].t)}${e[2] ? `<span>${esc(e[2])}</span>` : ""}</button></li>`).join("") || `<li class="muted">End of the journey</li>`}</ul>`;
+      h += `<details><summary>More about this step</summary>
+        <p class="lbl">Comes from</p><ul class="nav">${inn.map(e => `<li><button data-node="${e[0]}">${esc(N[e[0]].t)}</button></li>`).join("") || `<li class="muted">Journey starts here</li>`}</ul>
+        ${n.sys.length ? `<p class="lbl">Systems involved</p><p class="muted">${n.sys.map(esc).join(", ")}</p>` : ""}
+        <p class="lbl">Error buckets</p><p class="muted">${[...new Set(n.e.flatMap(x => x[3].split(",")))].map(k => BUCKET[k] || k).join(", ")}</p>
+        <p class="lbl">On paths</p><p class="muted">${PATHS.filter(p => p.nodes.has(n.id)).map(p => p.id).join(", ")}</p></details>`;
+    } else {
+      const ids = [...P.nodes], e = ids.reduce((a, id) => a + N[id].e.length, 0), c = ids.reduce((a, id) => a + crit(N[id]), 0);
+      h += `<p class="kicker">${esc(PATH_GROUPS[P.g])}</p><h2>${esc(P.t)}</h2><p class="desc">${esc(P.n)}</p>
+        <p class="stats"><span><b>${P.seq.length}</b> steps</span><span><b>${e}</b> errors</span><span><b>${c}</b> critical</span></p>
+        <h3>Steps in order</h3><ol class="steps">${P.seq.map((id, i) => `<li><button data-node="${id}"><span class="i">${i + 1}</span><span>${esc(N[id].t)}</span><span class="n">${N[id].e.length}</span></button></li>`).join("")}</ol>`;
+      if (P.sideIds.length) h += `<p class="lbl">Also triggered</p><ul class="nav">${P.sideIds.map(id => `<li><button data-node="${id}">${esc(N[id].t)}</button></li>`).join("")}</ul>`;
+    }
+    d.innerHTML = h; d.scrollTop = 0;
+  }
+
+  // ---------- errors tab ----------
+  function renderErrors() {
+    const P = curPath(), q = st.q.trim().toLowerCase();
+    let rows = "", total = 0;
+    BANDS.forEach(b => {
+      let body = "";
+      stepsOf(b.id).filter(n => !P || P.nodes.has(n.id)).forEach(n => {
+        n.e.filter(x => st.sev[x[2]]).sort((a, c) => SO[a[2]] - SO[c[2]]).forEach(x => {
+          if (q && !(n.t + " " + x[0] + " " + x[1]).toLowerCase().includes(q)) return;
+          total++;
+          body += `<tr data-node="${n.id}" tabindex="0"><td class="tstep">${esc(n.t)}</td><td><p class="et">${esc(x[0])}</p><p class="ei">${esc(x[1])}</p></td><td><span class="pill sev-${x[2]}">${SEV[x[2]]}</span></td></tr>`;
+        });
+      });
+      if (body) rows += `<tr class="grp"><th colspan="3"><span class="sid">${b.id}</span>${esc(b.t)}</th></tr>` + body;
+    });
+    const cnt = k => NODES.filter(n => !P || P.nodes.has(n.id)).reduce((a, n) => a + n.e.filter(x => x[2] === k).length, 0);
+    $("#errors").innerHTML = `<div class="ebar">
+      <input type="search" id="q" placeholder="Search errors" aria-label="Search errors" value="${esc(st.q)}">
+      <div class="chips">${["C", "H", "M", "L"].map(k => `<button class="chip sev-${k}" data-sev="${k}" aria-pressed="${!!st.sev[k]}">${SEV[k]} <span>${cnt(k)}</span></button>`).join("")}</div>
+      <p class="muted">${pl(total, "error")}${P ? ` on ${esc(P.t)}` : ""}</p></div>
+      <div class="twrap"><table><thead><tr><th>Step</th><th>What goes wrong</th><th>Severity</th></tr></thead><tbody>${rows || `<tr><td colspan="3" class="muted">Nothing matches. Clear the search or turn a severity back on.</td></tr>`}</tbody></table></div>`;
+    $("#q").addEventListener("input", ev => { st.q = ev.target.value; const p = ev.target.selectionStart; renderErrors(); const i = $("#q"); i.focus(); i.setSelectionRange(p, p); });
+  }
+
+  function renderBar() {
+    document.querySelectorAll("[data-ch]").forEach(b => b.setAttribute("aria-selected", b.dataset.ch === st.ch));
+    document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === st.tab));
+    $("#journey").hidden = st.tab !== "journey"; $("#errors").hidden = st.tab !== "errors";
+    $("#path").value = st.path || ""; $("#clear").hidden = !st.path;
+  }
+  function render() { renderBar(); renderDrawer(); if (st.tab === "journey") renderJourney(); else renderErrors(); }
+
+  // channel switch: load that channel's data, path list and summary
+  function loadChannel(ch) {
+    const C = CHANNELS[ch];
+    st.ch = ch; st.path = null; st.sel = null; st.q = "";
+    ({ BANDS, NODES, EDGES, PATH_GROUPS, PATHS } = C.data);
+    ORDER = C.data.ORDER || ONLINE_ORDER;
+    N = {}; NODES.forEach(n => { N[n.id] = n; });
+    B = {}; BANDS.forEach(b => { B[b.id] = b; });
+    $("#ttl").textContent = C.title;
+    $("#path").innerHTML = `<option value="">All steps, no path</option>` + PATH_GROUPS.map((g, gi) =>
+      `<optgroup label="${esc(g)}">${PATHS.filter(p => p.g === gi).map(p => `<option value="${p.id}">${esc(p.t)}</option>`).join("")}</optgroup>`).join("");
+    const total = NODES.reduce((a, n) => a + n.e.length, 0), tc = NODES.reduce((a, n) => a + crit(n), 0);
+    $("#sum").textContent = `${NODES.length} steps in ${BANDS.length} stages, ${PATHS.length} customer paths, ${total} possible errors (${tc} critical).`;
+    try { localStorage.setItem("aio-paths-ch", ch); } catch (e) {}
+  }
+  $("#path").addEventListener("change", ev => { st.path = ev.target.value || null; st.sel = null; render(); });
+  let startCh = "online";
+  try { const s = localStorage.getItem("aio-paths-ch"); if (CHANNELS[s]) startCh = s; } catch (e) {}
+  loadChannel(startCh);
+
+  document.addEventListener("click", ev => {
+    const t = ev.target.closest("[data-node],[data-act],[data-tab],[data-sev],[data-ch]");
+    if (!t) return;
+    if (t.dataset.ch) { if (t.dataset.ch !== st.ch) { loadChannel(t.dataset.ch); render(); document.querySelector(".scroll").scrollTop = 0; } }
+    else if (t.dataset.node) {
+      st.sel = t.dataset.node;
+      if (st.tab !== "journey") { st.tab = "journey"; render(); } else { renderDrawer(); renderJourney(); }
+      const el = document.querySelector(`.card[data-node="${st.sel}"]`);
+      if (el && !ev.target.closest(".card")) el.scrollIntoView({ block: "center", behavior: "smooth" });
+    } else if (t.dataset.act === "close") { st.sel = null; st.path = null; render(); }
+    else if (t.dataset.act === "back") { st.sel = null; render(); }
+    else if (t.dataset.act === "clear") { st.path = null; st.sel = null; render(); }
+    else if (t.dataset.tab) { st.tab = t.dataset.tab; render(); }
+    else if (t.dataset.sev) { st.sev[t.dataset.sev] = st.sev[t.dataset.sev] ? 0 : 1; renderErrors(); }
+  });
+  document.addEventListener("keydown", ev => {
+    if (ev.key === "Escape") { if (st.sel) st.sel = null; else st.path = null; render(); }
+    const r = ev.target.closest && ev.target.closest("tr[data-node]");
+    if (r && ev.key === "Enter") r.click();
+  });
+  render();
+})();
+
+</script>
+</body>
+</html>
+
+
+</body></html>

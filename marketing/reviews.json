@@ -1,0 +1,949 @@
+{
+  "key": "reviews",
+  "name": "Review Management",
+  "title": "Review Management: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Connect review sources",
+      "s": "Match provider accounts and listings to the restaurant."
+    },
+    {
+      "id": "B",
+      "t": "Collect guest feedback",
+      "s": "Follow submission, collection and stale feed recovery."
+    },
+    {
+      "id": "C",
+      "t": "Work the inbox",
+      "s": "Find the right review and choose how to respond."
+    },
+    {
+      "id": "D",
+      "t": "Publish and verify replies",
+      "s": "Check what the guest and operator can see."
+    },
+    {
+      "id": "E",
+      "t": "Evaluate and maintain",
+      "s": "Review insights, mobile summaries and connection changes."
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Open Review Management",
+      "d": "Open the restaurant review workspace and inspect the onboarding or overview state.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "An established restaurant lands back on first use",
+          "Operator repeats setup",
+          "M",
+          "OB",
+          []
+        ],
+        [
+          "Old location counts remain after switching restaurants",
+          "Incorrect reputation figures",
+          "H",
+          "D,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Connect Google Business Profile",
+      "d": "Authorise Google and select the business location. A connected account also needs a stored location before the first fetch.",
+      "sys": [
+        "Web Dash: Review Management",
+        "Google Business Profile"
+      ],
+      "e": [
+        [
+          "Operator has access to the account but selects the wrong listing",
+          "Another location supplies the reviews",
+          "H",
+          "OB,CN",
+          []
+        ],
+        [
+          "Permission is revoked after authorisation",
+          "Fresh reviews stop arriving",
+          "H",
+          "OB,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A3",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Connect Yelp",
+      "d": "Select the Yelp business for this restaurant and check the displayed business name. Fetch readiness requires the stored listing.",
+      "sys": [
+        "Web Dash: Review Management",
+        "Yelp"
+      ],
+      "e": [
+        [
+          "Two similarly named branches are confused",
+          "Reviews attributed to the wrong branch",
+          "H",
+          "OB,CN",
+          []
+        ],
+        [
+          "Connected indicator appears before the selected location is saved",
+          "Fetch remains unavailable",
+          "M",
+          "OB,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A4",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Connect Tripadvisor",
+      "d": "Use the Tripadvisor connection flow for the selected restaurant. It can contribute reviews independently of the other sources.",
+      "sys": [
+        "Web Dash: Review Management",
+        "Tripadvisor"
+      ],
+      "e": [
+        [
+          "Wrong listing is paired with the restaurant",
+          "Ratings do not describe this location",
+          "H",
+          "OB,CN",
+          []
+        ],
+        [
+          "Operator expects Tripadvisor to support the Google reply workflow",
+          "Review remains unanswered",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A5",
+      "b": "A",
+      "k": "dec",
+      "rel": "L",
+      "t": "Are connected sources ready?",
+      "d": "Fetch requires at least one connected source and all connected sources to be ready. Repair an incomplete connection and try again.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "One incomplete listing blocks the fetch for other ready sources",
+          "First import delayed",
+          "H",
+          "OB",
+          []
+        ],
+        [
+          "Disabled action gives no indication which source needs attention",
+          "Operator cannot finish onboarding",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "cust",
+      "rel": "L",
+      "t": "Leave a review",
+      "d": "A guest posts a rating and optional text at the chosen provider. The original review belongs to that provider.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Guest posts to a neighbouring branch",
+          "Review is missing from the intended inbox",
+          "H",
+          "CN",
+          []
+        ],
+        [
+          "Rating without text is overlooked in a text search",
+          "Genuine rating goes unanswered",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "int",
+      "rel": "L",
+      "t": "Fetch restaurant reviews",
+      "d": "Fetch reviews submits collection work for connected sources. Check source totals as the results arrive.",
+      "sys": [
+        "Web Dash: Review Management",
+        "Google Business Profile",
+        "MoM"
+      ],
+      "e": [
+        [
+          "Google reviews stop syncing to MoM even though the listing has newer reviews",
+          "Manager misses new guest feedback",
+          "H",
+          "CN,T",
+          [
+            "5032"
+          ]
+        ],
+        [
+          "A retry imports a previously collected review again",
+          "Counts and reply workload increase",
+          "H",
+          "D,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Recover a stale feed",
+      "d": "Compare a recent provider review with Web Dash and MoM. The scrum team reports that reconnecting Google is a workaround for PROD 5032.",
+      "sys": [
+        "Web Dash: Review Management",
+        "MoM",
+        "Google Business Profile"
+      ],
+      "e": [
+        [
+          "Reconnect selects another listing with a similar name",
+          "Gap is hidden by unrelated reviews",
+          "H",
+          "CN,OB",
+          []
+        ],
+        [
+          "Only the displayed total is checked after reconnecting",
+          "Specific missing review remains absent",
+          "M",
+          "R,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Filter the inbox",
+      "d": "Filter by source, rating or reply and read status. Open a matching review and inspect its content. The dashboard saves the chosen reporting duration locally. Check the period again after moving between restaurants.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Read and replied filters are confused",
+          "Unanswered complaint appears dealt with",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "A retained source filter hides recent feedback",
+          "Operator believes collection has stopped",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Inspect review details",
+      "d": "Check the source, date, rating and text. Order or ticket context is available where the review has an associated ticket.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Ticket context is displayed against the wrong review",
+          "Operator refers to another guest order",
+          "C",
+          "S,D",
+          []
+        ],
+        [
+          "A provider review with no order link looks like an incomplete import",
+          "Unnecessary investigation",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Mark the review read",
+      "d": "Reading status and published response status are separate measures in Review Management.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Marking read removes the review from an unread queue before anyone replies",
+          "Guest waits longer",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Mobile and dashboard read counts diverge",
+          "Two managers repeat triage",
+          "M",
+          "CN,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "dec",
+      "rel": "L",
+      "t": "Does this source support replies?",
+      "d": "Google and Yelp have reply integrations. For other sources verify the available action before composing a public response.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Unsupported source offers a reply action that fails at submit",
+          "Manager loses work",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "A reply action is unavailable for a supported review",
+          "Complaint cannot be answered from the inbox",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Compose a response",
+      "d": "Write a response or generate an AI suggestion for this review and edit the proposed wording before sending.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Draft cites an item or refund absent from the review",
+          "Restaurant makes an incorrect public promise",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "An earlier suggestion remains when the operator opens another review",
+          "Reply addresses the wrong guest",
+          "H",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "int",
+      "rel": "L",
+      "t": "Publish the response",
+      "d": "AIO forwards the response to Google or Yelp and stores the result locally. Existing replies can restrict a second submission depending on source.",
+      "sys": [
+        "Web Dash: Review Management",
+        "Google Business Profile",
+        "Yelp"
+      ],
+      "e": [
+        [
+          "Provider accepts the reply but local saving fails",
+          "Inbox still shows unanswered",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "Two managers reply to the same review from different devices",
+          "Conflicting public responses",
+          "H",
+          "CX,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "cust",
+      "rel": "L",
+      "t": "Read the public reply",
+      "d": "Check that the response visible on the source matches the restaurant, review and intended text.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "A local success message appears while the public reply is absent",
+          "Guest believes the complaint was ignored",
+          "H",
+          "CN,CX",
+          []
+        ],
+        [
+          "Public reply contains personal order details from the inbox",
+          "Guest privacy is compromised",
+          "C",
+          "S,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Remove a Google reply",
+      "d": "The removal service calls Google and marks the saved reply deleted after success. Provider support varies.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Google removes the reply but the inbox still shows replied",
+          "Staff cannot tell whether to respond again",
+          "H",
+          "D,CN",
+          []
+        ],
+        [
+          "Operator expects the same removal option on another source",
+          "Incorrect response stays visible",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Generate restaurant insights",
+      "d": "Request analysis of available reviews. The service distinguishes an in-progress run from insufficient data and handles completion separately.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Insufficient reviews leave the page waiting for a completion signal",
+          "Onboarding stalls",
+          "H",
+          "OB,T",
+          []
+        ],
+        [
+          "An older summary appears while a new analysis is in progress",
+          "Operator acts on stale feedback",
+          "M",
+          "R,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Read themes and trends",
+      "d": "Inspect sentiments, keywords, categories and suggestions. Compare a theme to the underlying reviews and date range.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "A repeated review dominates a small sample",
+          "Priority is set from duplicate feedback",
+          "H",
+          "D,R",
+          []
+        ],
+        [
+          "A filtered inbox is compared with restaurant-wide insights",
+          "Trend appears inconsistent",
+          "M",
+          "R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Check the mobile summary",
+      "d": "Compare MoM unread and negative counts with the same restaurant and source reviews in Web Dash.",
+      "sys": [
+        "Web Dash: Review Management",
+        "MoM"
+      ],
+      "e": [
+        [
+          "Mobile summary stays stale after the web inbox updates",
+          "Manager misses an urgent complaint",
+          "H",
+          "CN,R",
+          []
+        ],
+        [
+          "Unread is interpreted as negative feedback",
+          "Wrong intervention prioritised",
+          "M",
+          "R,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E4",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Disconnect a source",
+      "d": "Use the source connection controls and confirm the intended restaurant before disconnecting.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Disconnecting the wrong Google listing interrupts collection",
+          "New reviews disappear from the inbox",
+          "H",
+          "OB,CN",
+          []
+        ],
+        [
+          "Old reviews still on screen imply that collection continues",
+          "Operator misses future feedback",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E5",
+      "b": "E",
+      "k": "term",
+      "rel": "L",
+      "t": "Confirm the outcome",
+      "d": "Compare the latest review, reply or connection state on the intended surface.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "Checking only a total hides a missing or duplicated individual review",
+          "Issue is closed prematurely",
+          "M",
+          "R,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E6",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Receive the weekly review report",
+      "d": "The restaurant weekly summary is scheduled and handed to the notification service for delivery. Compare the period and restaurant with the inbox, and check the recorded outcome separately from receipt.",
+      "sys": [
+        "Web Dash: Review Management",
+        "Email service"
+      ],
+      "e": [
+        [
+          "Report is sent to an outdated distribution list after a management change",
+          "Review details reach unintended recipients",
+          "C",
+          "S,OB",
+          []
+        ],
+        [
+          "Delivery succeeds but its saved status fails to update",
+          "The same report may be sent again",
+          "M",
+          "D,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E7",
+      "b": "E",
+      "k": "int",
+      "rel": "L",
+      "t": "Export review records",
+      "d": "The service produces a restaurant-specific Excel export containing review and analysis data. Confirm that the requesting role has the appropriate route to use it.",
+      "sys": [
+        "Web Dash: Review Management"
+      ],
+      "e": [
+        [
+          "An export is compared with a filtered inbox while the file contains a broader set",
+          "Review count appears inconsistent",
+          "M",
+          "R,CX",
+          []
+        ],
+        [
+          "A download stops partway through and appears complete",
+          "Restaurant loses rows during reconciliation",
+          "H",
+          "D,R",
+          []
+        ]
+      ]
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "A5",
+      ""
+    ],
+    [
+      "A5",
+      "B1",
+      "Leave a review"
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "C1",
+      ""
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "E3",
+      ""
+    ],
+    [
+      "E3",
+      "E5",
+      ""
+    ],
+    [
+      "A2",
+      "A3",
+      ""
+    ],
+    [
+      "A3",
+      "A5",
+      ""
+    ],
+    [
+      "A5",
+      "A3",
+      "Connect Yelp"
+    ],
+    [
+      "A5",
+      "B2",
+      "Fetch restaurant reviews"
+    ],
+    [
+      "C1",
+      "E5",
+      ""
+    ],
+    [
+      "A1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "A2",
+      ""
+    ],
+    [
+      "B2",
+      "E3",
+      ""
+    ],
+    [
+      "A1",
+      "C1",
+      ""
+    ],
+    [
+      "C3",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "D1",
+      "Compose a response"
+    ],
+    [
+      "D1",
+      "D2",
+      ""
+    ],
+    [
+      "D2",
+      "D3",
+      ""
+    ],
+    [
+      "D3",
+      "E5",
+      ""
+    ],
+    [
+      "C2",
+      "D4",
+      ""
+    ],
+    [
+      "D4",
+      "D1",
+      ""
+    ],
+    [
+      "A1",
+      "A4",
+      ""
+    ],
+    [
+      "A4",
+      "A5",
+      ""
+    ],
+    [
+      "C2",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "E5",
+      "Confirm the outcome"
+    ],
+    [
+      "A1",
+      "E1",
+      ""
+    ],
+    [
+      "E1",
+      "E2",
+      ""
+    ],
+    [
+      "E2",
+      "C1",
+      ""
+    ],
+    [
+      "C2",
+      "E5",
+      ""
+    ],
+    [
+      "A1",
+      "E4",
+      ""
+    ],
+    [
+      "E4",
+      "E5",
+      ""
+    ],
+    [
+      "A1",
+      "E6",
+      "Weekly report"
+    ],
+    [
+      "E6",
+      "E2",
+      "Compare with insights"
+    ],
+    [
+      "C1",
+      "E7",
+      "Export"
+    ],
+    [
+      "E7",
+      "E5",
+      "Reconcile"
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Onboarding and sync",
+    "Reply handling",
+    "Analysis and maintenance"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "Connect Google and fetch",
+      "n": "Start with a single provider and confirm feedback in both views.",
+      "s": "A1 A2 A5 B1 B2 C1 C2 C3 E3 E5",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Resolve incomplete multi-source setup",
+      "n": "Complete a missing Yelp listing before fetching alongside Google.",
+      "s": "A1 A2 A3 A5 A3 A5 B2 C1 E5",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 0,
+      "t": "Recover missing mobile reviews",
+      "n": "Compare an identifiable review, reconnect and check the mobile summary.",
+      "s": "A1 B2 B3 A2 A5 B2 E3 E5",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 1,
+      "t": "Publish a reply",
+      "n": "Read a Google or Yelp review and verify the public reply.",
+      "s": "A1 C1 C2 C3 C4 D1 D2 D3 E5",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Correct a public Google response",
+      "n": "Verify the existing reply, remove it and send a corrected response.",
+      "s": "A1 C1 C2 D4 D1 D2 D3 E5",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Read a Tripadvisor review",
+      "n": "Collect a review and check what action the provider supports.",
+      "s": "A1 A4 A5 B1 B2 C1 C2 C4 E5",
+      "side": ""
+    },
+    {
+      "id": "P07",
+      "g": 2,
+      "t": "Read generated insights",
+      "n": "Generate insights from available feedback and compare with source reviews.",
+      "s": "A1 E1 E2 C1 C2 E5",
+      "side": ""
+    },
+    {
+      "id": "P08",
+      "g": 2,
+      "t": "Disconnect a source",
+      "n": "Review the listing and confirm the change in connection state.",
+      "s": "A1 E4 E5",
+      "side": ""
+    },
+    {
+      "id": "P09",
+      "g": 2,
+      "t": "Reconcile the weekly review report",
+      "n": "Check the report period, supporting reviews and restaurant export.",
+      "s": "A1 E6 E2 C1 E7 E5",
+      "side": ""
+    }
+  ],
+  "NOTES": [
+    "PROD 5032 records the MoM sync symptom. Reconnecting Google is a reported workaround. The production root cause is open.",
+    "The first fetch and insight status transitions are visible in Zeus. Provider collection cadence, exact analysis refresh time, mobile screens and notification delivery require operational verification.",
+    "Google and Yelp have outbound reply handlers. Google has a deletion handler. Tripadvisor reply publication was not found in the same path.",
+    "Weekly email scheduling and restaurant export are present. Confirm the actual recipients, delivery and mobile display with the restaurant.",
+    "Zeus internal, 02473c3bac9. See review-management/review/review.service.ts, the review relay and features/reviewManagement."
+  ]
+}

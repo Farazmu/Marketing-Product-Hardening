@@ -1,0 +1,1262 @@
+{
+  "key": "guestbook",
+  "name": "Guest Book",
+  "title": "Guest Book: operator and guest paths and what can go wrong",
+  "BANDS": [
+    {
+      "id": "A",
+      "t": "Choose the restaurant and entry point",
+      "s": "A guest can arrive through staff entry, commerce or an import."
+    },
+    {
+      "id": "B",
+      "t": "Identify the guest",
+      "s": "Match contact details and keep purchases with the correct person."
+    },
+    {
+      "id": "C",
+      "t": "Import records",
+      "s": "Validate the file, track partial progress and recover rejected rows."
+    },
+    {
+      "id": "D",
+      "t": "Find and inspect a guest",
+      "s": "Use segments, filters and individual records to answer operator questions."
+    },
+    {
+      "id": "E",
+      "t": "Configure audiences",
+      "s": "Maintain segment rules, spending bands and guest attributes."
+    },
+    {
+      "id": "F",
+      "t": "Use and maintain the record",
+      "s": "Carry permissions, preferences and balances into the products that use them."
+    }
+  ],
+  "NODES": [
+    {
+      "id": "A1",
+      "b": "A",
+      "k": "term",
+      "rel": "L",
+      "t": "Open Guest Book",
+      "d": "Choose the restaurant and open Guest Book Overview or Configure.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Counts from another location remain visible during a switch",
+          "Manager picks the wrong audience",
+          "H",
+          "R,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A2",
+      "b": "A",
+      "k": "op",
+      "rel": "L",
+      "t": "Add a guest manually",
+      "d": "Add guest takes a US phone number and accepts email and birthday. The form supplies the country prefix.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "A national number already containing a prefix is entered twice",
+          "Valid guest cannot be saved",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "An incorrect birthday is accepted as a genuine date",
+          "Birthday message arrives on the wrong day",
+          "H",
+          "CN,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A3",
+      "b": "A",
+      "k": "cust",
+      "rel": "L",
+      "t": "Identify during an order",
+      "d": "At the Android register, staff look up a guest by phone and attach the matching profile to the ticket, or enter the details for a new guest. A temporary ticket name identifies the order. Online ordering, receipt contact and card matching are separate entry points.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "Online ordering",
+        "POS",
+        "Kiosk"
+      ],
+      "e": [
+        [
+          "A family shares a phone and one person's visit attaches to another",
+          "Visit history becomes unreliable",
+          "H",
+          "D",
+          []
+        ],
+        [
+          "A receipt contact is treated as permission to send promotions",
+          "Guest gets unwanted marketing",
+          "C",
+          "L,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A4",
+      "b": "A",
+      "k": "int",
+      "rel": "L",
+      "t": "Receive a loyalty or card event",
+      "d": "Loyalty transactions update guest activity. Gift card purchaser and recipient can be different people, so check whose card and history appear.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "Marketing Gift cards",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "A gifted card appears under the buyer instead of the intended recipient",
+          "Wrong guest sees stored value",
+          "C",
+          "S,D",
+          []
+        ],
+        [
+          "Guest receives loyalty credit under a temporary payment profile",
+          "Balance appears missing",
+          "H",
+          "M,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "A5",
+      "b": "A",
+      "k": "int",
+      "rel": "L",
+      "t": "Submit a website popup",
+      "d": "Newsletter, Sign Up and Contact Us popups can create or link a guest and assign the Potential segment. The guest update can fail after the visitor receives confirmation of the form submission.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "Website builder"
+      ],
+      "e": [
+        [
+          "A form submission is counted as a marketable guest without a matching opt in",
+          "Unwanted contact",
+          "C",
+          "L,CN",
+          []
+        ],
+        [
+          "Guest Book update fails after the website accepts a submission",
+          "A real lead is missing from the audience",
+          "H",
+          "D,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B1",
+      "b": "B",
+      "k": "soft",
+      "rel": "L",
+      "t": "Match phone or email",
+      "d": "At the Android register, the Add Guest phone lookup displays the matched contact before staff attach it to the ticket. Payment and import services have their own matching rules, including email fallback where supported. Manual creation can reject an existing email or phone.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "POS"
+      ],
+      "e": [
+        [
+          "Formatting variants create two entries for one person",
+          "Orders and points are split",
+          "H",
+          "D,M",
+          []
+        ],
+        [
+          "A reused phone conflicts with an existing email identity",
+          "A guest is linked to the wrong person",
+          "C",
+          "S,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B2",
+      "b": "B",
+      "k": "soft",
+      "rel": "L",
+      "t": "Link the restaurant record",
+      "d": "A customer identity and its association with the restaurant are separate. Check that the local association exists when an existing guest orders at a new branch.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "A recognised customer has no link to the new branch",
+          "Staff cannot find the guest",
+          "H",
+          "OB,D",
+          []
+        ],
+        [
+          "A contact change propagates to an unrelated profile",
+          "Wrong person receives follow-up",
+          "C",
+          "S,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "b": "B",
+      "k": "soft",
+      "rel": "L",
+      "t": "Resolve payment identity",
+      "d": "The payment service can merge a card-created guest into an identified ticket customer. Android POS resolves the receipt name from the ticket and linked customer fields and suppresses recognised placeholder names. Compare the receipt with the attached profile.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "POS",
+        "CFD"
+      ],
+      "e": [
+        [
+          "Temporary and identified records both keep the same visit",
+          "Spend and visit count inflate",
+          "H",
+          "M,R",
+          []
+        ],
+        [
+          "A placeholder name reaches the printed receipt after a change to receipt formatting",
+          "Guest sees an incorrect identity",
+          "H",
+          "CN,CX",
+          [
+            "4966"
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "B4",
+      "b": "B",
+      "k": "op",
+      "rel": "L",
+      "t": "Handle an incorrect guest name",
+      "d": "When Android POS finds a returning guest, the cashier sees the saved name and attaches the profile by customer ID. This flow has no name-edit field. A temporary ticket name and a correction to the saved Guest Book profile are separate actions.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "POS"
+      ],
+      "e": [
+        [
+          "A returning guest asks to correct their name and the cashier can only attach the existing profile from this screen",
+          "The stored name still needs correction in Guest Book",
+          "M",
+          "CN,CX",
+          [
+            "5045"
+          ]
+        ],
+        [
+          "Correcting a shared contact changes the wrong guest name",
+          "Subsequent receipts identify the wrong person",
+          "H",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C1",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Choose the import source",
+      "d": "In Configure, open the Guest Book import drawer and select the platform whose column layout matches the file.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "A loyalty upload is interpreted as a guest file",
+          "Expected customers are rejected",
+          "H",
+          "OB,D",
+          []
+        ],
+        [
+          "Progress for a loyalty import appears as guest import progress",
+          "Operator waits for the wrong job",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Select and validate the file",
+      "d": "The drawer advertises CSV and Excel up to 5 MB. The server checks the platform columns and whether any valid customers remain.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Wrong headers reject the file before the first row is saved",
+          "Migration delayed",
+          "H",
+          "OB",
+          []
+        ],
+        [
+          "A spreadsheet converts a phone number or strips leading digits",
+          "Rows no longer match existing contacts",
+          "H",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C3",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Validate individual rows",
+      "d": "Normalisation separates accepted rows, invalid records and duplicates before or during processing, depending on the source format.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Repeated contacts within the upload inflate successful counts",
+          "Migration looks more complete than it is",
+          "H",
+          "D,R",
+          []
+        ],
+        [
+          "Rows with no usable contact details appear eligible",
+          "Unreachable guests enter targeting",
+          "H",
+          "CN,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C4",
+      "b": "C",
+      "k": "soft",
+      "rel": "L",
+      "t": "Apply imported preferences",
+      "d": "Import uses source-specific subscription data when supplied. Eligibility must be checked independently for email and marketing texts. A qualifying points import can also trigger a separate loyalty welcome text after the row commits.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "A missing SMS preference becomes an explicit opt in",
+          "Guests receive texts without consent",
+          "C",
+          "L,D",
+          []
+        ],
+        [
+          "Reimport replaces a recorded opt out with an older preference",
+          "Previously suppressed guest is contacted",
+          "C",
+          "L,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C5",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Track or cancel an import",
+      "d": "Inspect the current restaurant and import type. Cancellation can occur after some records have been processed.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Cancel is interpreted as undoing completed rows",
+          "Operator repeats previously imported records",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "Progress remains active after a worker stops",
+          "Manager cannot tell which rows completed",
+          "H",
+          "OB,T",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C6",
+      "b": "C",
+      "k": "op",
+      "rel": "L",
+      "t": "Download and correct conflicts",
+      "d": "Review the failed records file, correct the source rows and retry only the affected entries.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "The failure file omits the original row or conflict",
+          "Valid guests remain missing",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "Retrying the complete file obscures which rows were already accepted",
+          "Counts no longer reconcile",
+          "M",
+          "R,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D1",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Find the guest",
+      "d": "Search the list, inspect segment cards, sort and load additional rows. The name or contact may differ from the original import.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "A retained segment excludes the matching phone number",
+          "Staff create another record",
+          "H",
+          "D,CX",
+          []
+        ],
+        [
+          "Pagination repeats the final row after a sort change",
+          "Operator overlooks a guest",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D2",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Apply guest filters",
+      "d": "Apply guest attributes and order or spend ranges. The date filter starts at All time and can combine with a selected segment.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Date and count filters together hide a recent guest",
+          "Operator assumes an import failed",
+          "M",
+          "CX",
+          []
+        ],
+        [
+          "Clearing visible filters leaves a separate segment active",
+          "Audience size stays unexpectedly small",
+          "M",
+          "CX,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D3",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Open the profile",
+      "d": "Open a row to load the guest and restaurant together. Overview and Activity are distinct profile tabs.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Switching guests briefly displays the previous person's contact details",
+          "Private information is misattributed",
+          "C",
+          "S,D",
+          []
+        ],
+        [
+          "A failed profile lookup looks like a guest with no activity",
+          "Staff incorrectly rebuild the profile",
+          "M",
+          "CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D4",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Check identity and attributes",
+      "d": "Inspect the displayed name, contact details, birthday, tags and loyalty or gift card summary where available.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Outdated email remains after profile correction",
+          "Next email reaches an old address",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "A missing balance is rendered as a genuine zero",
+          "Staff give incorrect advice",
+          "H",
+          "M,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D5",
+      "b": "D",
+      "k": "op",
+      "rel": "L",
+      "t": "Inspect orders and activity",
+      "d": "Activity includes order history with date, order number and total spend. Open an available order detail and match it to the original ticket.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "A refund is shown as a second positive purchase",
+          "Spend and visit history are overstated",
+          "H",
+          "M,R",
+          []
+        ],
+        [
+          "Gift card purchase value is confused with food order spend",
+          "Guest value is overstated",
+          "H",
+          "M,R",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "D6",
+      "b": "D",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Review loyalty, cards and receipts",
+      "d": "Open the guest profile to see rewards and the cards linked at this restaurant. For a self-purchase inspect the buyer. For a gift inspect the linked recipient. Open card activity and any available receipt, including separate purchase and refund events.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "Marketing Gift cards",
+        "Marketing Loyalty"
+      ],
+      "e": [
+        [
+          "Points from a reversed order remain in the summary",
+          "Guest expects unavailable rewards",
+          "H",
+          "M,CN",
+          []
+        ],
+        [
+          "A gift is checked against the buyer while it belongs to the linked recipient",
+          "Support reports a missing card",
+          "H",
+          "R,CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "E1",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Set segment rules",
+      "d": "Configure the visit or inactivity criteria for the available guest segments. Review the thresholds used by Regular and Lost journeys.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Shortening the lost threshold moves many guests into reminders at once",
+          "Unexpected sending volume",
+          "H",
+          "CN,B",
+          []
+        ],
+        [
+          "Threshold change is saved for the wrong restaurant",
+          "Local audiences are redefined",
+          "H",
+          "D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E2",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Set average spend bands",
+      "d": "Configure Economy, Standard and the higher spend band. Validate adjacent monetary boundaries and decimals before saving.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "A guest exactly at the boundary is counted twice",
+          "Target groups overlap",
+          "H",
+          "M,D",
+          []
+        ],
+        [
+          "Spend fields save while a separate segment update fails",
+          "Operator believes all settings took effect",
+          "H",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "b": "E",
+      "k": "soft",
+      "rel": "L",
+      "t": "Update classifications",
+      "d": "Segment and spend calculations use restaurant activity. Compare the guest profile, segment count and downstream audience after a change.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "The card updates before individual guest memberships",
+          "Displayed and actual audience sizes differ",
+          "H",
+          "D,R",
+          []
+        ],
+        [
+          "A refunded or cancelled order still qualifies a guest for a spend tier",
+          "Wrong guests receive offers",
+          "H",
+          "M,CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "E4",
+      "b": "E",
+      "k": "op",
+      "rel": "L",
+      "t": "Inspect tags and allergens",
+      "d": "Review the available tag and allergen groups and their association with the selected guest. Campaign filters can consume them.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Removing a tag leaves a saved audience unexpectedly empty",
+          "Campaign misses its target group",
+          "H",
+          "CN,D",
+          []
+        ],
+        [
+          "An allergen label from another guest appears on the profile",
+          "Staff use incorrect guest information",
+          "H",
+          "D,CX",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F1",
+      "b": "F",
+      "k": "soft",
+      "rel": "L",
+      "t": "Check channel consent",
+      "d": "Email subscription and promotional SMS consent are recorded separately. On the Android customer-facing loyalty signup, the guest chooses whether to receive promotions and the app sends that choice with the signup. A phone number supplied for a receipt alone does not establish that choice.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "CFD"
+      ],
+      "e": [
+        [
+          "A phone captured for a receipt is included in a promotional audience",
+          "Unconsented marketing text",
+          "C",
+          "L,CN",
+          []
+        ],
+        [
+          "Email opt out also suppresses an unrelated permitted channel",
+          "Guest misses requested messages",
+          "H",
+          "CN",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F2",
+      "b": "F",
+      "k": "int",
+      "rel": "L",
+      "t": "Resolve marketing audiences",
+      "d": "Campaigns snapshot eligible guests when submitted. Journeys evaluate their own trigger and channel eligibility. Reconcile the time of selection.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "Marketing Campaigns",
+        "Marketing Journeys"
+      ],
+      "e": [
+        [
+          "A manager compares a saved campaign with today's larger segment",
+          "Audience appears incomplete",
+          "M",
+          "R,CN",
+          []
+        ],
+        [
+          "A guest who changed segment still enters an inappropriate reminder",
+          "Guest receives an irrelevant offer",
+          "H",
+          "CN,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F3",
+      "b": "F",
+      "k": "cust",
+      "rel": "TBC",
+      "t": "Withdraw marketing consent",
+      "d": "The guest can unsubscribe from email or change marketing SMS consent by reply. The SMS worker uses the provider decision or recognised STOP, START or UNSTOP text, and writes the matched guest and restaurant preference. Check the next send independently.",
+      "sys": [
+        "Web Dash: Guest Book",
+        "Twilio",
+        "Email service"
+      ],
+      "e": [
+        [
+          "A later import re-enables the withdrawn channel",
+          "Marketing resumes against the guest's preference",
+          "C",
+          "L,D",
+          []
+        ],
+        [
+          "An already queued send uses an earlier consent snapshot",
+          "Opted out guest still receives a message",
+          "C",
+          "L,CN",
+          []
+        ]
+      ],
+      "internalOnly": true
+    },
+    {
+      "id": "F4",
+      "b": "F",
+      "k": "op",
+      "rel": "TBC",
+      "t": "Handle a privacy request",
+      "d": "Verify the authorised route for correction, access or erasure of a guest record and its downstream copies. The Guest Book controller inspected exposes no operator erasure flow.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Staff remove a profile from a visible list while a downstream copy remains contactable",
+          "Privacy request is incomplete",
+          "C",
+          "L,D",
+          []
+        ],
+        [
+          "A shared phone is treated as proof of identity for erasure",
+          "Another guest loses their history",
+          "C",
+          "S,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "F5",
+      "b": "F",
+      "k": "term",
+      "rel": "L",
+      "t": "Verify the guest outcome",
+      "d": "Recheck the intended restaurant, guest and destination surface after a change or import.",
+      "sys": [
+        "Web Dash: Guest Book"
+      ],
+      "e": [
+        [
+          "Only a list count is verified after merging profiles",
+          "Points or history remain attached to the wrong person",
+          "H",
+          "M,D",
+          []
+        ]
+      ]
+    },
+    {
+      "id": "C7",
+      "b": "C",
+      "k": "soft",
+      "rel": "TBC",
+      "t": "Send an imported points welcome",
+      "d": "After a committed import with positive points, check whether the guest is reachable, has previously been welcomed, and qualifies as new, previously at zero points, or without a ticket. Record an accepted welcome so a later import can skip it.",
+      "sys": [
+        "Guest Book import",
+        "Loyalty",
+        "SMS"
+      ],
+      "e": [
+        [
+          "An accepted welcome is not recorded before an import is retried",
+          "The guest may receive a duplicate balance message",
+          "H",
+          "CX",
+          []
+        ],
+        [
+          "An imported guest has points but no reachable number",
+          "The balance is recorded without a welcome text",
+          "M",
+          "CX",
+          []
+        ]
+      ],
+      "internalOnly": true
+    }
+  ],
+  "EDGES": [
+    [
+      "A1",
+      "A2",
+      ""
+    ],
+    [
+      "A2",
+      "B1",
+      ""
+    ],
+    [
+      "B1",
+      "B2",
+      ""
+    ],
+    [
+      "B2",
+      "D1",
+      ""
+    ],
+    [
+      "D1",
+      "D3",
+      ""
+    ],
+    [
+      "D3",
+      "D4",
+      ""
+    ],
+    [
+      "D4",
+      "F5",
+      ""
+    ],
+    [
+      "A1",
+      "A3",
+      ""
+    ],
+    [
+      "A3",
+      "B1",
+      ""
+    ],
+    [
+      "B2",
+      "B3",
+      ""
+    ],
+    [
+      "B3",
+      "B4",
+      "Name needs correction"
+    ],
+    [
+      "B4",
+      "D1",
+      ""
+    ],
+    [
+      "D3",
+      "D5",
+      ""
+    ],
+    [
+      "D5",
+      "F5",
+      ""
+    ],
+    [
+      "A1",
+      "A4",
+      ""
+    ],
+    [
+      "A4",
+      "B1",
+      ""
+    ],
+    [
+      "D3",
+      "D6",
+      ""
+    ],
+    [
+      "D6",
+      "F5",
+      ""
+    ],
+    [
+      "A1",
+      "A5",
+      ""
+    ],
+    [
+      "A5",
+      "D1",
+      ""
+    ],
+    [
+      "D1",
+      "F5",
+      ""
+    ],
+    [
+      "A1",
+      "C1",
+      ""
+    ],
+    [
+      "C1",
+      "C2",
+      ""
+    ],
+    [
+      "C2",
+      "C3",
+      ""
+    ],
+    [
+      "C3",
+      "C4",
+      ""
+    ],
+    [
+      "C4",
+      "C5",
+      ""
+    ],
+    [
+      "C5",
+      "D1",
+      ""
+    ],
+    [
+      "D3",
+      "F5",
+      ""
+    ],
+    [
+      "C5",
+      "C6",
+      ""
+    ],
+    [
+      "C6",
+      "C2",
+      ""
+    ],
+    [
+      "C6",
+      "D1",
+      ""
+    ],
+    [
+      "A1",
+      "D1",
+      ""
+    ],
+    [
+      "D1",
+      "D2",
+      ""
+    ],
+    [
+      "D2",
+      "D1",
+      ""
+    ],
+    [
+      "D4",
+      "D5",
+      ""
+    ],
+    [
+      "A1",
+      "E1",
+      ""
+    ],
+    [
+      "E1",
+      "E2",
+      ""
+    ],
+    [
+      "E2",
+      "E3",
+      ""
+    ],
+    [
+      "E3",
+      "E4",
+      ""
+    ],
+    [
+      "E4",
+      "D1",
+      ""
+    ],
+    [
+      "D3",
+      "F1",
+      ""
+    ],
+    [
+      "F1",
+      "F2",
+      ""
+    ],
+    [
+      "F2",
+      "F5",
+      ""
+    ],
+    [
+      "F1",
+      "F3",
+      ""
+    ],
+    [
+      "F3",
+      "F1",
+      ""
+    ],
+    [
+      "D3",
+      "F4",
+      ""
+    ],
+    [
+      "F4",
+      "F5",
+      ""
+    ],
+    [
+      "A5",
+      "B1",
+      ""
+    ],
+    [
+      "C4",
+      "C7",
+      "Eligible points import"
+    ],
+    [
+      "C7",
+      "D3",
+      ""
+    ],
+    [
+      "B3",
+      "D1",
+      "Name is correct"
+    ]
+  ],
+  "PATH_GROUPS": [
+    "Capture and identity",
+    "Imports",
+    "Profiles and targeting"
+  ],
+  "PATHS": [
+    {
+      "id": "P01",
+      "g": 0,
+      "t": "Create a guest in Web Dash",
+      "n": "Add a guest and confirm the resulting local profile.",
+      "s": "A1 A2 B1 B2 D1 D3 D4 F5",
+      "side": ""
+    },
+    {
+      "id": "P02",
+      "g": 0,
+      "t": "Identify a returning guest at checkout",
+      "n": "Match the guest and reconcile a payment profile and receipt.",
+      "s": "A1 A3 B1 B2 B3 D1 D3 D5 F5",
+      "side": ""
+    },
+    {
+      "id": "P03",
+      "g": 0,
+      "t": "Review loyalty and gift card ownership",
+      "n": "Check a commerce event against the intended guest and balance.",
+      "s": "A1 A4 B1 B2 D1 D3 D6 F5",
+      "side": ""
+    },
+    {
+      "id": "P04",
+      "g": 0,
+      "t": "Verify a form submission",
+      "n": "Trace an eligible popup submission to its guest record and restaurant association.",
+      "s": "A1 A5 B1 B2 D1 D3 F5",
+      "side": ""
+    },
+    {
+      "id": "P05",
+      "g": 1,
+      "t": "Import a clean file",
+      "n": "Validate source, preferences and the resulting profiles.",
+      "s": "A1 C1 C2 C3 C4 C5 D1 D3 F5",
+      "side": ""
+    },
+    {
+      "id": "P06",
+      "g": 1,
+      "t": "Recover rejected records",
+      "n": "Inspect a partial result, correct the failures and retry.",
+      "s": "A1 C1 C2 C3 C4 C5 C6 C2 C3 C4 C5 D1 F5",
+      "side": ""
+    },
+    {
+      "id": "P07",
+      "g": 1,
+      "t": "Cancel a running import",
+      "n": "Check which rows survived cancellation before retrying.",
+      "s": "A1 C1 C2 C3 C4 C5 C6 D1 F5",
+      "side": ""
+    },
+    {
+      "id": "P08",
+      "g": 2,
+      "t": "Investigate a missing guest",
+      "n": "Clear filters and reconcile activity on the selected profile.",
+      "s": "A1 D1 D2 D1 D3 D4 D5 F5",
+      "side": ""
+    },
+    {
+      "id": "P09",
+      "g": 2,
+      "t": "Change targeting rules",
+      "n": "Save segment and spend rules, then check affected campaign and journey audiences.",
+      "s": "A1 E1 E2 E3 E4 D1 D3 F1 F2 F5",
+      "side": ""
+    },
+    {
+      "id": "P10",
+      "g": 2,
+      "t": "Verify an opt out",
+      "n": "Trace a preference change into the next selection of recipients.",
+      "s": "A1 D1 D3 F1 F3 F1 F2 F5",
+      "side": ""
+    },
+    {
+      "id": "P11",
+      "g": 2,
+      "t": "Handle a privacy request",
+      "n": "Check the correct identity and determine the supported fulfilment route.",
+      "s": "A1 D1 D3 F4 F5",
+      "side": ""
+    },
+    {
+      "id": "P12",
+      "g": 0,
+      "t": "Import points and verify the welcome",
+      "n": "Check the completed guest row, the separate welcome and the resulting balance.",
+      "s": "C1 C2 C3 C4 C7 D3 D6",
+      "side": ""
+    },
+    {
+      "id": "P13",
+      "g": 0,
+      "t": "Returning guest reports an incorrect name",
+      "n": "Identify the existing profile at the register, then check the stored name in Guest Book.",
+      "s": "A1 A3 B1 B2 B3 B4 D1 D3 D4 F5",
+      "side": ""
+    }
+  ],
+  "NOTES": [
+    "Gift card activity in the profile reads transaction records. A loyalty welcome following an eligible import is transactional. Marketing text eligibility still depends on the guest consent record.",
+    "Android POS internal d2b5329 was checked in AddCustomerFragment, TicketReceiptMapper and the customer-facing loyalty signup. Payment identity merges, privacy requests and cancellation of an in-flight import depend on their respective services. Three website popup types create guests.",
+    "PROD 5045 is a request for an existing-name edit on POS. PROD 4966 documents the dummy guest on a receipt and also appears in Loyalty.",
+    "Zeus internal, 02473c3bac9. See features/guestbook, components/guestbook/overview/profile/GiftCardsDrawer.tsx and jobs/guests/import-loyalty-sms.ts."
+  ]
+}
